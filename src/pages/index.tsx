@@ -1,21 +1,17 @@
 import type { GetStaticPropsContext, NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import {MyApp} from "../components/MyApp";
 import { useStore } from "../store";
+import { CollectionPanel } from "../components/CollectionPanel";
 
 const queryClient = new QueryClient();
+const apiBaseUrl: string = process.env.NEXT_PUBLIC_API_BASEURL ?? ``;
 
-type PageProps = {
-   apiBaseurl: string
-};
-
-const Home: NextPage<PageProps> = (props) => {
-   useStore.setState({ apiBaseUrl: props.apiBaseurl });
+const Home: NextPage<PageProps> = () => {
+   useStore.setState({ apiBaseUrl });
    return (
       <React.StrictMode>
          {/* Provider */}
@@ -31,26 +27,7 @@ const Home: NextPage<PageProps> = (props) => {
                   />
                   <link rel="icon" href="/favicon.ico" />
                </Head>
-
-               <MyApp >
-
-               <footer className={styles.footer}>
-                  <a
-                     href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-                     target="_blank"
-                     rel="noopener noreferrer"
-                  >
-                     Powered by{" "}
-                     <span className={styles.logo}>
-                        <Image
-                           src="/vercel.svg"
-                           alt="Vercel Logo"
-                           width={72}
-                           height={16}
-                        />
-                     </span>
-                  </a>
-               </footer>
+               <CollectionPanel/>
             </div>
          </QueryClientProvider>
       </React.StrictMode>

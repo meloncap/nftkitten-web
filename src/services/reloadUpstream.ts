@@ -14,14 +14,12 @@ export const reloadUpstream = async (payload: any) => {
    const tokenMints: {[tokenMint: string]: 1} = {};
    const walletAddresses: {[wallet: string]: 1} = {};
 
+   const scannedIn24Hours = await queryScanLog(client);
+   
    await queryAndUpsertMany('launchpad/collections', 
       getUpsertSql(`launchpad`), v => [(v as any).symbol, v], client);
 
-   const scannedIn24Hours = await queryScanLog(client);
-   const collectionListingSet = await queryIdSet('collection_id', 'collection_listing', client);
-   const [collectionActivitySet, collectionStatSet] = await Promise.all([
-      queryIdSet('collection_id', 'collection_activity', client),
-      queryIdSet('collection_id', 'collection_stat', client)]);
+   const collectionStatSet = await queryIdSet('collection_id', 'collection_stat', client);
    const collectionQueue: Subject<() => Promise<unknown>> = new Subject();
    const collectionQueuePromise = waitForQueries(collectionQueue);
    const collections = await queryAndUpsertMany('collections', 
@@ -29,15 +27,14 @@ export const reloadUpstream = async (payload: any) => {
    for (let i = collections.length - 1; i >= 0; i--) {
       const v = collections[i];
       const id = (v as any).symbol;
-      if (force || !scannedIn24Hours.has(`collection_stat_listing.${id}`) && !collectionListingSet.has(id))
+      if (force || !scannedIn24Hours.has(`collection_stat.${id}`) && !collectionStatSet.has(id)) {
          collectionQueue.next(() => queryAndUpsertMany(`collections/${id}/listings`, getUpsertSqlWithParent(`collection`, `listing`),
             v => [id, v, (v as any).pdaAddress], client));
-      if (force || !scannedIn24Hours.has(`collection_activity.${id}`) && !collectionActivitySet.has(id))
          collectionQueue.next(() => queryAndUpsertMany(`collections/${id}/activities`, getUpsertSqlWithParent(`collection`, `activity`),
             v => [id, v, (v as any).signature], client));
-      if (force || !scannedIn24Hours.has(`collection_stat.${id}`) && !collectionStatSet.has(id))
          collectionQueue.next(() => queryAndUpsertOne(`collections/${id}/stats`, getUpsertSql('collection_stat', 'collection_'),
-            v => [v, id], client));
+            v => [id, v], client));
+      }
    }
    collectionQueue.complete();
    console.log(`collection queue ${await collectionQueuePromise} complete`);
@@ -75,31 +72,20 @@ export const reloadUpstream = async (payload: any) => {
    for (const buyer in await queryIdSet("data->'buyer'", 'wallet_offers_received', client))
       walletAddresses[buyer] = 1;
 
-   const [
-      tokenSet,
-      tokenListingSet,
-      tokenOfferReceivedSet,
-      tokenActivitySet
-   ] = await Promise.all([
-      queryIdSet('id', 'token', client),
-      queryIdSet('token_id', 'token_listing', client),
-      queryIdSet('token_id', 'token_offer_received', client),
-      queryIdSet('token_id', 'token_activity', client)]);
+   const tokenSet = await queryIdSet('id', 'token', client);
    const tokenQueue: Subject<() => Promise<unknown>> = new Subject();
    const tokenQueuePromise = waitForQueries(tokenQueue);
    for (const id in tokenMints) {
-      if (force || !scannedIn24Hours.has(`token.${id}`) && !tokenSet.has(id))
+      if (force || !scannedIn24Hours.has(`token.${id}`) && !tokenSet.has(id)) {
          tokenQueue.next(() => queryAndUpsertMany(`tokens/${id}`, getUpsertSql(`token`),
             v => [id, v, (v as any).mintAddress], client));
-      if (force || !scannedIn24Hours.has(`token_listing.${id}`) && !tokenListingSet.has(id))
          tokenQueue.next(() => queryAndUpsertMany(`tokens/${id}/listings`, getUpsertSqlWithParent(`token`, `listing`),
             v => [id, v, (v as any).pdaAddress], client, false));
-      if (force || !scannedIn24Hours.has(`token_offer_received.${id}`) && !tokenOfferReceivedSet.has(id))
          tokenQueue.next(() => queryAndUpsertMany(`tokens/${id}/offer_received`, getUpsertSqlWithParent(`token`, `offer_received`),
             v => [id, v, (v as any).pdaAddress], client));
-      if (force || !scannedIn24Hours.has(`token_activity.${id}`) && !tokenActivitySet.has(id))
          tokenQueue.next(() => queryAndUpsertMany(`tokens/${id}/activities`, getUpsertSqlWithParent(`token`, `activity`),
             v => [id, v, (v as any).signature], client));
+      }
    }
    tokenQueue.complete();
    console.log(`collection queue ${await tokenQueuePromise} complete`);
@@ -113,36 +99,22 @@ export const reloadUpstream = async (payload: any) => {
    for (const seller in await queryIdSet("data->'seller'", 'token_activity', client))
       walletAddresses[seller] = 1;
 
-   const [
-      walletTokenSet,
-      walletActivitySet,
-      offersMadeSet,
-      offersReceivedSet,
-      walletEscrowBalanceSet
-    ] = await Promise.all([
-       queryIdSet('wallet_id', 'wallet_token', client),
-       queryIdSet('wallet_id', 'wallet_activity', client),
-       queryIdSet('wallet_id', 'wallet_offers_made', client),
-       queryIdSet('wallet_id', 'wallet_offers_received', client),
-       queryIdSet('wallet_id', 'wallet_escrow_balance', client)]);
+   const walletTokenSet = await queryIdSet('wallet_id', 'wallet_token', client);
    const walletQueue: Subject<() => Promise<unknown>> = new Subject();
    const walletQueuePromise = waitForQueries(walletQueue);
    for (const id in walletAddresses) {
-      if (force || !scannedIn24Hours.has(`wallet_token.${id}`) && !walletTokenSet.has(id))
+      if (force || !scannedIn24Hours.has(`wallet_token.${id}`) && !walletTokenSet.has(id)) {
          walletQueue.next(() => queryAndUpsertMany(`wallets/${id}/tokens`,
             getUpsertSqlWithParent(`wallet`, `token`), v => [id, v, (v as any).pdaAddress], client));
-      if (force || !scannedIn24Hours.has(`wallet_activity.${id}`) && !walletActivitySet.has(id))
          walletQueue.next(() => queryAndUpsertMany(`wallets/${id}/activities`,
             getUpsertSqlWithParent(`wallet`, `activity`), v => [id, v, (v as any).signature], client));
-      if (force || !scannedIn24Hours.has(`wallet_offers_made.${id}`) && !offersMadeSet.has(id))
          walletQueue.next(() => queryAndUpsertMany(`wallets/${id}/offers_made`,
             getUpsertSqlWithParent(`wallet`, `offers_made`), v => [id, v, (v as any).pdaAddress], client));
-      if (force || !scannedIn24Hours.has(`wallet_offers_received.${id}`) && !offersReceivedSet.has(id))
          walletQueue.next(() => queryAndUpsertMany(`wallets/${id}/offers_received`,
             getUpsertSqlWithParent(`wallet`, `offers_received`), v => [id, v, (v as any).pdaAddress], client));
-      if (force || !scannedIn24Hours.has(`wallet_escrow_balance.${id}`) && !walletEscrowBalanceSet.has(id))
          walletQueue.next((() => queryAndUpsertOne(`wallets/${id}/escrow_balance`,
             getUpsertSql('wallet_escrow_balance', 'wallet_'), v => [id, v], client)));
+      }
    }
    walletQueue.complete();
    console.log(`collection queue ${await walletQueuePromise} complete`);
@@ -153,24 +125,24 @@ export const reloadUpstream = async (payload: any) => {
 };
 
 const getUpsertSql = (obj: string, id_prefix: string = '') => {
-   return [`INSERT INTO ${obj}(${id_prefix}id,data)VALUES($1::text,$2)
+   return [`INSERT INTO me_${obj}(${id_prefix}id,data)VALUES($1::text,$2)
 ON CONFLICT(${id_prefix}id)WHERE data@>$2 AND $2@>data
 DO UPDATE SET data=$2,updated_at=now()`,
-`INSERT INTO scan_log(id,scanned_at)VALUES(CONCAT('${obj}.',$1::text),now())
+`INSERT INTO me_scan_log(id,scanned_at)VALUES(CONCAT('${obj}.',$1::text),now())
 ON CONFLICT(id) DO UPDATE SET scanned_at=now()`];
 }
 
 const getUpsertSqlWithParent = (parent: string, obj: string) => {
-   return [`INSERT INTO ${parent}_${obj}(id,${parent}_id,data)VALUES($3::text,$1::text,$2)
+   return [`INSERT INTO me_${parent}_${obj}(id,${parent}_id,data)VALUES($3::text,$1::text,$2)
 ON CONFLICT(${parent}_id,id)WHERE data@>$2 AND $2@>data
 DO UPDATE SET data=$2,updated_at=now()`,
-`INSERT INTO scan_log(id,scanned_at)VALUES(CONCAT('${parent}_${obj}.',$1::text),now())
+`INSERT INTO me_scan_log(id,scanned_at)VALUES(CONCAT('${parent}_${obj}.',$1::text),now())
 ON CONFLICT(id) DO UPDATE SET scanned_at=now()`];
 }
 
 const queryScanLog = async (client: Client) => {
    const idSet = new Set<string>();
-   let {rows} = await client.query(`SELECT id FROM scan_log WHERE scanned_at >= NOW() - INTERVAL '24 HOURS'`);
+   let {rows} = await client.query(`SELECT id FROM me_scan_log WHERE scanned_at >= NOW() - INTERVAL '24 HOURS'`);
    for (const row of rows) {
       idSet.add(row['id']);
    }
@@ -179,7 +151,7 @@ const queryScanLog = async (client: Client) => {
 
 const queryIdSet = async (field1: string, obj: string, client: Client) => {
    const idSet = new Set<string>();
-   let {rows} = await client.query(`SELECT DISTINCT ${field1} AS id FROM ${obj}`);
+   let {rows} = await client.query(`SELECT DISTINCT ${field1} AS id FROM me_${obj}`);
    for (const row of rows) {
       idSet.add(row['id']);
    }
@@ -200,14 +172,15 @@ const queryAndUpsertMany = async (endpoint: string, texts: string[],
       paging ? `?offset=${offset}&limit=${BATCH_SIZE}` : ``), []);
    while (data.length) {
       Array.prototype.push.apply(result, data);
-      queue.next(() => upsert(client, texts, valuesAccessor, data));
+      queue.next(() => upsert(client, texts[0], valuesAccessor, data));
+      queue.next(() => upsert(client, texts[1], d => [valuesAccessor(d)[0]], data));
       if (!paging) break;
       offset += BATCH_SIZE;
       data = await fetchFromUpstream(`${ME_API}/${endpoint}?offset=${offset}&limit=${BATCH_SIZE}`, []);
       // console.info(`queryList: ${endpoint} offset: ${offset}`);
    }
    queue.complete();
-   console.info(`done ${await queuePromise}: ${endpoint}`);
+   console.info(`done ${(await queuePromise) / 2.0}: ${endpoint}`);
    return result;
 }
 
@@ -216,7 +189,8 @@ const queryAndUpsertOne = async (endpoint: string, texts: string[],
 
    console.info(`query: ${endpoint}`);
    let value = await fetchFromUpstream(`${ME_API}/${endpoint}`, null);
-   if (value) await upsert(client, texts, valuesAccessor, [value]);
+   if (value) await upsert(client, texts[0], valuesAccessor, [value]);
+   await upsert(client, texts[1], d => [valuesAccessor(d)[0]], [value])
    return value;
 }
 
@@ -254,18 +228,17 @@ const fetchFromUpstream = <T>(url: string, defVal: T) =>
          return defVal;
       });
 
-const upsert = (client: Client, texts: string[],
+const upsert = (client: Client, text: string,
    valuesAccessor: (v: unknown) => unknown[], data: unknown[]) => new Promise(resolve =>
    from(data).pipe(
       concatMap(value => {
          const values = valuesAccessor(value);
-         return from(client.query({ text: texts[1], values: [values[0]], rowMode: 'array' })).pipe(
-            mergeMap(() => from(client.query({ text: texts[0], values, rowMode: 'array' })))
+         return from(client.query({ text: text, values, rowMode: 'array' })).pipe(
+            catchError(ex => {
+               console.error({ex,values,test:text});
+               return of(ex);
+            })
          );
-      }),
-      catchError(ex => {
-         console.error(ex);
-         return of(ex);
       }),
       count()
    ).subscribe(count => resolve(count)));
