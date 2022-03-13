@@ -12,15 +12,18 @@ export const CollectionPanel: FC = () => {
          method: "POST",
          body: JSON.stringify({
             query: `
-  collection {
+query MyQuery {
+  me_collection {
     id
     data
   }
+}
 `,
          }),
       })
          .then((res) => res.json())
-         .then((res) => res.data)
+         .then((res) => res.data),
+      { keepPreviousData: true }
    );
    return (
       <div>

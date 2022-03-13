@@ -3,7 +3,6 @@ import { Client } from 'pg';
 import { concatMap, Subject, count, bufferTime, catchError, from, mergeMap, of } from "rxjs";
 
 const ME_API = `https://api-mainnet.magiceden.dev/v2`
-const BATCH_SIZE = 500;
 const UPSERT_PER_SECOND = 1000;
 const QUERY_PER_SECOND = 2;
 
@@ -16,21 +15,23 @@ export const reloadUpstream = async (payload: any) => {
 
    const scannedIn24Hours = await queryScanLog(client);
    
-   await queryAndUpsertMany('launchpad/collections', 
+   await queryAndUpsertMany('launchpad/collections', 500,
       getUpsertSql(`launchpad`), v => [(v as any).symbol, v], client);
 
    const collectionStatSet = await queryIdSet('collection_id', 'collection_stat', client);
    const collectionQueue: Subject<() => Promise<unknown>> = new Subject();
    const collectionQueuePromise = waitForQueries(collectionQueue);
-   const collections = await queryAndUpsertMany('collections', 
+   const collections = await queryAndUpsertMany('collections', 500,
       getUpsertSql(`collection`), v => [(v as any).symbol, v], client);
    for (let i = collections.length - 1; i >= 0; i--) {
       const v = collections[i];
       const id = (v as any).symbol;
       if (force || !scannedIn24Hours.has(`collection_stat.${id}`) && !collectionStatSet.has(id)) {
-         collectionQueue.next(() => queryAndUpsertMany(`collections/${id}/listings`, getUpsertSqlWithParent(`collection`, `listing`),
+         collectionQueue.next(() => queryAndUpsertMany(`collections/${id}/listings`, 20,
+            getUpsertSqlWithParent(`collection`, `listing`),
             v => [id, v, (v as any).pdaAddress], client));
-         collectionQueue.next(() => queryAndUpsertMany(`collections/${id}/activities`, getUpsertSqlWithParent(`collection`, `activity`),
+         collectionQueue.next(() => queryAndUpsertMany(`collections/${id}/activities`, 500,
+            getUpsertSqlWithParent(`collection`, `activity`),
             v => [id, v, (v as any).signature], client));
          collectionQueue.next(() => queryAndUpsertOne(`collections/${id}/stats`, getUpsertSql('collection_stat', 'collection_'),
             v => [id, v], client));
@@ -77,13 +78,16 @@ export const reloadUpstream = async (payload: any) => {
    const tokenQueuePromise = waitForQueries(tokenQueue);
    for (const id in tokenMints) {
       if (force || !scannedIn24Hours.has(`token.${id}`) && !tokenSet.has(id)) {
-         tokenQueue.next(() => queryAndUpsertMany(`tokens/${id}`, getUpsertSql(`token`),
+         tokenQueue.next(() => queryAndUpsertOne(`tokens/${id}`, getUpsertSql(`token`),
             v => [id, v, (v as any).mintAddress], client));
-         tokenQueue.next(() => queryAndUpsertMany(`tokens/${id}/listings`, getUpsertSqlWithParent(`token`, `listing`),
-            v => [id, v, (v as any).pdaAddress], client, false));
-         tokenQueue.next(() => queryAndUpsertMany(`tokens/${id}/offer_received`, getUpsertSqlWithParent(`token`, `offer_received`),
+         tokenQueue.next(() => queryAndUpsertMany(`tokens/${id}/listings`, 0,
+            getUpsertSqlWithParent(`token`, `listing`),
             v => [id, v, (v as any).pdaAddress], client));
-         tokenQueue.next(() => queryAndUpsertMany(`tokens/${id}/activities`, getUpsertSqlWithParent(`token`, `activity`),
+         tokenQueue.next(() => queryAndUpsertMany(`tokens/${id}/offer_received`, 500,
+            getUpsertSqlWithParent(`token`, `offer_received`),
+            v => [id, v, (v as any).pdaAddress], client));
+         tokenQueue.next(() => queryAndUpsertMany(`tokens/${id}/activities`, 500,
+            getUpsertSqlWithParent(`token`, `activity`),
             v => [id, v, (v as any).signature], client));
       }
    }
@@ -104,13 +108,13 @@ export const reloadUpstream = async (payload: any) => {
    const walletQueuePromise = waitForQueries(walletQueue);
    for (const id in walletAddresses) {
       if (force || !scannedIn24Hours.has(`wallet_token.${id}`) && !walletTokenSet.has(id)) {
-         walletQueue.next(() => queryAndUpsertMany(`wallets/${id}/tokens`,
+         walletQueue.next(() => queryAndUpsertMany(`wallets/${id}/tokens`, 500,
             getUpsertSqlWithParent(`wallet`, `token`), v => [id, v, (v as any).pdaAddress], client));
-         walletQueue.next(() => queryAndUpsertMany(`wallets/${id}/activities`,
+         walletQueue.next(() => queryAndUpsertMany(`wallets/${id}/activities`, 500,
             getUpsertSqlWithParent(`wallet`, `activity`), v => [id, v, (v as any).signature], client));
-         walletQueue.next(() => queryAndUpsertMany(`wallets/${id}/offers_made`,
+         walletQueue.next(() => queryAndUpsertMany(`wallets/${id}/offers_made`, 500,
             getUpsertSqlWithParent(`wallet`, `offers_made`), v => [id, v, (v as any).pdaAddress], client));
-         walletQueue.next(() => queryAndUpsertMany(`wallets/${id}/offers_received`,
+         walletQueue.next(() => queryAndUpsertMany(`wallets/${id}/offers_received`, 500,
             getUpsertSqlWithParent(`wallet`, `offers_received`), v => [id, v, (v as any).pdaAddress], client));
          walletQueue.next((() => queryAndUpsertOne(`wallets/${id}/escrow_balance`,
             getUpsertSql('wallet_escrow_balance', 'wallet_'), v => [id, v], client)));
@@ -158,8 +162,8 @@ const queryIdSet = async (field1: string, obj: string, client: Client) => {
    return idSet;
 }
 
-const queryAndUpsertMany = async (endpoint: string, texts: string[],
-   valuesAccessor: (v: unknown) => unknown[], client: Client, paging: boolean = true) => {
+const queryAndUpsertMany = async (endpoint: string, batchSize: number, texts: string[],
+   valuesAccessor: (v: unknown) => unknown[], client: Client) => {
 
    console.info(`query: ${endpoint}`);
 
@@ -169,14 +173,14 @@ const queryAndUpsertMany = async (endpoint: string, texts: string[],
    let offset = 0;
    
    let data = await fetchFromUpstream(`${ME_API}/${endpoint}` + (
-      paging ? `?offset=${offset}&limit=${BATCH_SIZE}` : ``), []);
+      batchSize ? `?offset=${offset}&limit=${batchSize}` : ``), []);
    while (data.length) {
       Array.prototype.push.apply(result, data);
       queue.next(() => upsert(client, texts[0], valuesAccessor, data));
       queue.next(() => upsert(client, texts[1], d => [valuesAccessor(d)[0]], data));
-      if (!paging) break;
-      offset += BATCH_SIZE;
-      data = await fetchFromUpstream(`${ME_API}/${endpoint}?offset=${offset}&limit=${BATCH_SIZE}`, []);
+      if (!batchSize) break;
+      offset += batchSize;
+      data = await fetchFromUpstream(`${ME_API}/${endpoint}?offset=${offset}&limit=${batchSize}`, []);
       // console.info(`queryList: ${endpoint} offset: ${offset}`);
    }
    queue.complete();

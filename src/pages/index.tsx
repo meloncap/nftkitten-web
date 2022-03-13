@@ -1,13 +1,13 @@
-import type { GetStaticPropsContext, NextPage } from "next";
+import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import React from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { useStore } from "../store";
 import { CollectionPanel } from "../components/CollectionPanel";
+import { queryClient } from "../services/queryClient";
 
-const queryClient = new QueryClient();
 const apiBaseUrl: string = process.env.NEXT_PUBLIC_API_BASEURL ?? ``;
 
 const Home: NextPage<PageProps> = () => {
