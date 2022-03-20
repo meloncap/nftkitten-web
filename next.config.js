@@ -4,7 +4,7 @@ const nextConfig = {
   experimental: {
   },
   images: {
-    domains: ["nftkitten.mo.cloudinary.net"]
+    domains: ["nftkitten.mo.cloudinary.net", "pbs.twimg.com"]
   },
   rewrites: async () => [
     {
