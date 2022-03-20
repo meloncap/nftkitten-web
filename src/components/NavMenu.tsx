@@ -13,6 +13,7 @@ export const NavMenu: FC = () => {
             src='/meow.webp'
             className='h-6 mr-3 rounded sm:h-10'
             alt='NFTKitten.io'
+            layout='fill'
           />
           <span className='self-center text-xl font-semibold whitespace-nowrap dark:text-white'>
             NFTKitten.io
