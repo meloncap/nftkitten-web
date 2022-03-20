@@ -10,7 +10,7 @@ export const fetchOption = (): UseInfiniteQueryOptions<MECollectionsResult> => {
     },
     getPreviousPageParam: (lastPage) => {
       if (lastPage.pageParam > 0) {
-        return lastPage.pageParam + 1;
+        return lastPage.pageParam - 1;
       }
     },
     retry: 10,

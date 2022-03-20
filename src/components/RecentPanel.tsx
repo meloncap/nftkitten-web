@@ -9,7 +9,7 @@ import { Card } from './Card';
 import fetchCollections from '../services/fetchCollections';
 import { fetchOption } from '../services/fetchOption';
 
-export const CollectionPanel: FC = () => {
+export const RecentPanel: FC = () => {
   const { isLoading, isError, isFetching, fetchNextPage, data, hasNextPage } =
     useInfiniteQuery<MECollectionsResult>(
       'collection',
