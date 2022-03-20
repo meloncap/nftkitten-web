@@ -1,17 +1,12 @@
 /* eslint-disable jsx-a11y/alt-text */
-import * as THREE from 'three'
-import { FC, useEffect, useMemo, useRef, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import {
-  InfiniteData,
   useInfiniteQuery,
   UseInfiniteQueryOptions,
 } from 'react-query'
-import styles from '../styles/collection.module.css'
 import useStore from '../hooks/useStore'
-import ErrorBoundary from './ErrorBoundary'
-import type { MECollection, MEErrors, StoreState } from '../global'
+import type { MECollection, MEErrors } from '../global'
 import LoadingScreen from './LoadingScreen'
-import { Canvas } from '@react-three/fiber'
 import Image from 'next/image'
 import useScrollPosition from '../hooks/useScrollPosition'
 
@@ -50,14 +45,13 @@ const fetchOption = (): UseInfiniteQueryOptions<MECollectionsResult> => {
 const LoadingCards: FC = () => {
   return (
     <>
-      {new Array(LIMIT).map(() => (
-        <div className='flex'>
+      {new Array(LIMIT).map((_, i) => (
+        <div className='flex' key={i}>
           <Image
             src={`/loading.webp`}
             alt='Loading...'
             width={SIZE}
             height={SIZE}
-            unoptimized
           />
         </div>
       ))}
@@ -73,12 +67,12 @@ export const CollectionPanel: FC = () => {
       fetchOption()
     )
   const [scrollY, scrollHeight, viewportHeight] = useScrollPosition()
+  const shouldLoadNext = useMemo(() => scrollY + viewportHeight * 2 >= scrollHeight, [scrollY, viewportHeight, scrollHeight])
   useEffect(() => {
-    if (hasNextPage && scrollY + viewportHeight * 2 >= scrollHeight) {
-      console.log(scrollY + viewportHeight * 2, scrollHeight)
+    if (hasNextPage && shouldLoadNext) {
       fetchNextPage()
     }
-  }, [hasNextPage, scrollY + viewportHeight * 2 >= scrollHeight])
+  }, [hasNextPage, shouldLoadNext, fetchNextPage])
   return (
     <div className='flex flex-row flex-wrap justify-start content-start'>
       {isLoading ? (
@@ -120,10 +114,12 @@ const Card: FC<{ collection: MECollection }> = ({ collection }) => {
   return (
     <div className='flex'>
       {!loaded && (
-        <img
+        <Image
           src='/loading.webp'
+          alt='Loading...'
+          width={SIZE}
+          height={SIZE}
           className='absolute'
-          style={{ width: `${SIZE}px`, height: `${SIZE}px` }}
         />
       )}
       <Image
