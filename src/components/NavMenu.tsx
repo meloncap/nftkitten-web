@@ -16,7 +16,7 @@ export const NavMenu: FC = () => {
             width={40}
             height={40}
           />
-          <span className='self-center text-xl font-semibold whitespace-nowrap dark:text-white'>
+          <span className='self-center text-xl font-semibold whitespace-nowrap dark:text-white ml-1'>
             NFTKitten.io
           </span>
         </a>
