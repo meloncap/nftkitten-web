@@ -12,7 +12,7 @@ export const LoadingCards: FC = () => {
   }, []);
   return <>
       {nums.map((_, i) => <div className='flex' key={i}>
-          <Image src={`/loading.webp`} alt='Loading...' width={THUMB_SIZE} height={THUMB_SIZE} unoptimized />
+          <Image src='/loading.webp' alt='Loading...' width={THUMB_SIZE} height={THUMB_SIZE} unoptimized />
         </div>)}
     </>;
 };

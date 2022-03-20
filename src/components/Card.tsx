@@ -17,7 +17,7 @@ export const Card: FC<{ collection: MECollection; }> = ({ collection }) => {
     : {
       width: `${THUMB_SIZE}px`,
       height: `${THUMB_SIZE}px`,
-      backgroundImage: 'url(/loading.webp)',
+      backgroundImage: `url(/loading.webp)`,
       backgroundSize: `${THUMB_SIZE}px ${THUMB_SIZE}px`,
     }
   let url = collection.image ?? ``;
