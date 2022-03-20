@@ -1,11 +1,11 @@
 import { CSSProperties, FC, useState } from 'react';
-import useStore from '../hooks/useStore'
+import useMyStore from '../hooks/useMyStore'
 import { MECollection } from '../global'
 import { THUMB_SIZE } from "../constants"
 import Image from 'next/image';
 
 export const Card: FC<{ collection: MECollection; }> = ({ collection }) => {
-  const imageBaseUrl = useStore.getState().imageBaseUrl;
+  const imageBaseUrl = useMyStore.getState().imageBaseUrl;
   const [loaded, setLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
   const loadingBg: CSSProperties = loaded

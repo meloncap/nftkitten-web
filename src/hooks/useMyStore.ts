@@ -2,10 +2,10 @@ import create, { StoreApi, UseBoundStore } from 'zustand'
 import { StoreState } from '../global'
 
 type MyStoreApi = StoreApi<StoreState> & {}
-const useStore: UseBoundStore<StoreState, MyStoreApi> = create(() => ({
+const useMyStore: UseBoundStore<StoreState, MyStoreApi> = create(() => ({
   apiBaseUrl: '',
   meApiBasUrl: '',
   imageBaseUrl: '',
   solScanBaseUrl: '',
 }))
-export default useStore
+export default useMyStore

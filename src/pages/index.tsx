@@ -3,7 +3,7 @@ import Head from 'next/head'
 import styles from '../styles/index.module.css'
 import { QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
-import useStore from '../hooks/useStore'
+import useMyStore from '../hooks/useMyStore'
 import { CollectionPanel } from '../components/CollectionPanel'
 import { queryClient } from '../services/queryClient'
 import { StrictMode } from 'react'
@@ -18,7 +18,7 @@ import '@solana/wallet-adapter-react-ui/styles.css'
 import { SolWalletProvider } from '../components/SolWalletProvider'
 
 const Home: NextPage = () => {
-  useStore.setState({ apiBaseUrl, meApiBasUrl, imageBaseUrl, solScanBaseUrl })
+  useMyStore.setState({ apiBaseUrl, meApiBasUrl, imageBaseUrl, solScanBaseUrl })
   return (
     <StrictMode>
       <SolWalletProvider>

@@ -1,11 +1,11 @@
 import { MECollectionPayload, MECollectionsResult, MEErrors } from '../global'
 import { PAGE_LIMIT } from "../constants"
-import useStore from '../hooks/useStore'
+import useMyStore from '../hooks/useMyStore'
 
 const fetchCollections = async ({
   pageParam = 0,
 }): Promise<MECollectionsResult> => {
-  const apiBaseUrl = useStore.getState().apiBaseUrl
+  const apiBaseUrl = useMyStore.getState().apiBaseUrl
   const res = await fetch(`${apiBaseUrl}/graphql`, {
     method: 'POST',
     body: JSON.stringify({
