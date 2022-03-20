@@ -1,5 +1,10 @@
 import React from 'react'
 
+export type RenderingCollection = {
+  symbols: { [symbol: string]: number; };
+  collections: MECollection[];
+}
+
 export type StoreState = {
   apiBaseUrl: string
   meApiBasUrl: string
@@ -219,4 +224,17 @@ export type MEError = {
     code: string
   }
   message: string
+}
+
+type MECollectionsResult = {
+  pageParam: number
+  data: MECollection[]
+}
+
+type MECollectionPayload = {
+  data: {
+    me_collection: Array<{
+      data: MECollection
+    }>
+  }
 }
