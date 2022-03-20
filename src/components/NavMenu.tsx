@@ -1,25 +1,24 @@
-import { useAnchorWallet } from '@solana/wallet-adapter-react'
+// import { useAnchorWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { FC } from 'react'
-import useScrollPosition from '../hooks/useScrollPosition'
+import Image from 'next/image'
 
 export const NavMenu: FC = () => {
-  const [_scrollY, _scrollHeight, _clientHeight, delta] = useScrollPosition()
-  const anchorWallet = useAnchorWallet()
+  // const anchorWallet = useAnchorWallet()
   return (
-    <nav className='border-stone-800 px-2 sm:px-4 py-2.5 dark:bg-gray-800 border-2'>
-      <div className='container flex flex-wrap justify-between items-center mx-auto'>
+    <nav className='px-2 border-2 border-stone-800 sm:px-4 py-2.5 dark:bg-gray-800'>
+      <div className='container flex flex-wrap items-center justify-between mx-auto'>
         <a href='#' className='flex items-center'>
-          <img
+          <Image
             src='/meow.webp'
-            className='mr-3 h-6 sm:h-10 rounded'
+            className='h-6 mr-3 rounded sm:h-10'
             alt='NFTKitten.io'
           />
           <span className='self-center text-xl font-semibold whitespace-nowrap dark:text-white'>
             NFTKitten.io
           </span>
         </a>
-        <div className='w-full block w-auto' id='mobile-menu'>
+        <div className='block w-auto w-full' id='mobile-menu'>
           <ul className='flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium'>
             <li>
               <WalletMultiButton />

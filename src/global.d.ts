@@ -1,5 +1,3 @@
-import React from 'react'
-
 export type RenderingCollection = {
   symbols: { [symbol: string]: number; };
   collections: MECollection[];
@@ -9,6 +7,7 @@ export type StoreState = {
   apiBaseUrl: string
   meApiBasUrl: string
   imageBaseUrl: string
+  solScanBaseUrl: string
 }
 export type CollectionData = {
   name: string | null
@@ -226,12 +225,12 @@ export type MEError = {
   message: string
 }
 
-type MECollectionsResult = {
+export type MECollectionsResult = {
   pageParam: number
   data: MECollection[]
 }
 
-type MECollectionPayload = {
+export type MECollectionPayload = {
   data: {
     me_collection: Array<{
       data: MECollection

@@ -6,5 +6,6 @@ const useStore: UseBoundStore<StoreState, MyStoreApi> = create(() => ({
   apiBaseUrl: '',
   meApiBasUrl: '',
   imageBaseUrl: '',
+  solScanBaseUrl: '',
 }))
 export default useStore

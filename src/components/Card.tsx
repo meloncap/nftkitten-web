@@ -31,13 +31,14 @@ export const Card: FC<{ collection: MECollection; }> = ({ collection }) => {
   return (
     <div className='flex' style={loadingBg}>
       {isError ? (
-        <img
+        <Image
           src={collection.image ?? ``}
           alt={collection.name ?? ``}
           width={THUMB_SIZE}
           height={THUMB_SIZE}
-          onLoad={() => setLoaded(true)}
-          onError={() => setIsError(true)} />
+          onLoadingComplete={() => setLoaded(true)}
+          onError={() => setIsError(true)}
+          unoptimized />
       ) : (
         <Image
           src={`${url}`}

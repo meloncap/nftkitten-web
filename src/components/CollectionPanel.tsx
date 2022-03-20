@@ -27,7 +27,7 @@ export const CollectionPanel: FC = () => {
     }
   }, [hasNextPage, shouldLoadNext, fetchNextPage])
   return (
-    <div className='flex flex-row flex-wrap justify-start content-start'>
+    <div className='flex flex-row flex-wrap content-start justify-start'>
       {isLoading ? (
         <LoadingScreen />
       ) : isError ? (

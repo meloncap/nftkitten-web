@@ -14,12 +14,13 @@ export function useOnScreen<T extends Element>(ref: MutableRefObject<T>, rootMar
         rootMargin,
       }
     );
-    if (ref.current) {
-      observer.observe(ref.current);
+    let element: Element = ref.current
+    if (element) {
+      observer.observe(element);
     }
     return () => {
-      observer.unobserve(ref.current);
+      observer.unobserve(element);
     };
-  }, []); // Empty array ensures that effect is only run on mount and unmount
+  }, [ref, rootMargin]); // Empty array ensures that effect is only run on mount and unmount
   return isIntersecting;
 }
