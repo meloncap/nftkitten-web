@@ -13,13 +13,14 @@ export const NavMenu: FC = () => {
             src='/meow.webp'
             className='h-6 mr-3 rounded sm:h-10'
             alt='NFTKitten.io'
-            layout='fill'
+            width={40}
+            height={40}
           />
           <span className='self-center text-xl font-semibold whitespace-nowrap dark:text-white'>
             NFTKitten.io
           </span>
         </a>
-        <div className='block w-auto w-full' id='mobile-menu'>
+        <div className='block w-auto' id='mobile-menu'>
           <ul className='flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium'>
             <li>
               <WalletMultiButton />
