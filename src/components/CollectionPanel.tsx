@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { FC, useEffect, useMemo, useState } from 'react'
+import { CSSProperties, FC, useEffect, useMemo, useState } from 'react'
 import {
   useInfiniteQuery,
   UseInfiniteQueryOptions,
@@ -12,7 +12,9 @@ import useScrollPosition from '../hooks/useScrollPosition'
 
 type MECollectionPayload = {
   data: {
-    meCollections: MECollection[]
+    me_collection: Array<{
+      data: MECollection
+    }>
   }
 }
 type MECollectionsResult = {
@@ -43,9 +45,14 @@ const fetchOption = (): UseInfiniteQueryOptions<MECollectionsResult> => {
 }
 
 const LoadingCards: FC = () => {
+  const nums = useMemo(() => {
+    const nums: number[] = [];
+    for (let i = 0; i < LIMIT; i++) nums.push(i)
+    return nums
+  }, [])
   return (
     <>
-      {new Array(LIMIT).map((_, i) => (
+      {nums.map((_, i) => (
         <div className='flex' key={i}>
           <Image
             src={`/loading.webp`}
@@ -101,7 +108,8 @@ export const CollectionPanel: FC = () => {
             .collections.map((collection) => (
               <Card key={collection.symbol} collection={collection} />
             ))}
-          {hasNextPage && <LoadingCards />}
+            <LoadingCards />
+          {/* {hasNextPage && <LoadingCards />} */}
         </>
       )}
     </div>
@@ -111,23 +119,19 @@ export const CollectionPanel: FC = () => {
 const Card: FC<{ collection: MECollection }> = ({ collection }) => {
   const imageBaseUrl = useStore.getState().imageBaseUrl
   const [loaded, setLoaded] = useState(false)
+  const loadingBg: CSSProperties = loaded ? {
+    backgroundColor: '#fff'
+  } : {
+    backgroundImage: 'url(/loading.webp)',
+    backgroundSize: `${SIZE}px ${SIZE}px`
+  }
   return (
-    <div className='flex'>
-      {!loaded && (
-        <Image
-          src='/loading.webp'
-          alt='Loading...'
-          width={SIZE}
-          height={SIZE}
-          className='absolute'
-        />
-      )}
+    <div className='flex' style={loadingBg}>
       <Image
         src={`${imageBaseUrl}/${collection.image}?tx=w_${SIZE},h_${SIZE}`}
         alt={collection.name ?? ``}
         width={SIZE}
         height={SIZE}
-        unoptimized
         onLoadingComplete={() => setLoaded(true)}
       />
     </div>
@@ -143,28 +147,24 @@ const fetchCollections = async ({
     body: JSON.stringify({
       query: `
 query MyQuery {
-  meCollections(offset: ${pageParam * LIMIT}, limit: ${LIMIT}) {
-    symbol
-    categories
-    description
-    discord
-    image
-    name
-    twitter
-    website
+  me_collection(offset: ${pageParam * LIMIT}, limit: ${LIMIT}) {
+    data
   }
 }
 `,
     }),
   })
+  console.log({page: pageParam})
   if (res.ok) {
     const result = await res.json()
     if (result.errors) {
       throw (result as MEErrors).errors[0].message
     }
+    const data = (result as MECollectionPayload).data.me_collection.map(c => c.data)
+    console.log(data)
     return {
       pageParam,
-      data: (result as MECollectionPayload).data.meCollections,
+      data,
     }
   }
   throw `${res.status} ${res.statusText}`

@@ -3,6 +3,9 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
   },
+  images: {
+    domains: ["nftkitten.mo.cloudinary.net"]
+  },
   rewrites: async () => [
     {
       source: '/original',
