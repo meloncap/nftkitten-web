@@ -17,6 +17,7 @@ export const MediaCard: FC<{
   const [ref, inView] = useInView({
     rootMargin: '2000px',
     fallbackInView: true,
+    delay: 300,
   })
   useEffect(() => {
     if (!inView && loaded) setLoaded(false)
