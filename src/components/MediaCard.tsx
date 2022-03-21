@@ -47,7 +47,13 @@ export const MediaCard: FC<{
     '/' +
     src
   return (
-    <div className={classNames('flex', { [styles['loading-background']]: !(loaded && inView)})} style={loadingStyle} ref={ref}>
+    <div
+      className={classNames('flex', {
+        [styles['loading-background']]: !(loaded && inView),
+      })}
+      style={loadingStyle}
+      ref={ref}
+    >
       {!inView ? null : isError ? (
         <Image
           src={src!}

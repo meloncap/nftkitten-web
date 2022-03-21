@@ -1,25 +1,22 @@
-import React, { FC, useEffect } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import classnames from 'classnames'
-import useLocalStorage from '../hooks/useLocalStorage'
+import useDarkMode from 'use-dark-mode'
 
 const DarkModeSwitcher: FC = () => {
-  const [themeToggle, setThemeToggle] = useLocalStorage('theme-toggle', 'dark')
-  useEffect(() => {
-    if (themeToggle === 'dark') {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }, [themeToggle])
+  const darkMode = useDarkMode(false, {
+    classNameDark: 'dark',
+    classNameLight: 'light',
+    element:
+      typeof document !== 'undefined' ? document.documentElement : undefined,
+  })
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  if (!mounted) return <></>
   return (
-    <button
-      id='theme-toggle'
-      type='button'
-      onClick={() => setThemeToggle(themeToggle === 'dark' ? 'light' : 'dark')}
-    >
+    <button id='theme-toggle' type='button' onClick={darkMode.toggle}>
       <svg
         id='theme-toggle-dark-icon'
-        className={classnames('w-5 h-5', { hidden: themeToggle === 'dark' })}
+        className={classnames('w-5 h-5', { hidden: darkMode.value })}
         fill='currentColor'
         viewBox='0 0 20 20'
         xmlns='http://www.w3.org/2000/svg'
@@ -28,7 +25,7 @@ const DarkModeSwitcher: FC = () => {
       </svg>
       <svg
         id='theme-toggle-light-icon'
-        className={classnames('w-5 h-5', { hidden: themeToggle !== 'dark' })}
+        className={classnames('w-5 h-5', { hidden: !darkMode.value })}
         fill='currentColor'
         viewBox='0 0 20 20'
         xmlns='http://www.w3.org/2000/svg'

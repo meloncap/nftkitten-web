@@ -2,7 +2,7 @@
 import { LoadingCards } from './LoadingCards'
 import { FC, useEffect, useMemo } from 'react'
 import { useInfiniteQuery } from 'react-query'
-import { MECollection, MECollectionsResult, RenderingRows } from '../global'
+import { MECollection, PagingResult, RenderingRows } from '../global'
 import LoadingScreen from './LoadingScreen'
 import useScrollPosition from '../hooks/useScrollPosition'
 import { MediaCard } from './MediaCard'
@@ -18,10 +18,10 @@ export const MeCollectionPanel: FC = () => {
     fetchNextPage,
     data,
     hasNextPage,
-  } = useInfiniteQuery<MECollectionsResult>(
+  } = useInfiniteQuery<PagingResult<MECollection>>(
     'MeCollection',
     fetchCollections,
-    fetchOption<MECollectionsResult>()
+    fetchOption<PagingResult<MECollection>>()
   )
 
   const [scrollY, scrollHeight, viewportHeight] = useScrollPosition()
@@ -50,7 +50,7 @@ export const MeCollectionPanel: FC = () => {
             .reduce(
               (
                 r: RenderingRows<MECollection>,
-                results: MECollectionsResult
+                results: PagingResult<MECollection>
               ) => {
                 for (const row of results.data) {
                   if (!row.image) continue

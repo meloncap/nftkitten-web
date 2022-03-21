@@ -1,4 +1,4 @@
-import { GlobalHead } from './../components/GlobalHead';
+import { GlobalHead } from './../components/GlobalHead'
 import type { NextPage } from 'next'
 import styles from '../styles/index.module.css'
 import { QueryClientProvider } from 'react-query'
@@ -10,6 +10,7 @@ import { NavMenu } from '../components/NavMenu'
 
 // import '@solana/wallet-adapter-react-ui/styles.css'
 import { SolWalletProvider } from '../components/SolWalletProvider'
+import { SolanaStatsBar } from '../components/SolanaStatsBar'
 
 const MagicEden: NextPage = () => {
   return (
@@ -18,7 +19,8 @@ const MagicEden: NextPage = () => {
         <QueryClientProvider client={queryClient}>
           {/* Dev tools */}
           <ReactQueryDevtools initialIsOpen={false} />
-          <GlobalHead/>
+          <SolanaStatsBar />
+          <GlobalHead />
           <div className={styles.container}>
             <NavMenu />
             <h1>MagicEden.io all collections</h1>

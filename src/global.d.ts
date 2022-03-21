@@ -7,8 +7,8 @@ export type StoreState = {
   apiBaseUrl: string
   meApiBasUrl: string
   imageBaseUrl: string
-  solScanApiBaseUrl: string
-  solScanPublicApiBaseUrl: string
+  solscanApiBaseUrl: string
+  solscanPublicApiBaseUrl: string
 }
 export type CollectionData = {
   name: string | null
@@ -226,9 +226,9 @@ export type MEError = {
   message: string
 }
 
-export type MECollectionsResult = {
+export type PagingResult<T> = {
   pageParam: number
-  data: MECollection[]
+  data: T[]
 }
 
 export type MECollectionPayload = {
@@ -303,11 +303,12 @@ export type SolscanTrade = {
   }
 }
 
-export type SolscanTradePayload = {
-  data: SolscanTrade[]
-  success: boolean
+export type SolscanMarket = {
+  priceUsdt: number
+  volumeUsdt: number
 }
-export type SolscanTradeResult = {
-  pageParam: number
-  data: SolscanTrade[]
+
+export type SolscanPayload<T> = {
+  data: T
+  success: boolean
 }

@@ -19,7 +19,6 @@ export const LoadingCards: FC<{ size: number }> = ({ size }) => {
             alt='Loading...'
             width={size}
             height={size}
-            unoptimized
           />
         </div>
       ))}

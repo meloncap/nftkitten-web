@@ -4,7 +4,6 @@ const withOptimizedImages = require('next-optimized-images')
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    tyledComponents: true
   },
   images: {
     domains: ["nftkitten.mo.cloudinary.net"],

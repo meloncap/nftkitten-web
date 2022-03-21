@@ -1,17 +1,17 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { FC } from 'react'
 import { useQuery } from 'react-query'
-import { SolscanTradeResult } from '../global'
+import { PagingResult, SolscanTrade } from '../global'
 import LoadingScreen from './LoadingScreen'
 import fetchSolTrade from '../services/fetchSolTrade'
 import { MediaCard } from './MediaCard'
 
 export const RecentTradePanel: FC = () => {
-  const { isLoading, isError, data } = useQuery<SolscanTradeResult>(
+  const { isLoading, isError, data } = useQuery<PagingResult<SolscanTrade>>(
     'SolscanTrade',
     fetchSolTrade,
     {
-      refetchInterval: 1000,
+      refetchInterval: 3000,
     }
   )
   return (
