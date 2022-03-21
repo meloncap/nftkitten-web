@@ -2,6 +2,8 @@ import { CSSProperties, FC, useState } from 'react'
 import useMyStore from '../hooks/useMyStore'
 import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
+import classNames from 'classnames'
+import styles from '../styles/loading.module.css'
 
 export const MediaCard: FC<{
   src: string
@@ -16,18 +18,15 @@ export const MediaCard: FC<{
     rootMargin: '2000px',
     fallbackInView: true,
   })
-  const loadingBg: CSSProperties =
+  const loadingStyle: CSSProperties =
     loaded && inView
       ? {
           width: `${width}px`,
           height: `${height}px`,
-          backgroundColor: '#fff',
         }
       : {
           width: `${width}px`,
           height: `${height}px`,
-          backgroundImage: `url(/loading.webp)`,
-          backgroundSize: `${width}px ${height}px`,
         }
   const f = /\.svg($|\?)/i.test(src) ? 'f_auto' : 'f_webp'
   const q = width <= 100 && height <= 100 ? 'q_auto:low' : 'q_auto'
@@ -44,14 +43,14 @@ export const MediaCard: FC<{
     '/' +
     src
   return (
-    <div className='flex' style={loadingBg} ref={ref}>
+    <div className={classNames('flex', { [styles['loading-background']]: !(loaded && inView)})} style={loadingStyle} ref={ref}>
       {!inView ? null : isError ? (
         <Image
           src={src!}
           alt={alt ?? ``}
           width={width}
           height={height}
-          onLoadingComplete={() => setLoaded(true)}
+          onLoadingComplete={() => setLoaded(false)}
           onError={() => setIsError(true)}
           unoptimized
         />

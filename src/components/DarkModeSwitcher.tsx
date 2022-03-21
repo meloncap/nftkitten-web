@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react'
 import classnames from 'classnames'
 import useLocalStorage from '../hooks/useLocalStorage'
 
-const DarkModeSwitcher: FC<{ className: string }> = ({ className }) => {
+const DarkModeSwitcher: FC = () => {
   const [themeToggle, setThemeToggle] = useLocalStorage('theme-toggle', 'dark')
   useEffect(() => {
     if (themeToggle === 'dark') {
@@ -15,7 +15,6 @@ const DarkModeSwitcher: FC<{ className: string }> = ({ className }) => {
     <button
       id='theme-toggle'
       type='button'
-      className={className}
       onClick={() => setThemeToggle(themeToggle === 'dark' ? 'light' : 'dark')}
     >
       <svg

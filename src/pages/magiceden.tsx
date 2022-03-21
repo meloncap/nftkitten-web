@@ -8,7 +8,7 @@ import { queryClient } from '../services/queryClient'
 import { StrictMode } from 'react'
 import { NavMenu } from '../components/NavMenu'
 
-import '@solana/wallet-adapter-react-ui/styles.css'
+// import '@solana/wallet-adapter-react-ui/styles.css'
 import { SolWalletProvider } from '../components/SolWalletProvider'
 
 const MagicEden: NextPage = () => {

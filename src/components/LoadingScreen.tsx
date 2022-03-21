@@ -1,9 +1,8 @@
 import { FC } from 'react'
-import styles from '../styles/loading.module.css'
 
 const LoadingScreen: FC = () => {
   return (
-    <div className={styles.loading}>
+    <div className='loading-screen'>
       <p>LOADING...</p>
       <i>
         <b>N</b>

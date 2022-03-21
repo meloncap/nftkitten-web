@@ -5,14 +5,22 @@ import { FC, useState } from 'react'
 import Image from 'next/image'
 import DarkModeSwitcher from './DarkModeSwitcher'
 import classNames from 'classnames'
-
+import { useRouter } from 'next/router'
+import Link from 'next/link'
 export const NavMenu: FC = () => {
   // const anchorWallet = useAnchorWallet()
+  const router = useRouter()
   const [hiddenMenu, setHiddenMenu] = useState(true)
+
+  function getMenuStyle(pathname: string) {
+    return pathname === router.pathname
+      ? 'block py-2 pr-4 pl-3 text-white dark:text-white bg-blue-700 rounded md:p-0 md:text-blue-700 md:bg-transparent'
+      : 'block py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0'
+  }
   return (
     <nav className='py-2.5 px-2 bg-white dark:bg-gray-800 rounded border-gray-200 sm:px-4'>
       <div className='container flex flex-wrap justify-between items-center mx-auto'>
-        <a href='#' className='flex items-center'>
+        <a href='/' className='flex items-center'>
           <Image
             src='/meow.webp'
             className='mr-3 h-6 rounded sm:h-10'
@@ -21,7 +29,7 @@ export const NavMenu: FC = () => {
             height={40}
             unoptimized
           />
-          <span className='self-center ml-2 text-xl font-semibold dark:text-white whitespace-nowrap'>
+          <span className='self-center mr-5 ml-2 text-xl font-semibold dark:text-white whitespace-nowrap'>
             NFTKitten.io
           </span>
         </a>
@@ -65,19 +73,23 @@ export const NavMenu: FC = () => {
         <div
           className={classNames(
             { hidden: hiddenMenu },
-            'justify-between items-center w-full md:flex md:order-1 md:w-auto'
+            'justify-between items-center w-full md:flex md:order-1 md:w-auto md:grow md:justify-end md:mr-4'
           )}
           id='mobile-menu-4'
         >
           <ul className='flex flex-col mt-4 md:flex-row md:mt-0 md:space-x-8 md:text-sm md:font-medium'>
-            <li>
-              <a href='/' className='block py-2 pr-4 pl-3 text-white dark:text-white bg-blue-700 rounded md:p-0 md:text-blue-700 md:bg-transparent'>Home</a>
+            <li className={getMenuStyle('/')}>
+              <Link href='/'>
+                Home
+              </Link>
             </li>
-            <li>
-              <a href='/magiceden' className='block py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0'>Magic Eden</a>
+            <li className={getMenuStyle('/magiceden')}>
+              <Link href='/magiceden'>
+                Magic Eden
+              </Link>
             </li>
-            <li>
-              <DarkModeSwitcher className='block py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0' />
+            <li className='block py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0'>
+              <DarkModeSwitcher />
             </li>
           </ul>
         </div>
