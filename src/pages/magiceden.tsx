@@ -31,7 +31,7 @@ const MagicEden: NextPage = () => {
               <link rel='icon' href='/favicon.ico' />
             </Head>
             <NavMenu />
-            <h1>MagicEden.io all collection.</h1>
+            <h1>MagicEden.io all collections</h1>
             <MeCollectionPanel />
           </div>
         </QueryClientProvider>
