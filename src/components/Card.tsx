@@ -29,9 +29,9 @@ const CardWithInView: FC<{
   let url = src
   if (!/^https:\/\/pbs\.twimg\.com\//.test(url)) {
     if (url?.indexOf('?') < 0) {
-      url = `${imageBaseUrl}/${url}?tx=w_${size},h_${size}`
+      url = `${imageBaseUrl}/${url}?tx=f_webp,w_${size},h_${size}`
     } else {
-      url = `${imageBaseUrl}/${url}&tx=w_${size},h_${size}`
+      url = `${imageBaseUrl}/${url}&tx=f_webp,w_${size},h_${size}`
     }
   }
   return (

@@ -1,5 +1,5 @@
 import { MECollectionPayload, MECollectionsResult } from '../global'
-import { PAGE_LIMIT } from "../constants"
+import { PAGE_LIMIT } from '../constants'
 import useMyStore from '../hooks/useMyStore'
 
 const fetchCollections = async ({
@@ -23,9 +23,7 @@ query MyQuery {
     if (!result.data) {
       throw JSON.stringify(result)
     }
-    const data = result.data.me_collection.map(
-      (c) => c.data
-    )
+    const data = result.data.me_collection.map((c) => c.data)
     return {
       pageParam,
       data,

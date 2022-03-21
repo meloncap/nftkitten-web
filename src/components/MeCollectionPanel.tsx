@@ -44,7 +44,7 @@ export const MeCollectionPanel: FC = () => {
 
   return (
     <div
-      className='flex flex-row flex-wrap content-start justify-start'
+      className='flex flex-row flex-wrap justify-start content-start'
       ref={ref}
     >
       {isLoading ? (
@@ -75,7 +75,12 @@ export const MeCollectionPanel: FC = () => {
               { ids: {}, rows: [] }
             )
             .rows.map((collection) => (
-              <Card key={collection.symbol} src={collection.image ?? ``} alt={collection.name} size={COLLECTION_THUMB_SIZE} />
+              <Card
+                key={collection.symbol}
+                src={collection.image ?? ``}
+                alt={collection.name}
+                size={COLLECTION_THUMB_SIZE}
+              />
             ))}
           {hasNextPage && isFetchingNextPage && (
             <LoadingCards size={COLLECTION_THUMB_SIZE} />
