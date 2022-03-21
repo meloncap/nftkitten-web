@@ -1,7 +1,6 @@
 import { UseInfiniteQueryOptions } from 'react-query';
-import { MECollectionsResult } from '../global';
 
-export const fetchOption = (): UseInfiniteQueryOptions<MECollectionsResult> => {
+export const fetchOption = <T extends { data: unknown[], pageParam: number }>(): UseInfiniteQueryOptions<T> => {
   return {
     getNextPageParam: (lastPage) => {
       if (lastPage.data.length > 0) {

@@ -1,4 +1,4 @@
-import { MECollectionPayload, MECollectionsResult, MEErrors } from '../global'
+import { MECollectionPayload, MECollectionsResult } from '../global'
 import { PAGE_LIMIT } from "../constants"
 import useMyStore from '../hooks/useMyStore'
 
@@ -19,11 +19,11 @@ query MyQuery {
     }),
   })
   if (res.ok) {
-    const result = await res.json()
-    if (result.errors) {
-      throw (result as MEErrors).errors[0].message
+    const result: MECollectionPayload = await res.json()
+    if (!result.data) {
+      throw JSON.stringify(result)
     }
-    const data = (result as MECollectionPayload).data.me_collection.map(
+    const data = result.data.me_collection.map(
       (c) => c.data
     )
     return {
@@ -31,6 +31,6 @@ query MyQuery {
       data,
     }
   }
-  throw `${res.status} ${res.statusText}`
+  throw JSON.stringify(res)
 }
 export default fetchCollections

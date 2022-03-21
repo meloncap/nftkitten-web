@@ -1,50 +1,49 @@
-import { CSSProperties, FC, useRef, useState } from 'react'
+import { CSSProperties, FC, Ref, useState } from 'react'
 import useMyStore from '../hooks/useMyStore'
-import { MECollection } from '../global'
-import { THUMB_SIZE } from '../constants'
 import Image from 'next/image'
-import useScrollPosition from '../hooks/useScrollPosition'
+import { InView } from 'react-intersection-observer'
 
-export const Card: FC<{ collection: MECollection }> = ({ collection }) => {
+const CardWithInView: FC<{
+  src: string
+  alt: string | null
+  size: number
+  inView: boolean
+  ref: Ref<any>
+}> = ({ src, alt, size, inView, ref }) => {
   const [loaded, setLoaded] = useState(false)
   const [isError, setIsError] = useState(false)
-  const ref = useRef<any>()
-  // eslint-disable-next-line no-unused-vars
-  const [scrollY, _, clientHeight] = useScrollPosition()
-  if (!collection.image) return null
   const imageBaseUrl = useMyStore.getState().imageBaseUrl
-  const loadingBg: CSSProperties = loaded
-    ? {
-        width: `${THUMB_SIZE}px`,
-        height: `${THUMB_SIZE}px`,
-        backgroundColor: '#fff',
-      }
-    : {
-        width: `${THUMB_SIZE}px`,
-        height: `${THUMB_SIZE}px`,
-        backgroundImage: `url(/loading.webp)`,
-        backgroundSize: `${THUMB_SIZE}px ${THUMB_SIZE}px`,
-      }
-  const inView = !ref.current
-    ? true
-    : ref.current.offsetTop > scrollY - clientHeight * 2 &&
-      ref.current.offsetTop < scrollY + clientHeight * 3
-  let url = collection.image
+  const loadingBg: CSSProperties =
+    loaded && inView
+      ? {
+          width: `${size}px`,
+          height: `${size}px`,
+          backgroundColor: '#fff',
+        }
+      : {
+          width: `${size}px`,
+          height: `${size}px`,
+          backgroundImage: `url(/loading.webp)`,
+          backgroundSize: `${size}px ${size}px`,
+        }
+  let url = src
   if (!/^https:\/\/pbs\.twimg\.com\//.test(url)) {
     if (url?.indexOf('?') < 0) {
-      url = `${imageBaseUrl}/${url}?tx=w_${THUMB_SIZE},h_${THUMB_SIZE}`
+      url = `${imageBaseUrl}/${url}?tx=w_${size},h_${size}`
     } else {
-      url = `${imageBaseUrl}/${url}&tx=w_${THUMB_SIZE},h_${THUMB_SIZE}`
+      url = `${imageBaseUrl}/${url}&tx=w_${size},h_${size}`
     }
   }
   return (
     <div className='flex' style={loadingBg} ref={ref}>
-      {!inView ? <></> : isError ? (
+      {inView ? (
+        <></>
+      ) : isError ? (
         <Image
-          src={collection.image!}
-          alt={collection.name ?? ``}
-          width={THUMB_SIZE}
-          height={THUMB_SIZE}
+          src={src!}
+          alt={alt ?? ``}
+          width={size}
+          height={size}
           onLoadingComplete={() => setLoaded(true)}
           onError={() => setIsError(true)}
           unoptimized
@@ -52,13 +51,33 @@ export const Card: FC<{ collection: MECollection }> = ({ collection }) => {
       ) : (
         <Image
           src={`${url}`}
-          alt={collection.name ?? ``}
-          width={THUMB_SIZE}
-          height={THUMB_SIZE}
+          alt={alt ?? ``}
+          width={size}
+          height={size}
           onLoadingComplete={() => setLoaded(true)}
           onError={() => setIsError(true)}
         />
       )}
     </div>
+  )
+}
+
+export const Card: FC<{ src: string; alt: string | null; size: number }> = ({
+  src,
+  alt,
+  size,
+}) => {
+  return (
+    <InView>
+      {({ inView, ref }) => (
+        <CardWithInView
+          src={src}
+          alt={alt}
+          inView={inView}
+          size={size}
+          ref={ref}
+        />
+      )}
+    </InView>
   )
 }

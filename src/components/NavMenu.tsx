@@ -2,6 +2,7 @@
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { FC } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export const NavMenu: FC = () => {
   // const anchorWallet = useAnchorWallet()
@@ -23,6 +24,16 @@ export const NavMenu: FC = () => {
         </a>
         <div className='block w-auto' id='mobile-menu'>
           <ul className='flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium'>
+            <li className='flex items-center justify-center'>
+              <Link href="/">
+                Home
+              </Link>
+            </li>
+            <li className='flex items-center justify-center'>
+              <Link href="/magiceden">
+                Magic Eden
+              </Link>
+            </li>
             <li>
               <WalletMultiButton />
             </li>

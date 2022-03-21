@@ -3,7 +3,7 @@ import Head from 'next/head'
 import styles from '../styles/index.module.css'
 import { QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
-import { CollectionPanel } from '../components/CollectionPanel'
+import { MeCollectionPanel } from '../components/MeCollectionPanel'
 import { queryClient } from '../services/queryClient'
 import { StrictMode } from 'react'
 import { NavMenu } from '../components/NavMenu'
@@ -11,7 +11,7 @@ import { NavMenu } from '../components/NavMenu'
 import '@solana/wallet-adapter-react-ui/styles.css'
 import { SolWalletProvider } from '../components/SolWalletProvider'
 
-const Home: NextPage = () => {
+const MagicEden: NextPage = () => {
   return (
     <StrictMode>
       <SolWalletProvider>
@@ -31,7 +31,8 @@ const Home: NextPage = () => {
               <link rel='icon' href='/favicon.ico' />
             </Head>
             <NavMenu />
-            <CollectionPanel />
+            <h1>MagicEden.io all collection.</h1>
+            <MeCollectionPanel />
           </div>
         </QueryClientProvider>
       </SolWalletProvider>
@@ -39,4 +40,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default MagicEden

@@ -3,7 +3,7 @@ import Head from 'next/head'
 import styles from '../styles/index.module.css'
 import { QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
-import { RecentPanel } from '../components/RecentPanel'
+import { RecentTradePanel } from '../components/RecentTradePanel'
 import { queryClient } from '../services/queryClient'
 import { StrictMode } from 'react'
 import { NavMenu } from '../components/NavMenu'
@@ -31,7 +31,8 @@ const Home: NextPage = () => {
               <link rel='icon' href='/favicon.ico' />
             </Head>
             <NavMenu />
-            <RecentPanel />
+            <h1>Recent NFT Trades</h1>
+            <RecentTradePanel />
           </div>
         </QueryClientProvider>
       </SolWalletProvider>

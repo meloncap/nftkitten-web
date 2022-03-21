@@ -1,6 +1,6 @@
-export type RenderingCollection = {
-  symbols: { [symbol: string]: number; };
-  collections: MECollection[];
+export type RenderingRows<T> = {
+  ids: { [symbol: string]: number }
+  rows: T[]
 }
 
 export type StoreState = {
@@ -236,4 +236,77 @@ export type MECollectionPayload = {
       data: MECollection
     }>
   }
+}
+
+export type SolscanTrade = {
+  info: {
+    _id: string
+    key: number
+    updateAuthority: string
+    mint: string
+    data: {
+      name: string
+      symbol: string
+      uri: string
+      sellerFeeBasisPoints: number
+      creators: Array<{
+        address: string
+        verified: number
+        share: number
+      }>
+      id: number
+    }
+    primarySaleHappened: number
+    isMutable: number
+    mintTx: string
+    createdTime: number
+    msgsource: string
+    collection: string
+    collectionId: string
+    meta: {
+      name: string
+      symbol: string
+      description: string
+      seller_fee_basis_points: number
+      image: string
+      external_url: string
+      edition: number
+      attributes: Array<{
+        trait_type: string
+        value: string
+      }>
+      collection: {
+        name: string
+        family: string
+      }
+      properties: {
+        files: Array<{
+          type: string
+          uri: string
+        }>
+        category: string
+        creators: Array<{
+          address: string
+          share: number
+        }>
+      }
+    }
+    family: string
+  }
+  trade: {
+    tradeCount: number
+    tradeTime: number
+    price: number
+    dex: string
+    signature: string
+  }
+}
+
+export type SolscanTradePayload = {
+  data: SolscanTrade[]
+  success: boolean
+}
+export type SolscanTradeResult = {
+  pageParam: number
+  data: SolscanTrade[]
 }
