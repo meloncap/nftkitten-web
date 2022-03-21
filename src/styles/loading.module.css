@@ -1,5 +1,5 @@
 .loading-background {
-  background-image: url(/loading.webp);
+  background-image: url(/img/loading.webp);
   background-repeat: no-repeat;
   animation: background-loop 3s linear infinite;
 }

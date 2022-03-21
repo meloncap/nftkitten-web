@@ -12,7 +12,7 @@ const nextConfig = {
   rewrites: async () => [
     {
       source: '/original',
-      destination: '/',
+      destination: '/img/original.jpg',
     },
   ],
 }

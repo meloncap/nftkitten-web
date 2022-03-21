@@ -15,7 +15,7 @@ export const LoadingCards: FC<{ size: number }> = ({ size }) => {
       {nums.map((_, i) => (
         <div className='flex' key={i}>
           <Image
-            src='/loading.webp'
+            src='/img/loading.webp'
             alt='Loading...'
             width={size}
             height={size}
