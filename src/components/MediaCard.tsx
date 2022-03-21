@@ -1,4 +1,4 @@
-import { CSSProperties, FC, useState } from 'react'
+import { CSSProperties, FC, useEffect, useState } from 'react'
 import useMyStore from '../hooks/useMyStore'
 import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
@@ -18,6 +18,9 @@ export const MediaCard: FC<{
     rootMargin: '2000px',
     fallbackInView: true,
   })
+  useEffect(() => {
+    if (!inView && loaded) setLoaded(false)
+  }, [loaded, inView, setLoaded])
   const loadingStyle: CSSProperties =
     loaded && inView
       ? {
