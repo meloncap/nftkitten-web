@@ -7,7 +7,8 @@ export type StoreState = {
   apiBaseUrl: string
   meApiBasUrl: string
   imageBaseUrl: string
-  solScanBaseUrl: string
+  solScanApiBaseUrl: string
+  solScanPublicApiBaseUrl: string
 }
 export type CollectionData = {
   name: string | null

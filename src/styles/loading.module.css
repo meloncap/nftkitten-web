@@ -21,6 +21,9 @@
   font: 20px normal Helvetica, Arial, sans-serif;
   animation: move 3.2s linear infinite;
   transform: rotate(180deg);
+  color: #000;
+}
+.dark .loading b {
   color: #fff;
 }
 .loading p {

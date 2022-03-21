@@ -1,5 +1,4 @@
 import type { NextPage } from 'next'
-import Head from 'next/head'
 import styles from '../styles/index.module.css'
 import { QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
@@ -8,8 +7,9 @@ import { queryClient } from '../services/queryClient'
 import { StrictMode } from 'react'
 import { NavMenu } from '../components/NavMenu'
 
-import '@solana/wallet-adapter-react-ui/styles.css'
+// import '@solana/wallet-adapter-react-ui/styles.css'
 import { SolWalletProvider } from '../components/SolWalletProvider'
+import { GlobalHead } from '../components/GlobalHead'
 
 const Home: NextPage = () => {
   return (
@@ -18,18 +18,8 @@ const Home: NextPage = () => {
         <QueryClientProvider client={queryClient}>
           {/* Dev tools */}
           <ReactQueryDevtools initialIsOpen={false} />
+          <GlobalHead/>
           <div className={styles.container}>
-            <Head>
-              <title>
-                NFTKitten.io | Analyze, track &amp;amp; discover crypto
-                collectibles and non-fungible tokens (NFTs)
-              </title>
-              <meta
-                name='description'
-                content='Analyze, track &amp;amp; discover crypto collectibles and non-fungible tokens (NFTs)'
-              />
-              <link rel='icon' href='/favicon.ico' />
-            </Head>
             <NavMenu />
             <h1>Recent NFT Trades</h1>
             <RecentTradePanel />

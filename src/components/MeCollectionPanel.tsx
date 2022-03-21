@@ -5,18 +5,12 @@ import { useInfiniteQuery } from 'react-query'
 import { MECollection, MECollectionsResult, RenderingRows } from '../global'
 import LoadingScreen from './LoadingScreen'
 import useScrollPosition from '../hooks/useScrollPosition'
-import { Card } from './Card'
+import { MediaCard } from './MediaCard'
 import fetchCollections from '../services/fetchCollections'
 import { fetchOption } from '../services/fetchOption'
 import { COLLECTION_THUMB_SIZE } from '../constants'
-import { useInView } from 'react-intersection-observer'
 
 export const MeCollectionPanel: FC = () => {
-  const { ref } = useInView({
-    rootMargin: '2000px',
-    fallbackInView: true,
-    delay: 300,
-  })
   const {
     isLoading,
     isError,
@@ -45,7 +39,6 @@ export const MeCollectionPanel: FC = () => {
   return (
     <div
       className='flex flex-row flex-wrap justify-start content-start'
-      ref={ref}
     >
       {isLoading ? (
         <LoadingScreen />
@@ -75,11 +68,12 @@ export const MeCollectionPanel: FC = () => {
               { ids: {}, rows: [] }
             )
             .rows.map((collection) => (
-              <Card
+              <MediaCard
                 key={collection.symbol}
                 src={collection.image ?? ``}
                 alt={collection.name}
-                size={COLLECTION_THUMB_SIZE}
+                width={COLLECTION_THUMB_SIZE}
+                height={COLLECTION_THUMB_SIZE}
               />
             ))}
           {hasNextPage && isFetchingNextPage && (

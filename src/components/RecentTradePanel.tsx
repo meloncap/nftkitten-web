@@ -4,7 +4,7 @@ import { useQuery } from 'react-query'
 import { SolscanTradeResult } from '../global'
 import LoadingScreen from './LoadingScreen'
 import fetchSolTrade from '../services/fetchSolTrade'
-import { Card } from './Card'
+import { MediaCard } from './MediaCard'
 
 export const RecentTradePanel: FC = () => {
   const { isLoading, isError, data } = useQuery<SolscanTradeResult>(
@@ -27,11 +27,12 @@ export const RecentTradePanel: FC = () => {
           {data?.data.map(
             (data) =>
               data?.info?.meta?.image && (
-                <Card
+                <MediaCard
                   key={data.info._id}
                   src={data?.info?.meta?.image ?? ``}
                   alt={data?.info?.meta?.name}
-                  size={100}
+                  width={100}
+                  height={100}
                 />
               )
           )}

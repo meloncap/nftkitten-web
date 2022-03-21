@@ -1,10 +1,13 @@
+const withOptimizedImages = require('next-optimized-images')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
+    tyledComponents: true
   },
   images: {
-    domains: ["nftkitten.mo.cloudinary.net", "pbs.twimg.com"]
+    domains: ["nftkitten.mo.cloudinary.net"],
   },
   rewrites: async () => [
     {
@@ -14,4 +17,4 @@ const nextConfig = {
   ],
 }
 
-module.exports = nextConfig
+module.exports = withOptimizedImages(nextConfig)

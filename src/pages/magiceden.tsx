@@ -1,5 +1,5 @@
+import { GlobalHead } from './../components/GlobalHead';
 import type { NextPage } from 'next'
-import Head from 'next/head'
 import styles from '../styles/index.module.css'
 import { QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
@@ -18,18 +18,8 @@ const MagicEden: NextPage = () => {
         <QueryClientProvider client={queryClient}>
           {/* Dev tools */}
           <ReactQueryDevtools initialIsOpen={false} />
+          <GlobalHead/>
           <div className={styles.container}>
-            <Head>
-              <title>
-                NFTKitten.io | Analyze, track &amp;amp; discover crypto
-                collectibles and non-fungible tokens (NFTs)
-              </title>
-              <meta
-                name='description'
-                content='Analyze, track &amp;amp; discover crypto collectibles and non-fungible tokens (NFTs)'
-              />
-              <link rel='icon' href='/favicon.ico' />
-            </Head>
             <NavMenu />
             <h1>MagicEden.io all collections</h1>
             <MeCollectionPanel />

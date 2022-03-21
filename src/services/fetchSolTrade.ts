@@ -6,7 +6,7 @@ const fetchSolTrade = async ({
 }): Promise<SolscanTradeResult> => {
   const solScanBaseUrl = useMyStore
     .getState()
-    .solScanBaseUrl.replace('public-', '')
+    .solScanApiBaseUrl.replace('public-', '')
   const res = await fetch(`${solScanBaseUrl}/nft?sortBy=tradeTime`)
   if (res.ok) {
     const result: SolscanTradePayload = await res.json()
