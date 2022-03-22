@@ -51,6 +51,7 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
 }) {
   const outerRef = useRef<HTMLDivElement>()
   const [isScrollBackward, setIsScrollBackward] = useState(false)
+  const [ref, setRef] = useState<FixedSizeGrid | null>(null)
   return (
     <>
       <button
@@ -58,12 +59,13 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
         data-mdb-ripple='true'
         data-mdb-ripple-color='light'
         className={classNames(
-          'fixed inline-block right-5 bottom-5 p-3 text-xs font-medium leading-tight text-white uppercase bg-red-600 hover:bg-red-700 focus:bg-red-700 active:bg-red-800 rounded-full focus:outline-none focus:ring-0 shadow-md hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out z-10',
+          'fixed inline-block right-5 bottom-5 p-3 text-xs font-medium leading-tight text-white uppercase bg-blue-600 hover:bg-blue-700 focus:bg-blu-700 active:bg-blue-800 rounded-full focus:outline-none focus:ring-0 shadow-md hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out z-10',
           { hidden: !isScrollBackward }
         )}
         onClick={() => {
           window.scrollTo({ left: 0, top: 0, behavior: 'smooth' })
-          setIsScrollBackward(true)
+          ref?.scrollTo({ scrollTop: 0 })
+          setIsScrollBackward(false)
         }}
       >
         <svg
@@ -109,7 +111,10 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
         }}
         overscanRowCount={10}
         useIsScrolling={useIsScrolling}
-        ref={loaderRef}
+        ref={(ref) => {
+          setRef(ref)
+          loaderRef(ref)
+        }}
         width={containerWidth}
         height={containerHeight}
         itemData={itemData ?? []}
