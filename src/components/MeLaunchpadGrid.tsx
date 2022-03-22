@@ -104,13 +104,21 @@ export const MeLaunchpadGrid: FC = () => {
                           ]
                         if (!col?.image || !itemData) return null
                         return (
-                          <MediaCard
-                            src={col.image}
-                            alt={col.name}
-                            width={COLLECTION_THUMB_SIZE}
-                            height={COLLECTION_THUMB_SIZE}
-                            style={style}
-                          ></MediaCard>
+                          <a
+                            href={
+                              `https://magiceden.io/marketplace/` + col.symbol
+                            }
+                            target='_blank'
+                            rel='noreferrer'
+                          >
+                            <MediaCard
+                              src={col.image}
+                              alt={col.name}
+                              width={COLLECTION_THUMB_SIZE}
+                              height={COLLECTION_THUMB_SIZE}
+                              style={style}
+                            ></MediaCard>
+                          </a>
                         )
                       }}
                     </FixedSizeGrid>
