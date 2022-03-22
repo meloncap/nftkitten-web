@@ -18,7 +18,7 @@ export const SolanaStatsBar: FC = () => {
     <div className='flex flex-row flex-wrap justify-between items-center p-2 text-white bg-slate-900'>
       <div className='flex flex-row items-center'>
         <Image src='/img/solana.svg' width='16' height='16' alt='Solana' />
-        <div className='ml-2'>
+        <div className='ml-2 text-xs'>
           {isLoading ? (
             <Image
               src='/img/loading.webp'
@@ -31,7 +31,7 @@ export const SolanaStatsBar: FC = () => {
           ) : (
             'SOL Price $' +
             data?.priceUsdt +
-            ' Volume $' +
+            ' VOL $' +
             new Intl.NumberFormat('en-US', {
               maximumSignificantDigits: 3,
             }).format(data?.volumeUsdt ?? 0)
