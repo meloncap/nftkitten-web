@@ -80,7 +80,7 @@ export const MeLaunchpadGrid: FC = () => {
         >
           {({ width, height, data, style }) => (
             <a
-              href={`https://magiceden.io/marketplace/` + data.id}
+              href={`https://magiceden.io/launchpad/` + data.id}
               target='_blank'
               rel='noreferrer'
               className='underline'

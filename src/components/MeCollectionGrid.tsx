@@ -81,7 +81,7 @@ export const MeCollectionGrid: FC = () => {
         >
           {({ width, height, data, style }) => (
             <a
-              href={`https://magiceden.io/launchpad/` + data.id}
+              href={`https://magiceden.io/marketplace/` + data.id}
               target='_blank'
               rel='noreferrer'
               className='underline'
