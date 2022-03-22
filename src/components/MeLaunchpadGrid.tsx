@@ -62,7 +62,7 @@ export const MeLaunchpadGrid: FC = () => {
     }
   }
   return (
-    <div className='grow'>
+    <div className='grow min-h-screen'>
       {isLoading ? (
         <LoadingScreen />
       ) : isError ? (
