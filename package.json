@@ -37,6 +37,7 @@
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
     "react-window-infinite-loader": "^1.0.7",
+    "react-window-scroller": "^1.0.10",
     "rxjs": "^7.5.5",
     "three": "^0.138.3",
     "use-dark-mode": "^2.3.1",

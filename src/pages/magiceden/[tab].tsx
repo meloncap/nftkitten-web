@@ -5,7 +5,7 @@ import { QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { MeCollectionGrid } from '../../components/MeCollectionGrid'
 import { queryClient } from '../../services/queryClient'
-import { StrictMode } from 'react'
+import { StrictMode, useMemo } from 'react'
 import { NavMenu } from '../../components/NavMenu'
 import { useRouter } from 'next/router'
 import { SolWalletProvider } from '../../components/SolWalletProvider'
@@ -13,11 +13,26 @@ import { SolanaStatsBar } from '../../components/SolanaStatsBar'
 import { MeLaunchpadGrid } from '../../components/MeLaunchpadGrid'
 import { TabPanel } from '../../components/TabPanel'
 
-// import '@solana/wallet-adapter-react-ui/styles.css'
-
 const MagicEden: NextPage = () => {
   const router = useRouter()
   const { tab } = router.query
+  const tabs = useMemo(
+    () => [
+      {
+        url: '/magiceden/launchpad',
+        isActive: /^launchpad$/i.test(`${tab}`),
+        title: () => <>Launchpad</>,
+        content: () => <MeLaunchpadGrid />,
+      },
+      {
+        url: '/magiceden/collection',
+        isActive: /^collection$/i.test(`${tab}`),
+        title: () => <>Collection</>,
+        content: () => <MeCollectionGrid />,
+      },
+    ],
+    [tab]
+  )
   return (
     <StrictMode>
       <SolWalletProvider>
@@ -38,25 +53,15 @@ const MagicEden: NextPage = () => {
                 >
                   MagicEden.io
                 </a>{' '}
-                {/launchpad/i.test(`${tab}`) && <>Launchpad</>}
-                {/collection/i.test(`${tab}`) && <>Collections</>}
+                {tabs
+                  .filter((t) => t.isActive)
+                  .map(({ title: Title }, i) => (
+                    <Title key={i} />
+                  ))}
               </h1>
               <SearchBox />
             </div>
-            <TabPanel>
-              {{
-                url: '/magiceden/launchpad',
-                isActive: /^launchpad$/i.test(`${tab}`),
-                title: () => <>Launchpad</>,
-                content: () => <MeLaunchpadGrid />,
-              }}
-              {{
-                url: '/magiceden/collection',
-                isActive: /^collection$/i.test(`${tab}`),
-                title: () => <>Collection</>,
-                content: () => <MeCollectionGrid />,
-              }}
-            </TabPanel>
+            <TabPanel tabs={tabs} />
           </div>
         </QueryClientProvider>
       </SolWalletProvider>

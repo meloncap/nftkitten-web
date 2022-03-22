@@ -10,12 +10,12 @@ type Tab = {
   content: ComponentType
 }
 
-export const TabPanel: FC<{ children: Tab[] }> = ({ children }) => {
+export const TabPanel: FC<{ tabs: Tab[] }> = ({ tabs }) => {
   return (
     <>
       <div className='border-b border-gray-200 dark:border-gray-700'>
         <ul className='flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400'>
-          {children.map(({ url, isActive, title: Title }, i) => (
+          {tabs.map(({ url, isActive, title: Title }, i) => (
             <li className='mr-2' key={i}>
               <Link href={url} passHref>
                 <a
@@ -49,7 +49,7 @@ export const TabPanel: FC<{ children: Tab[] }> = ({ children }) => {
           ))}
         </ul>
       </div>
-      {children
+      {tabs
         .filter((t) => t.isActive)
         .map(({ content: Content }, i) => (
           <Content key={i} />

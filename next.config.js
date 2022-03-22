@@ -13,6 +13,10 @@ const nextConfig = {
       source: '/original',
       destination: '/img/original.jpg',
     },
+    {
+      source: '/',
+      destination: '/sol/home',
+    },
   ],
 }
 

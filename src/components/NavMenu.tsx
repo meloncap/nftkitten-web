@@ -12,8 +12,8 @@ export const NavMenu: FC = () => {
   const [hiddenMenu, setHiddenMenu] = useState(true)
 
   const getMenuStyle = useCallback(
-    (pathname: string) => {
-      return pathname === router.pathname
+    (regex: RegExp) => {
+      return regex.test(router.pathname)
         ? 'block py-2 pr-4 pl-3 text-white dark:text-white bg-blue-700 rounded md:p-0 md:text-blue-700 md:bg-transparent'
         : 'block py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0'
     },
@@ -80,10 +80,10 @@ export const NavMenu: FC = () => {
           id='mobile-menu-4'
         >
           <ul className='flex flex-col mt-4 md:flex-row md:mt-0 md:space-x-8 md:text-sm md:font-medium'>
-            <li className={getMenuStyle('/')}>
+            <li className={getMenuStyle(/^\/$|\/sol($|\/)/i)}>
               <Link href='/'>Home</Link>
             </li>
-            <li className={getMenuStyle('/magiceden/launchpad')}>
+            <li className={getMenuStyle(/^\/magiceden\//)}>
               <Link href='/magiceden/launchpad'>Magic Eden</Link>
             </li>
           </ul>

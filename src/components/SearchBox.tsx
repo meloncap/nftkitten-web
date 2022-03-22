@@ -69,7 +69,7 @@ export const SearchBox: FC = () => {
               </h3>
               <button
                 type='button'
-                className='inline-flex items-center p-1.5 ml-auto text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm'
+                className='inline-flex items-center p-1.5 ml-auto text-sm text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg'
                 data-modal-toggle='large-modal'
                 onClick={() => setOpen(false)}
               >
