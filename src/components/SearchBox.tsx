@@ -1,6 +1,6 @@
 /* eslint-disable tailwindcss/no-custom-classname */
 import { useDebounce } from './../../useDebounce'
-import { FC, useEffect, useState, useRef } from 'react'
+import { FC, useEffect, useState, useRef, useMemo } from 'react'
 import classNames from 'classnames'
 import { useQuery } from 'react-query'
 import { fetchNFTSearch } from '../services/fetchNFTSearch'
@@ -31,23 +31,27 @@ export const SearchBox: FC = () => {
   useEffect(() => {
     if (open) inputRef.current.focus()
   }, [open])
-  let lookup: { [family: string]: Array<SolscanSearch['collection'][0]> } = {}
-  if (data?.collection.length) {
-    lookup = data?.collection.reduce(
-      (
-        g: { [family: string]: Array<SolscanSearch['collection'][0]> },
-        i: SolscanSearch['collection'][0]
-      ) => {
-        if (i.family && i.family in g) {
-          g[i.family].push(i)
-        } else {
-          g[i.family ?? ``] = [i]
-        }
-        return g
-      },
-      {}
-    )
-  }
+  const lookup = useMemo((): {
+    [family: string]: Array<SolscanSearch['collection'][0]>
+  } => {
+    if (data?.collection.length) {
+      return data?.collection.reduce(
+        (
+          g: { [family: string]: Array<SolscanSearch['collection'][0]> },
+          i: SolscanSearch['collection'][0]
+        ) => {
+          if (i.family && i.family in g) {
+            g[i.family].push(i)
+          } else {
+            g[i.family ?? ``] = [i]
+          }
+          return g
+        },
+        {}
+      )
+    }
+    return {}
+  }, [data])
   return (
     <>
       <div
@@ -65,15 +69,15 @@ export const SearchBox: FC = () => {
               </h3>
               <button
                 type='button'
-                className='inline-flex items-center p-1.5 ml-auto text-sm text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg'
+                className='inline-flex items-center p-1.5 ml-auto text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm'
                 data-modal-toggle='large-modal'
                 onClick={() => setOpen(false)}
               >
-                <span className='flex-none pl-3 mr-2 ml-auto text-xs font-semibold'>
+                <span className='hidden pl-3 mr-2 ml-auto text-xs font-semibold md:inline'>
                   ESC
                 </span>
                 <svg
-                  className='w-5 h-5'
+                  className='w-8 h-8 md:w-5 md:h-5'
                   fill='currentColor'
                   viewBox='0 0 20 20'
                   xmlns='http://www.w3.org/2000/svg'
@@ -100,13 +104,13 @@ export const SearchBox: FC = () => {
             </div>
             <div className='flex items-center p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600'>
               {isError ? (
-                'Opps - something go wrong.'
+                <>Opps - something go wrong.</>
               ) : isLoading ? null : !data?.collection?.length ? (
                 !!debouncedFilter && (
                   <>cannot find anything for &quot;{debouncedFilter}&quot;</>
                 )
               ) : (
-                <div className='p-5 mb-4 w-full bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700'>
+                <div className='w-full bg-gray-50 dark:bg-gray-800'>
                   {Object.entries(lookup).map(([family, cols], i) =>
                     family ? (
                       <div
@@ -173,7 +177,7 @@ export const SearchBox: FC = () => {
               ></circle>
             </svg>
             Quick search...
-            <span className='flex-none pl-3 ml-auto text-xs font-semibold'>
+            <span className='hidden flex-none pl-3 ml-auto text-xs font-semibold md:inline'>
               ⌘K
             </span>
           </button>
