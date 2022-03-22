@@ -93,10 +93,22 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
             outerRef.current?.scrollIntoView({
               behavior: 'smooth',
             })
+          } else if (
+            props.verticalScrollDirection === 'backward' &&
+            props.scrollTop <= 0
+          ) {
+            window.scrollTo({
+              top: 0,
+              left: 0,
+              behavior: 'smooth',
+            })
+            setIsScrollBackward(false)
+          } else {
+            setIsScrollBackward(
+              props.verticalScrollDirection === 'backward' &&
+                (window.scrollY > 0 || props.scrollTop > 0)
+            )
           }
-          setIsScrollBackward(
-            props.verticalScrollDirection === 'backward' && (window.scrollY > 0 || props.scrollTop > 0)
-          )
         }}
         columnCount={~~(containerWidth / width)}
         columnWidth={width}
