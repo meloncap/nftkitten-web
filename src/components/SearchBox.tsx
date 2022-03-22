@@ -145,7 +145,7 @@ export const SearchBox: FC = () => {
         <div className='relative bg-white dark:bg-slate-900 pointer-events-auto'>
           <button
             type='button'
-            className='hidden items-center py-1.5 pr-3 pl-2 w-full text-sm leading-6 text-slate-400 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-md ring-1 ring-slate-900/10 hover:ring-slate-300 shadow-sm lg:flex'
+            className='flex items-center py-1.5 pr-3 pl-2 w-full text-sm leading-6 text-slate-400 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-md ring-1 ring-slate-900/10 hover:ring-slate-300 shadow-sm'
             onClick={() => setOpen(true)}
           >
             <svg
