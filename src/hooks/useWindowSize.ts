@@ -1,18 +1,14 @@
 import { useState, useEffect } from 'react'
 
-type WindowSize = {
-  width: number | undefined
-  height: number | undefined
+type WinSize = {
+  width: number
+  height: number
 }
 
-// Hook
-const useWindowSize = () => {
+export function useWindowSize() {
   // Initialize state with undefined width/height so server and client renders match
   // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
-  const [windowSize, setWindowSize] = useState<WindowSize>({
-    width: undefined,
-    height: undefined,
-  })
+  const [windowSize, setWindowSize] = useState<WinSize>()
   useEffect(() => {
     // Handler to call on window resize
     function handleResize() {
@@ -31,4 +27,3 @@ const useWindowSize = () => {
   }, []) // Empty array ensures that effect is only run on mount
   return windowSize
 }
-export default useWindowSize

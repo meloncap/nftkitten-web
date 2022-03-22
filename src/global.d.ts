@@ -239,7 +239,7 @@ export type MECollectionPayload = {
   }
 }
 
-export type SolscanTrade = {
+export type SolscanToken = {
   info: {
     _id: string
     key: number
@@ -311,4 +311,66 @@ export type SolscanMarket = {
 export type SolscanPayload<T> = {
   data: T
   success: boolean
+}
+
+export type SolscanSearch = {
+  collection: Array<{
+    _id: string
+    collectionId: string
+    attributes: Array<{
+      trait_type: string
+      value: string
+    }>
+    avatar: string
+    collection: string
+    creators: Array<{
+      address: string
+      verified: number
+      share: number
+    }>
+    family?: string
+  }>
+  nft: any | null
+}
+
+export type SolscanCollection = {
+  success: boolean
+  data: {
+    _id: string
+    collectionId: string
+    avatar: string
+    collection: string
+    createdTime: number
+    creators: Array<{
+      address: string
+      verified: number
+      share: number
+    }>
+    family: string
+  }
+  dex: string[]
+  totalItems: number
+  volume: number
+  floorPrice: number
+  lastTrade: Array<{
+    _id: string
+    mint: string
+    name: string
+    symbol: string
+    buyer: string
+    seller: string
+    price: number
+    collection: string
+    collectionId: string
+    tradeTime: number
+    dex: string
+    signature: string
+    family: string
+    image: string
+    attributes: Array<{
+      trait_type: string
+      value: string
+    }>
+  }>
+  totalAttributes: number
 }

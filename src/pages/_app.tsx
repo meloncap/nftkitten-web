@@ -1,7 +1,7 @@
 import type { AppProps } from 'next/app'
 import Script from 'next/script'
 import { FC } from 'react'
-import useMyStore from '../hooks/useMyStore'
+import { useMyStore } from '../hooks/useMyStore'
 import '../styles/globals.css'
 
 const apiBaseUrl: string = process.env.NEXT_PUBLIC_API_BASE_URL ?? ``

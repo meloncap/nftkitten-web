@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react'
 import classnames from 'classnames'
 import useDarkMode from 'use-dark-mode'
 
-const DarkModeSwitcher: FC = () => {
+export const DarkModeSwitcher: FC = () => {
   const darkMode = useDarkMode(false, {
     classNameDark: 'dark',
     classNameLight: 'light',
@@ -11,7 +11,7 @@ const DarkModeSwitcher: FC = () => {
   })
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
-  if (!mounted) return <></>
+  if (!mounted) return null
   return (
     <button id='theme-toggle' type='button' onClick={darkMode.toggle}>
       <svg
@@ -39,5 +39,3 @@ const DarkModeSwitcher: FC = () => {
     </button>
   )
 }
-
-export default DarkModeSwitcher

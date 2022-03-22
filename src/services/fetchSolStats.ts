@@ -1,7 +1,7 @@
 import { SolscanPayload, SolscanMarket } from '../global'
-import useMyStore from '../hooks/useMyStore'
+import { useMyStore } from '../hooks/useMyStore'
 
-const fetchSolTrade = async (): Promise<SolscanMarket> => {
+export const fetchSolStats = async (): Promise<SolscanMarket> => {
   const solscanBaseUrl = useMyStore.getState().solscanApiBaseUrl
   const res = await fetch(`${solscanBaseUrl}/market?symbol=SOL`)
   if (res.ok) {
@@ -13,4 +13,3 @@ const fetchSolTrade = async (): Promise<SolscanMarket> => {
   }
   throw JSON.stringify(res)
 }
-export default fetchSolTrade

@@ -18,19 +18,21 @@ export const NavMenu: FC = () => {
   }
   return (
     <nav className='py-2.5 px-2 bg-slate-300 dark:bg-gray-800 rounded border-gray-200 sm:px-4'>
-      <div className='container flex flex-wrap justify-between items-center mx-auto'>
-        <a href='/' className='flex items-center'>
-          <Image
-            src='/img/meow.webp'
-            className='mr-3 h-6 rounded sm:h-10'
-            alt='NFTKitten.io'
-            width={40}
-            height={40}
-          />
-          <span className='self-center mr-5 ml-2 text-xl font-semibold dark:text-white whitespace-nowrap'>
-            NFTKitten.io
-          </span>
-        </a>
+      <div className='flex flex-wrap justify-between items-center mx-auto'>
+        <Link href='/' passHref>
+          <a className='flex items-center'>
+            <Image
+              src='/img/meow.webp'
+              className='mr-3 h-6 rounded sm:h-10'
+              alt='NFTKitten.io'
+              width={40}
+              height={40}
+            />
+            <span className='self-center mr-5 ml-2 text-xl font-semibold dark:text-white whitespace-nowrap'>
+              NFTKitten.io
+            </span>
+          </a>
+        </Link>
         <div className='flex md:order-2'>
           <WalletMultiButton className='py-2.5 px-5 mr-3 text-sm font-medium text-center text-white bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 md:mr-0' />
           <button
@@ -78,10 +80,10 @@ export const NavMenu: FC = () => {
             <li className={getMenuStyle('/')}>
               <Link href='/'>Home</Link>
             </li>
-            <li className={getMenuStyle('/magiceden')}>
-              <Link href='/magiceden'>Magic Eden</Link>
+            <li className={getMenuStyle('/magiceden/launchpad')}>
+              <Link href='/magiceden/launchpad'>Magic Eden</Link>
             </li>
-            <li className={getMenuStyle('/magiceden')}>
+            <li className='block py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0'>
               <a
                 href='https://twitter.com/NFTKitten_io?ref_src=twsrc%5Etfw'
                 target='_blank'

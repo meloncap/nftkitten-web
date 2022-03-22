@@ -3,15 +3,15 @@ import { FC } from 'react'
 import { useQuery } from 'react-query'
 import { SolscanMarket } from '../global'
 import Image from 'next/image'
-import fetchSolStats from '../services/fetchSolStats'
-import DarkModeSwitcher from './DarkModeSwitcher'
+import { fetchSolStats } from '../services/fetchSolStats'
+import { DarkModeSwitcher } from './DarkModeSwitcher'
 
 export const SolanaStatsBar: FC = () => {
   const { isLoading, isError, data } = useQuery<SolscanMarket>(
     'SolscanStats',
     fetchSolStats,
     {
-      refetchInterval: 3000,
+      refetchInterval: 1000 * 60,
     }
   )
   return (
@@ -19,13 +19,23 @@ export const SolanaStatsBar: FC = () => {
       <div className='flex flex-row items-center'>
         <Image src='/img/solana.svg' width='16' height='16' alt='Solana' />
         <div className='ml-2'>
-        {isLoading ? (
-          <Image src='/img/loading.webp' width='20' height='20' alt='loading' />
-        ) : isError ? (
-          ''
-        ) : (
-          'SOL Price $' + data?.priceUsdt + ', VOL ' + data?.volumeUsdt
-        )}
+          {isLoading ? (
+            <Image
+              src='/img/loading.webp'
+              width='20'
+              height='20'
+              alt='loading'
+            />
+          ) : isError ? (
+            ''
+          ) : (
+            'SOL Price $' +
+            data?.priceUsdt +
+            ' Volume $' +
+            new Intl.NumberFormat('en-US', {
+              maximumSignificantDigits: 3,
+            }).format(data?.volumeUsdt ?? 0)
+          )}
         </div>
       </div>
       <DarkModeSwitcher />

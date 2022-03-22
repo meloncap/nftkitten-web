@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-const LoadingScreen: FC = () => {
+export const LoadingScreen: FC = () => {
   return (
     <div className='loading-screen'>
       <p>LOADING...</p>
@@ -21,4 +21,3 @@ const LoadingScreen: FC = () => {
     </div>
   )
 }
-export default LoadingScreen

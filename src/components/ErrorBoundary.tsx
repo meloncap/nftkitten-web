@@ -1,6 +1,6 @@
 import { Component, ReactNode } from 'react'
 
-export default class ErrorBoundary extends Component<{
+export class ErrorBoundary extends Component<{
   fallback: NonNullable<ReactNode> | null
 }> {
   state = { hasError: false, error: null }

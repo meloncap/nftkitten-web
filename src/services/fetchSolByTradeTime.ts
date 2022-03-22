@@ -1,13 +1,13 @@
-import { SolscanPayload, PagingResult, SolscanTrade } from '../global'
-import useMyStore from '../hooks/useMyStore'
+import { SolscanPayload, PagingResult, SolscanToken } from '../global'
+import { useMyStore } from '../hooks/useMyStore'
 
-const fetchSolTrade = async ({
+export const fetchSolByTradeTime = async ({
   pageParam = 0,
-}): Promise<PagingResult<SolscanTrade>> => {
+}): Promise<PagingResult<SolscanToken>> => {
   const solscanBaseUrl = useMyStore.getState().solscanApiBaseUrl
   const res = await fetch(`${solscanBaseUrl}/nft?sortBy=tradeTime`)
   if (res.ok) {
-    const result: SolscanPayload<SolscanTrade[]> = await res.json()
+    const result: SolscanPayload<SolscanToken[]> = await res.json()
     if (!result.success) {
       throw JSON.stringify(result)
     }
@@ -19,4 +19,3 @@ const fetchSolTrade = async ({
   }
   throw JSON.stringify(res)
 }
-export default fetchSolTrade
