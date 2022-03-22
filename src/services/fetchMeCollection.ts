@@ -11,9 +11,7 @@ export const fetchMeCollection = async ({
     body: JSON.stringify({
       query: `
 query MyQuery {
-  meCollections(offset: ${
-    pageParam * ME_PAGE_LIMIT
-  }, limit: ${ME_PAGE_LIMIT}) {
+  meCollections(offset: ${pageParam * ME_PAGE_LIMIT}, limit: ${ME_PAGE_LIMIT}) {
     symbol
     description
     image

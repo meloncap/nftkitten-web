@@ -11,9 +11,7 @@ export const fetchMeLaunchpad = async ({
     body: JSON.stringify({
       query: `
 query MyQuery {
-  meLaunchpad(offset: ${
-    pageParam * ME_PAGE_LIMIT
-  }, limit: ${ME_PAGE_LIMIT}) {
+  meLaunchpad(offset: ${pageParam * ME_PAGE_LIMIT}, limit: ${ME_PAGE_LIMIT}) {
     description
     edition
     featured
