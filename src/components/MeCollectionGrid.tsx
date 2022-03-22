@@ -63,7 +63,7 @@ export const MeCollectionGrid: FC = () => {
     [hasNextPage, fetchNextPage]
   )
   return (
-    <div className='grow'>
+    <div className='grow min-h-screen'>
       {isLoading ? (
         <LoadingScreen />
       ) : isError ? (
