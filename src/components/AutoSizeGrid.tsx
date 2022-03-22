@@ -89,7 +89,7 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
               behavior: 'smooth',
             })
           }
-          setIsScrollBackward(props.verticalScrollDirection === 'backward' && window.scrollTop > 0)
+          setIsScrollBackward(props.verticalScrollDirection === 'backward' && window.scrollY > 0)
         }}
         columnCount={~~(containerWidth / width)}
         columnWidth={width}
