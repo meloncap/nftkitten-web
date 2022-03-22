@@ -86,7 +86,10 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
       <FixedSizeGrid
         outerRef={outerRef}
         onScroll={(props: GridOnScrollProps) => {
-          if (props.verticalScrollDirection === 'forward') {
+          if (
+            props.verticalScrollDirection === 'forward' &&
+            props.scrollTop > 0
+          ) {
             outerRef.current?.scrollIntoView({
               behavior: 'smooth',
             })
