@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 // import { useAnchorWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
-import { FC, useState } from 'react'
+import { FC, useCallback, useState } from 'react'
 import Image from 'next/image'
 import classNames from 'classnames'
 import { useRouter } from 'next/router'
@@ -11,11 +11,14 @@ export const NavMenu: FC = () => {
   const router = useRouter()
   const [hiddenMenu, setHiddenMenu] = useState(true)
 
-  function getMenuStyle(pathname: string) {
-    return pathname === router.pathname
-      ? 'block py-2 pr-4 pl-3 text-white dark:text-white bg-blue-700 rounded md:p-0 md:text-blue-700 md:bg-transparent'
-      : 'block py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0'
-  }
+  const getMenuStyle = useCallback(
+    (pathname: string) => {
+      return pathname === router.pathname
+        ? 'block py-2 pr-4 pl-3 text-white dark:text-white bg-blue-700 rounded md:p-0 md:text-blue-700 md:bg-transparent'
+        : 'block py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0'
+    },
+    [router.pathname]
+  )
   return (
     <nav className='py-2.5 px-2 bg-slate-300 dark:bg-gray-800 rounded border-gray-200 sm:px-4'>
       <div className='flex flex-wrap justify-between items-center mx-auto'>
@@ -28,7 +31,7 @@ export const NavMenu: FC = () => {
               width={40}
               height={40}
             />
-            <span className='self-center mr-5 ml-2 text-xl font-semibold dark:text-white whitespace-nowrap'>
+            <span className='hidden self-center mr-5 ml-2 text-xl font-semibold dark:text-white whitespace-nowrap sm:inline'>
               NFTKitten.io
             </span>
           </a>
@@ -82,15 +85,6 @@ export const NavMenu: FC = () => {
             </li>
             <li className={getMenuStyle('/magiceden/launchpad')}>
               <Link href='/magiceden/launchpad'>Magic Eden</Link>
-            </li>
-            <li className='block py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0'>
-              <a
-                href='https://twitter.com/NFTKitten_io?ref_src=twsrc%5Etfw'
-                target='_blank'
-                rel='noreferrer'
-              >
-                @NFTKitten_io
-              </a>
             </li>
           </ul>
         </div>

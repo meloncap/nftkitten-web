@@ -1,5 +1,5 @@
 import { MECollection, PagingResult } from '../global'
-import { PAGE_LIMIT } from '../constants'
+import { ME_PAGE_LIMIT } from '../constants'
 import { useMyStore } from '../hooks/useMyStore'
 
 export const fetchMeCollection = async ({
@@ -11,7 +11,9 @@ export const fetchMeCollection = async ({
     body: JSON.stringify({
       query: `
 query MyQuery {
-  meCollections(offset: ${pageParam * PAGE_LIMIT}, limit: ${PAGE_LIMIT}) {
+  meCollections(offset: ${
+    pageParam * ME_PAGE_LIMIT
+  }, limit: ${ME_PAGE_LIMIT}) {
     symbol
     description
     image

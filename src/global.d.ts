@@ -3,7 +3,7 @@ export type RenderingRows<T> = {
   rows: T[]
 }
 
-export type StoreState = {
+export type MyStoreState = {
   apiBaseUrl: string
   meApiBasUrl: string
   imageBaseUrl: string

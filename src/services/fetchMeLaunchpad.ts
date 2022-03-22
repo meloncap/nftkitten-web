@@ -1,5 +1,5 @@
 import { MELaunchpad, PagingResult } from '../global'
-import { PAGE_LIMIT } from '../constants'
+import { ME_PAGE_LIMIT } from '../constants'
 import { useMyStore } from '../hooks/useMyStore'
 
 export const fetchMeLaunchpad = async ({
@@ -11,7 +11,9 @@ export const fetchMeLaunchpad = async ({
     body: JSON.stringify({
       query: `
 query MyQuery {
-  meLaunchpad(offset: ${pageParam * PAGE_LIMIT}, limit: ${PAGE_LIMIT}) {
+  meLaunchpad(offset: ${
+    pageParam * ME_PAGE_LIMIT
+  }, limit: ${ME_PAGE_LIMIT}) {
     description
     edition
     featured

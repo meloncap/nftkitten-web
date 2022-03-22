@@ -1,7 +1,6 @@
-import create, { UseBoundStore } from 'zustand'
-import { StoreState } from '../global'
+import create from 'zustand'
 
-export const useMyStore: UseBoundStore<StoreState, any> = create(() => ({
+export const useMyStore = create(() => ({
   apiBaseUrl: '',
   meApiBasUrl: '',
   imageBaseUrl: '',

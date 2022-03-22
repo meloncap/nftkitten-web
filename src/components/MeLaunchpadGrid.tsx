@@ -1,30 +1,20 @@
-/* eslint-disable jsx-a11y/alt-text */
-import { LoadingCards } from './LoadingCards'
-import { FC } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import { useInfiniteQuery } from 'react-query'
 import { MELaunchpad, PagingResult, RenderingRows } from '../global'
 import { LoadingScreen } from './LoadingScreen'
-import { FixedSizeGrid } from 'react-window'
-import { MediaCard } from './MediaCard'
 import { fetchMeLaunchpad } from '../services/fetchMeLaunchpad'
 import { fetchOption } from '../services/fetchOption'
-import { COLLECTION_THUMB_SIZE, PAGE_LIMIT } from '../constants'
-import AutoSizer from 'react-virtualized-auto-sizer'
-import InfinityLoader from 'react-window-infinite-loader'
+import { AutoSizeGrid } from './AutoSizeGrid'
+import { MediaCard } from './MediaCard'
+import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../constants'
 
 export const MeLaunchpadGrid: FC = () => {
-  const {
-    isLoading,
-    isError,
-    isFetchingNextPage,
-    fetchNextPage,
-    data,
-    hasNextPage,
-  } = useInfiniteQuery<PagingResult<MELaunchpad>>(
-    'MeCollection',
-    fetchMeLaunchpad,
-    fetchOption<PagingResult<MELaunchpad>>()
-  )
+  const { isLoading, isError, fetchNextPage, data, hasNextPage } =
+    useInfiniteQuery<PagingResult<MELaunchpad>>(
+      'MeCollection',
+      fetchMeLaunchpad,
+      fetchOption<PagingResult<MELaunchpad>>()
+    )
   // const [scrollY, scrollHeight, viewportHeight] = useScrollPosition()
 
   // const shouldLoadNext = useMemo(
@@ -36,31 +26,41 @@ export const MeLaunchpadGrid: FC = () => {
   //     fetchNextPage()
   //   }
   // }, [hasNextPage, shouldLoadNext, fetchNextPage])
-  const itemData = data?.pages.reduce(
-    (r: RenderingRows<MELaunchpad>, results: PagingResult<MELaunchpad>) => {
-      for (const row of results.data) {
-        if (!row.image) continue
-        if (row.symbol in r) {
-          r.ids[row.symbol]++
-        } else {
-          r.ids[row.symbol] = 1
-          r.rows.push(row)
-        }
+  const itemData = useMemo(
+    () =>
+      data?.pages.reduce(
+        (
+          r: RenderingRows<{ id: string; src: string; alt: string | null }>,
+          results: PagingResult<MELaunchpad>
+        ) => {
+          for (const row of results.data) {
+            if (!row.image) continue
+            if (row.symbol in r) {
+              r.ids[row.symbol]++
+            } else {
+              r.ids[row.symbol] = 1
+              r.rows.push({
+                id: row.symbol,
+                src: row.image,
+                alt: row.name,
+              })
+            }
+          }
+          return r
+        },
+        { ids: {}, rows: [] }
+      ).rows,
+    [data]
+  )
+  const loadMoreItems = useCallback(
+    // eslint-disable-next-line no-unused-vars
+    (startIndex: number, stopIndex: number) => {
+      if (hasNextPage) {
+        return fetchNextPage().then(() => {})
       }
-      return r
     },
-    { ids: {}, rows: [] }
-  ).rows
-  function isItemLoaded(index: number) {
-    if (!itemData) return false
-    return itemData.length > index
-  }
-  function loadMoreItems(_: number, stopIndex: number) {
-    if (!itemData) return
-    if (stopIndex > itemData.length && hasNextPage) {
-      fetchNextPage()
-    }
-  }
+    [hasNextPage, fetchNextPage]
+  )
   return (
     <div className='grow min-h-screen'>
       {isLoading ? (
@@ -70,67 +70,31 @@ export const MeLaunchpadGrid: FC = () => {
           500 - Something went wrong
         </h1>
       ) : (
-        <AutoSizer>
-          {({ width, height }) => (
-            <>
-              <InfinityLoader
-                isItemLoaded={isItemLoaded}
-                itemCount={itemData?.length ?? 0}
-                loadMoreItems={loadMoreItems}
-                minimumBatchSize={PAGE_LIMIT}
-                threshold={~~(height / COLLECTION_THUMB_SIZE)}
-              >
-                {({ onItemsRendered, ref }) => (
-                  <>
-                    <FixedSizeGrid
-                      columnCount={~~(width / COLLECTION_THUMB_SIZE)}
-                      columnWidth={COLLECTION_THUMB_SIZE}
-                      rowCount={Math.ceil(
-                        (itemData?.length ?? 0) /
-                          ~~(width / COLLECTION_THUMB_SIZE)
-                      )}
-                      rowHeight={COLLECTION_THUMB_SIZE}
-                      onItemsRendered={onItemsRendered as any}
-                      ref={ref}
-                      width={width}
-                      height={height}
-                      itemData={itemData ?? []}
-                    >
-                      {({ columnIndex, rowIndex, data, style }) => {
-                        const col =
-                          data[
-                            ~~(width / COLLECTION_THUMB_SIZE) * rowIndex +
-                              columnIndex
-                          ]
-                        if (!col?.image || !itemData) return null
-                        return (
-                          <a
-                            href={
-                              `https://magiceden.io/marketplace/` + col.symbol
-                            }
-                            target='_blank'
-                            rel='noreferrer'
-                          >
-                            <MediaCard
-                              src={col.image}
-                              alt={col.name}
-                              width={COLLECTION_THUMB_SIZE}
-                              height={COLLECTION_THUMB_SIZE}
-                              style={style}
-                            ></MediaCard>
-                          </a>
-                        )
-                      }}
-                    </FixedSizeGrid>
-                    {hasNextPage && isFetchingNextPage && (
-                      <LoadingCards size={COLLECTION_THUMB_SIZE} />
-                    )}
-                  </>
-                )}
-              </InfinityLoader>
-            </>
+        <AutoSizeGrid
+          pageSize={ME_PAGE_LIMIT}
+          width={COLLECTION_THUMB_SIZE}
+          height={COLLECTION_THUMB_SIZE}
+          itemData={itemData}
+          loadMoreItems={loadMoreItems}
+          hasMore={hasNextPage}
+        >
+          {({ width, height, data, style }) => (
+            <a
+              href={`https://magiceden.io/marketplace/` + data.id}
+              target='_blank'
+              rel='noreferrer'
+              className='underline'
+            >
+              <MediaCard
+                src={data.src!}
+                alt={data.alt}
+                width={width}
+                height={height}
+                style={style}
+              ></MediaCard>
+            </a>
           )}
-        </AutoSizer>
+        </AutoSizeGrid>
       )}
     </div>
   )
