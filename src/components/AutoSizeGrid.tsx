@@ -66,6 +66,9 @@ function OuterElementType({
   }, [setIsScrollBackward])
   const scrollHandler = useCallback(
     (ev: any) => {
+      if (onScroll) {
+        onScroll(ev)
+      }
       if (ev.currentTarget.scrollTop === scrollTop.current) return
       const delta = ev.currentTarget.scrollTop - scrollTop.current
       const newIsScrollBackward = delta < 0
@@ -77,11 +80,11 @@ function OuterElementType({
         window.scrollY <
           document.documentElement.scrollHeight - window.innerHeight
       ) {
-        window.scrollBy({ top: delta })
+        window.scrollBy({ top: delta, behavior: 'auto' })
       }
       scrollTop.current = ev.currentTarget.scrollTop
     },
-    [isScrollBackward]
+    [isScrollBackward, onScroll]
   )
   return (
     <>
@@ -92,7 +95,6 @@ function OuterElementType({
         }}
         ref={forwardedRef}
         {...props}
-        onScroll={onScroll}
         onScrollCapture={scrollHandler}
       ></div>
       <button
@@ -285,7 +287,8 @@ function GridWithSize<T>({
     <InfinityLoader
       isItemLoaded={isItemLoaded}
       itemCount={
-        (itemData?.length ?? 0) + (loadMoreItems ? ~~(containerWidth / width) : 0)
+        (itemData?.length ?? 0) +
+        (loadMoreItems ? ~~(containerWidth / width) : 0)
       }
       loadMoreItems={loadMoreItems ?? (() => {})}
       minimumBatchSize={pageSize}
@@ -293,7 +296,6 @@ function GridWithSize<T>({
     >
       {({ onItemsRendered, ref }) => (
         <GridWithLoader
-          hasMore={!!loadMoreItems}
           pageSize={pageSize}
           itemData={itemData}
           loadMoreItems={loadMoreItems}

@@ -76,12 +76,11 @@ export const MediaCard = ({
           width={width}
           height={height}
           onLoadingComplete={() => setLoaded(false)}
-          onError={() => setIsError(true)}
           unoptimized
         />
       ) : (
         <Image
-          src={`${url}`}
+          src={`/img/loading.webp$`} //{url}
           alt={alt ?? ``}
           width={width}
           height={height}

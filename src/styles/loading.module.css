@@ -1,4 +1,5 @@
 .loading-background {
   background-image: url(/img/loading.webp);
   background-repeat: no-repeat;
+  background-size: 100px 100px;
 }
