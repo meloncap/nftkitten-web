@@ -80,7 +80,7 @@ export const MediaCard = ({
         />
       ) : (
         <Image
-          src={`/img/loading.webp$`} //{url}
+          src={url}
           alt={alt ?? ``}
           width={width}
           height={height}
