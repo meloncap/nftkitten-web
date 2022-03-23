@@ -5,12 +5,10 @@ import {
   FixedSizeGrid as Grid,
   GridChildComponentProps,
   GridOnItemsRenderedProps,
-  GridOnScrollProps,
   ListOnItemsRenderedProps,
 } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import InfinityLoader from 'react-window-infinite-loader'
-import { useInView } from 'react-intersection-observer'
 import React, {
   ComponentType,
   useCallback,
@@ -20,6 +18,7 @@ import React, {
   HTMLProps,
   forwardRef,
   useMemo,
+  UIEvent,
 } from 'react'
 import classNames from 'classnames'
 
@@ -56,30 +55,83 @@ type GridWithLoaderProps<T> = GridWithSizeProps<T> & {
 function OuterElementType({
   style,
   forwardedRef,
+  onScroll,
   ...props
 }: HTMLProps<HTMLDivElement> & { forwardedRef: any }) {
-  const { ref: inViewRef, inView } = useInView({
-    threshold: 0.9,
-    fallbackInView: true,
-  })
-  const combineRef = useCallback(
-    (newRef: HTMLDivElement | null) => {
-      inViewRef(newRef)
-      forwardedRef(newRef)
+  const scrollTop = useRef<number>(0)
+  const [isScrollBackward, setIsScrollBackward] = useState(false)
+  const scrollClickHandler = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    setIsScrollBackward(false)
+  }, [setIsScrollBackward])
+  const scrollHandler = useCallback(
+    (ev: any) => {
+      if (onScroll) {
+        onScroll(ev)
+      }
+      if (ev.currentTarget.scrollTop === scrollTop.current) return
+      const delta = ev.currentTarget.scrollTop - scrollTop.current
+      const newIsScrollBackward = delta < 0
+      if (newIsScrollBackward != isScrollBackward) {
+        setIsScrollBackward(newIsScrollBackward)
+      }
+      if (
+        delta > 0 &&
+        window.scrollY <
+          document.documentElement.scrollHeight - window.innerHeight
+      ) {
+        window.scrollBy({ top: delta, behavior: 'smooth' })
+      }
+      scrollTop.current = ev.currentTarget.scrollTop
     },
-    [inViewRef, forwardedRef]
+    [onScroll, isScrollBackward]
   )
   return (
-    <div
-      style={{
-        ...style,
-        height: '100vh',
-        overflow: inView ? 'auto' : 'hidden',
-      }}
-      ref={combineRef}
-      {...props}
-    ></div>
+    <>
+      <div
+        style={{
+          ...style,
+          height: '100vh',
+        }}
+        ref={forwardedRef}
+        {...props}
+        onScroll={scrollHandler}
+      ></div>
+      <button
+        type='button'
+        data-mdb-ripple='true'
+        data-mdb-ripple-color='light'
+        className={classNames(
+          'fixed inline-block right-5 bottom-5 p-3 text-xs font-medium leading-tight text-white uppercase bg-blue-600 hover:bg-blue-700 focus:bg-blu-700 active:bg-blue-800 rounded-full focus:outline-none focus:ring-0 shadow-md hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out z-10',
+          { hidden: !isScrollBackward }
+        )}
+        onClick={scrollClickHandler}
+      >
+        <svg
+          aria-hidden='true'
+          focusable='false'
+          data-prefix='fas'
+          className='w-4 h-4'
+          role='img'
+          xmlns='http://www.w3.org/2000/svg'
+          viewBox='0 0 448 512'
+        >
+          <path
+            fill='currentColor'
+            d='M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z'
+          ></path>
+        </svg>
+      </button>
+    </>
   )
+}
+
+function InnerElementType({
+  style,
+  forwardedRef,
+  ...props
+}: HTMLProps<HTMLDivElement> & { forwardedRef: any }) {
+  return <div style={style} ref={forwardedRef} {...props}></div>
 }
 
 type GridItemProps<T> = {
@@ -106,7 +158,6 @@ function GridWithLoader<T>({
   loaderOnItemsRendered,
   loaderRef,
 }: GridWithLoaderProps<T>) {
-  const [isScrollBackward, setIsScrollBackward] = useState(false)
   const gridRef = useRef<FixedSizeGrid>()
   const ref = useCallback(
     (newRef: any) => {
@@ -115,21 +166,6 @@ function GridWithLoader<T>({
     },
     [loaderRef]
   )
-  const onScroll = useCallback(
-    (props: GridOnScrollProps) => {
-      if (props.verticalScrollDirection === 'forward') {
-        setIsScrollBackward(false)
-      } else if (window.scrollY > 0) {
-        setIsScrollBackward(true)
-      }
-    },
-    [setIsScrollBackward]
-  )
-  const scrollClickHandler = useCallback(() => {
-    window.scrollTo({ left: 0, top: 0, behavior: 'smooth' })
-    gridRef.current?.scrollTo({ scrollTop: 0 })
-    setIsScrollBackward(false)
-  }, [setIsScrollBackward, gridRef])
   const onItemsRendered = useCallback(
     (props: GridOnItemsRenderedProps) => {
       loaderOnItemsRendered({
@@ -148,66 +184,44 @@ function GridWithLoader<T>({
       )),
     []
   )
+  const innerElementType = useMemo(
+    () =>
+      forwardRef<HTMLDivElement>((props, ref) => (
+        <InnerElementType forwardedRef={ref} {...props} />
+      )),
+    []
+  )
   return (
-    <>
-      <button
-        type='button'
-        data-mdb-ripple='true'
-        data-mdb-ripple-color='light'
-        className={classNames(
-          'fixed inline-block right-5 top-5 p-3 text-xs font-medium leading-tight text-white uppercase bg-blue-600 hover:bg-blue-700 focus:bg-blu-700 active:bg-blue-800 rounded-full focus:outline-none focus:ring-0 shadow-md hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out z-10',
-          { hidden: isScrollBackward }
-        )}
-        onClick={scrollClickHandler}
-      >
-        <svg
-          aria-hidden='true'
-          focusable='false'
-          data-prefix='fas'
-          className='w-4 h-4'
-          role='img'
-          xmlns='http://www.w3.org/2000/svg'
-          viewBox='0 0 448 512'
-        >
-          <path
-            fill='currentColor'
-            d='M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z'
-          ></path>
-        </svg>
-      </button>
-      <Grid
-        outerElementType={outerElementType}
-        onScroll={onScroll}
-        columnCount={~~(containerWidth / width)}
-        columnWidth={width}
-        rowCount={Math.ceil(
-          (itemData?.length ?? 0) / ~~(containerWidth / width)
-        )}
-        rowHeight={height}
-        onItemsRendered={onItemsRendered}
-        overscanRowCount={10}
-        useIsScrolling={useIsScrolling}
-        ref={ref}
-        width={containerWidth}
-        height={containerHeight}
-        itemData={itemData ?? []}
-      >
-        {({ columnIndex, rowIndex, isScrolling, data: rows, style }) => (
-          <GridItem
-            containerWidth={containerWidth}
-            containerHeight={containerHeight}
-            width={width}
-            height={height}
-            columnIndex={columnIndex}
-            rowIndex={rowIndex}
-            isScrolling={isScrolling}
-            rows={rows}
-            style={style}
-            Children={Children}
-          />
-        )}
-      </Grid>
-    </>
+    <Grid
+      outerElementType={outerElementType}
+      innerElementType={innerElementType}
+      columnCount={~~(containerWidth / width)}
+      columnWidth={width}
+      rowCount={Math.ceil((itemData?.length ?? 0) / ~~(containerWidth / width))}
+      rowHeight={height}
+      onItemsRendered={onItemsRendered}
+      overscanRowCount={10}
+      useIsScrolling={useIsScrolling}
+      ref={ref}
+      width={containerWidth}
+      height={containerHeight}
+      itemData={itemData ?? []}
+    >
+      {({ columnIndex, rowIndex, isScrolling, data: rows, style }) => (
+        <GridItem
+          containerWidth={containerWidth}
+          containerHeight={containerHeight}
+          width={width}
+          height={height}
+          columnIndex={columnIndex}
+          rowIndex={rowIndex}
+          isScrolling={isScrolling}
+          rows={rows}
+          style={style}
+          Children={Children}
+        />
+      )}
+    </Grid>
   )
 }
 
