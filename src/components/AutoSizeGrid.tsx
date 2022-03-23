@@ -59,7 +59,7 @@ function OuterElementType({
   ...props
 }: HTMLProps<HTMLDivElement> & { forwardedRef: any }) {
   const { ref: inViewRef, inView } = useInView({
-    threshold: 1,
+    threshold: 0.9,
     fallbackInView: true,
   })
   const combineRef = useCallback(
