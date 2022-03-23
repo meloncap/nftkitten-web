@@ -18,17 +18,17 @@ import React, {
   HTMLProps,
   forwardRef,
   useMemo,
-  UIEvent,
 } from 'react'
 import classNames from 'classnames'
 
 type AutoSizeGridProps<T> = {
-  hasMore?: boolean | undefined
   pageSize?: number | undefined
   width: number
   height: number
   itemData: T[] | undefined
-  loadMoreItems: (startIndex: number, stopIndex: number) => void | Promise<void>
+  loadMoreItems?:
+    | ((startIndex: number, stopIndex: number) => void | Promise<void>)
+    | undefined
   useIsScrolling?: boolean | undefined
   children: ComponentType<AutoSizeGridChildComponentProps<T>>
 }
@@ -66,9 +66,6 @@ function OuterElementType({
   }, [setIsScrollBackward])
   const scrollHandler = useCallback(
     (ev: any) => {
-      if (onScroll) {
-        onScroll(ev)
-      }
       if (ev.currentTarget.scrollTop === scrollTop.current) return
       const delta = ev.currentTarget.scrollTop - scrollTop.current
       const newIsScrollBackward = delta < 0
@@ -80,11 +77,11 @@ function OuterElementType({
         window.scrollY <
           document.documentElement.scrollHeight - window.innerHeight
       ) {
-        window.scrollBy({ top: delta, behavior: 'smooth' })
+        window.scrollBy({ top: delta })
       }
       scrollTop.current = ev.currentTarget.scrollTop
     },
-    [onScroll, isScrollBackward]
+    [isScrollBackward]
   )
   return (
     <>
@@ -95,7 +92,8 @@ function OuterElementType({
         }}
         ref={forwardedRef}
         {...props}
-        onScroll={scrollHandler}
+        onScroll={onScroll}
+        onScrollCapture={scrollHandler}
       ></div>
       <button
         type='button'
@@ -155,6 +153,7 @@ function GridWithLoader<T>({
   children: Children,
   containerWidth,
   containerHeight,
+  loadMoreItems,
   loaderOnItemsRendered,
   loaderRef,
 }: GridWithLoaderProps<T>) {
@@ -191,13 +190,17 @@ function GridWithLoader<T>({
       )),
     []
   )
+  const columnCount = ~~(containerWidth / width)
   return (
     <Grid
       outerElementType={outerElementType}
       innerElementType={innerElementType}
-      columnCount={~~(containerWidth / width)}
+      columnCount={columnCount}
       columnWidth={width}
-      rowCount={Math.ceil((itemData?.length ?? 0) / ~~(containerWidth / width))}
+      rowCount={
+        Math.ceil((itemData?.length ?? 0) / columnCount) +
+        (loadMoreItems ? columnCount : 0)
+      }
       rowHeight={height}
       onItemsRendered={onItemsRendered}
       overscanRowCount={10}
@@ -263,7 +266,6 @@ function GridItem<T>({
 }
 
 function GridWithSize<T>({
-  hasMore,
   pageSize,
   itemData,
   loadMoreItems,
@@ -283,15 +285,15 @@ function GridWithSize<T>({
     <InfinityLoader
       isItemLoaded={isItemLoaded}
       itemCount={
-        (itemData?.length ?? 0) + (hasMore ?? false ? pageSize ?? 10 : 0)
+        (itemData?.length ?? 0) + (loadMoreItems ? ~~(containerWidth / width) : 0)
       }
-      loadMoreItems={loadMoreItems}
+      loadMoreItems={loadMoreItems ?? (() => {})}
       minimumBatchSize={pageSize}
       threshold={10}
     >
       {({ onItemsRendered, ref }) => (
         <GridWithLoader
-          hasMore={hasMore}
+          hasMore={!!loadMoreItems}
           pageSize={pageSize}
           itemData={itemData}
           loadMoreItems={loadMoreItems}

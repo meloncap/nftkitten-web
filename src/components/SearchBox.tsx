@@ -29,7 +29,12 @@ export function SearchBox() {
     return () => window.removeEventListener('keydown', handler)
   }, [])
   useEffect(() => {
-    if (open) inputRef.current.focus()
+    if (open) {
+      inputRef.current.focus()
+      document.documentElement.classList.add('overflow-hidden')
+    } else {
+      document.documentElement.classList.remove('overflow-hidden')
+    }
   }, [open])
   const lookup = useMemo((): {
     [family: string]: Array<SolscanSearch['collection'][0]>
@@ -57,8 +62,9 @@ export function SearchBox() {
       <div
         tabIndex={-1}
         className={classNames(
+          'flex overflow-x-hidden overflow-y-auto fixed inset-x-0 top-0 z-50 w-screen h-screen md:inset-0 md:h-full bg-gray-700/50 place-content-center',
           { hidden: !open },
-          'flex overflow-x-hidden overflow-y-auto fixed inset-x-0 top-0 z-50 w-full h-modal md:inset-0 md:h-full bg-gray-700/50 place-content-center'
+          
         )}
       >
         <div className='relative p-4 w-full max-w-4xl h-full md:h-auto'>

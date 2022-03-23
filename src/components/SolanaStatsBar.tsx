@@ -3,38 +3,69 @@ import { useQuery } from 'react-query'
 import { SolscanMarket } from '../global'
 import Image from 'next/image'
 import { fetchSolStats } from '../services/fetchSolStats'
+import { fetchEthStats } from '../services/fetchEthStats'
 import { DarkModeSwitcher } from './DarkModeSwitcher'
 
 export const SolanaStatsBar = () => {
-  const { isLoading, isError, data } = useQuery<SolscanMarket>(
-    'SolscanStats',
-    fetchSolStats,
-    {
-      refetchInterval: 1000 * 5,
-    }
-  )
+  const {
+    isLoading: isLoadingSol,
+    isError: isErrorSol,
+    data: dataSol,
+  } = useQuery<SolscanMarket>('SolStats', fetchSolStats, {
+    refetchInterval: 1000 * 5,
+  })
+  const {
+    isLoading: isLoadingEth,
+    isError: isErrorEth,
+    data: dataEth,
+  } = useQuery<SolscanMarket>('EthStats', fetchEthStats, {
+    refetchInterval: 1000 * 5,
+  })
   return (
     <div className='flex flex-row flex-wrap justify-between items-center p-2 text-white bg-slate-900'>
       <div className='flex flex-row items-center'>
-        <Image src='/img/solana.svg' width='16' height='16' alt='Solana' />
-        <div className='ml-2 text-xs'>
-          {isLoading ? (
+        <Image alt='Solana' src='/img/sol.svg' width={16} height={16} />
+        <div className='mr-2 ml-1 text-xs'>
+          {isLoadingSol ? (
             <Image
               src='/img/loading.webp'
               width='20'
               height='20'
               alt='loading'
             />
-          ) : isError ? (
+          ) : isErrorSol ? (
             ''
           ) : (
             <>
-              SOL Price ${data?.priceUsdt + ' '}
-              <span className='hidden sm:inline'>
+              SOL Price ${dataSol?.priceUsdt + ' '}
+              <span className='hidden md:inline'>
                 VOL $
                 {new Intl.NumberFormat('en-US', {
                   maximumSignificantDigits: 3,
-                }).format(data?.volumeUsdt ?? 0)}
+                }).format(dataSol?.volumeUsdt ?? 0)}
+              </span>
+            </>
+          )}
+        </div>
+        <Image alt='Ethereum' src='/img/eth.svg' width={16} height={16} />
+        <div className='mr-2 ml-1 text-xs'>
+          {isLoadingEth ? (
+            <Image
+              src='/img/loading.webp'
+              width='20'
+              height='20'
+              alt='loading'
+            />
+          ) : isErrorEth ? (
+            ''
+          ) : (
+            <>
+              ETH Price ${dataEth?.priceUsdt + ' '}
+              <span className='hidden md:inline'>
+                VOL $
+                {new Intl.NumberFormat('en-US', {
+                  maximumSignificantDigits: 3,
+                }).format(dataEth?.volumeUsdt ?? 0)}
               </span>
             </>
           )}

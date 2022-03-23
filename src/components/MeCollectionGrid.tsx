@@ -74,25 +74,25 @@ export const MeCollectionGrid = () => {
         <AutoSizeGrid
           pageSize={ME_PAGE_LIMIT}
           width={COLLECTION_THUMB_SIZE}
-          height={COLLECTION_THUMB_SIZE}
+          height={COLLECTION_THUMB_SIZE + 30}
           itemData={itemData}
-          loadMoreItems={loadMoreItems}
-          hasMore={hasNextPage}
+          loadMoreItems={hasNextPage ? loadMoreItems : undefined}
         >
-          {({ width, height, data, style }) => (
+          {({ data, style }) => (
             <a
               href={`https://magiceden.io/marketplace/` + data.id}
               target='_blank'
               rel='noreferrer'
               className='underline'
+              style={style}
             >
               <MediaCard
                 src={data.src}
                 alt={data.alt}
-                width={width}
-                height={height}
-                style={style}
+                width={COLLECTION_THUMB_SIZE}
+                height={COLLECTION_THUMB_SIZE}
               ></MediaCard>
+              <div className='text-ellipsis'>{data.alt}</div>
             </a>
           )}
         </AutoSizeGrid>

@@ -6,6 +6,7 @@ import { LoadingScreen } from './LoadingScreen'
 import { MediaCard } from './MediaCard'
 import { fetchSolCollectionByVol } from '../services/fetchSolCollectionByVol'
 import { AutoSizeGrid } from './AutoSizeGrid'
+import Image from 'next/image'
 
 export const HighVolCollectionPanel: FC = () => {
   const { isLoading, isError, data } = useQuery<
@@ -21,6 +22,9 @@ export const HighVolCollectionPanel: FC = () => {
           id: d.data.collectionId,
           src: d.data.avatar,
           alt: d.data.collection,
+          sol: new Intl.NumberFormat('en-US', {
+            maximumSignificantDigits: 2,
+          }).format(d.floorPrice / 100000000),
         })),
     [data]
   )
@@ -35,24 +39,32 @@ export const HighVolCollectionPanel: FC = () => {
       ) : (
         <AutoSizeGrid
           width={100}
-          height={100}
+          height={130}
           itemData={itemData}
-          loadMoreItems={() => {}}
         >
-          {({ width, height, data, style }) => (
+          {({ data, style }) => (
             <a
               href={`https://solscan.io/collection/` + data.id}
               target='_blank'
               rel='noreferrer'
+              style={style}
             >
               <MediaCard
                 key={data.id}
                 src={data.src}
                 alt={data.alt}
-                width={width}
-                height={height}
-                style={style}
+                width={100}
+                height={100}
               />
+              <div className='flex flex-row flex-nowrap items-center text-xs text-ellipsis'>
+                <Image
+                  alt={data.alt}
+                  src='/img/sol.svg'
+                  width={12}
+                  height={12}
+                />{' '}
+                {data.sol}
+              </div>
             </a>
           )}
         </AutoSizeGrid>
