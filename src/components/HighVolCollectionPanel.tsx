@@ -37,11 +37,7 @@ export const HighVolCollectionPanel: FC = () => {
           500 - Something went wrong
         </h1>
       ) : (
-        <AutoSizeGrid
-          width={100}
-          height={130}
-          itemData={itemData}
-        >
+        <AutoSizeGrid width={100} height={130} itemData={itemData}>
           {({ data, style }) => (
             <a
               href={`https://solscan.io/collection/` + data.id}
