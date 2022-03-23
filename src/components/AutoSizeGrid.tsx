@@ -156,7 +156,7 @@ function GridWithLoader<T>({
         data-mdb-ripple-color='light'
         className={classNames(
           'fixed inline-block right-5 top-5 p-3 text-xs font-medium leading-tight text-white uppercase bg-blue-600 hover:bg-blue-700 focus:bg-blu-700 active:bg-blue-800 rounded-full focus:outline-none focus:ring-0 shadow-md hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out z-10',
-          { hidden: !isScrollBackward }
+          { hidden: isScrollBackward }
         )}
         onClick={scrollClickHandler}
       >
