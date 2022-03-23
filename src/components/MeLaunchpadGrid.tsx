@@ -8,6 +8,7 @@ import { AutoSizeGrid } from './AutoSizeGrid'
 import { MediaCard } from './MediaCard'
 import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../constants'
 import Image from 'next/image'
+import { features } from 'process'
 
 export const MeLaunchpadGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
@@ -35,7 +36,7 @@ export const MeLaunchpadGrid = () => {
             id: string
             src: string
             alt: string | undefined
-            sol: string
+            date: string | null
             featured: boolean
           }>,
           results: PagingResult<MELaunchpad>
@@ -50,11 +51,7 @@ export const MeLaunchpadGrid = () => {
                 id: row.symbol,
                 src: row.image,
                 alt: row.name ?? undefined,
-                sol: row.price
-                  ? new Intl.NumberFormat('en-US', {
-                      maximumSignificantDigits: 2,
-                    }).format(row.price / 100000000)
-                  : `0`,
+                date: row.launchDatetime,
                 featured: !!row.featured,
               })
             }
@@ -105,13 +102,8 @@ export const MeLaunchpadGrid = () => {
                 height={COLLECTION_THUMB_SIZE}
               ></MediaCard>
               <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-                <Image
-                  alt={data.alt}
-                  src='/img/sol.svg'
-                  width={12}
-                  height={12}
-                />{' '}
-                {data.sol}
+                {data.featured && `⭐ `}
+                {data.date}
               </div>
             </a>
           )}
