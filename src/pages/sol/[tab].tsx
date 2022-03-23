@@ -21,7 +21,7 @@ const Home: NextPage = () => {
       {
         url: '/',
         isActive: /^home$/.test(`${tab}`),
-        title: () => <>Popular NFT Collections</>,
+        title: () => <>Popular NFT</>,
         content: () => <HighVolCollectionPanel />,
       },
       {
