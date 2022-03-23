@@ -1,12 +1,11 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { FC } from 'react'
 import { useQuery } from 'react-query'
 import { SolscanMarket } from '../global'
 import Image from 'next/image'
 import { fetchSolStats } from '../services/fetchSolStats'
 import { DarkModeSwitcher } from './DarkModeSwitcher'
 
-export const SolanaStatsBar: FC = () => {
+export const SolanaStatsBar = () => {
   const { isLoading, isError, data } = useQuery<SolscanMarket>(
     'SolscanStats',
     fetchSolStats,

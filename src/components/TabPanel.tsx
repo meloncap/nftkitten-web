@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ComponentType, FC } from 'react'
+import { ComponentType } from 'react'
 import classNames from 'classnames'
 
 type Tab = {
@@ -10,7 +10,7 @@ type Tab = {
   content: ComponentType
 }
 
-export const TabPanel: FC<{ tabs: Tab[] }> = ({ tabs }) => {
+export function TabPanel({ tabs }: { tabs: Tab[] }) {
   return (
     <>
       <div className='border-b border-gray-200 dark:border-gray-700'>

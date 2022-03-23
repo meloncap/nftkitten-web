@@ -1,12 +1,13 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 // import { useAnchorWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
-import { FC, useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import Image from 'next/image'
 import classNames from 'classnames'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-export const NavMenu: FC = () => {
+
+export const NavMenu = () => {
   // const anchorWallet = useAnchorWallet()
   const router = useRouter()
   const [hiddenMenu, setHiddenMenu] = useState(true)

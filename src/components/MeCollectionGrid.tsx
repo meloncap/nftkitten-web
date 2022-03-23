@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { FC, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useInfiniteQuery } from 'react-query'
 import { MECollection, PagingResult, RenderingRows } from '../global'
 import { LoadingScreen } from './LoadingScreen'
@@ -9,7 +9,7 @@ import { fetchOption } from '../services/fetchOption'
 import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../constants'
 import { AutoSizeGrid } from './AutoSizeGrid'
 
-export const MeCollectionGrid: FC = () => {
+export const MeCollectionGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
     useInfiniteQuery<PagingResult<MECollection>>(
       'MeCollection',

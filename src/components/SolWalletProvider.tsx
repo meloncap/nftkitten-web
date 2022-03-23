@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react'
+import React, { PropsWithChildren, useMemo } from 'react'
 import {
   ConnectionProvider,
   WalletProvider,
@@ -27,7 +27,7 @@ import {
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 import { clusterApiUrl } from '@solana/web3.js'
 
-export const SolWalletProvider: FC = ({ children }) => {
+export function SolWalletProvider({ children }: PropsWithChildren<unknown>) {
   // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
   const network = WalletAdapterNetwork.Devnet
 

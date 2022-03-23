@@ -1,13 +1,13 @@
 /* eslint-disable tailwindcss/no-custom-classname */
 import { useDebounce } from './../../useDebounce'
-import { FC, useEffect, useState, useRef, useMemo } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
 import classNames from 'classnames'
 import { useQuery } from 'react-query'
 import { fetchNFTSearch } from '../services/fetchNFTSearch'
 import { SolscanSearch } from '../global'
 import { CollectionRow } from './CollectionRow'
 
-export const SearchBox: FC = () => {
+export function SearchBox() {
   const inputRef = useRef<any>()
   const [open, setOpen] = useState(false)
   const [filter, setFilter] = useState<string>('')

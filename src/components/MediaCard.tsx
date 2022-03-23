@@ -1,20 +1,29 @@
-import { CSSProperties, FC, ReactNode, useState } from 'react'
+import { CSSProperties, ReactNode, useState } from 'react'
 import { useMyStore } from '../hooks/useMyStore'
 import Image from 'next/image'
 import classNames from 'classnames'
 import styles from '../styles/loading.module.css'
 
-export const MediaCard: FC<{
+const imageBaseUrlSelector = (x: any): string => x.imageBaseUrl
+
+export const MediaCard = ({
+  src,
+  alt,
+  width,
+  height,
+  style,
+  children,
+}: {
   src: string
   alt: string | null
   width: number
   height: number
   style?: CSSProperties
   children?: ReactNode | ReactNode[]
-}> = ({ src, alt, width, height, style, children }) => {
+}) => {
   const [loaded, setLoaded] = useState(false)
   const [isError, setIsError] = useState(false)
-  const imageBaseUrl = useMyStore.getState().imageBaseUrl
+  const imageBaseUrl = useMyStore(imageBaseUrlSelector)
   // const [ref, inView] = useInView({
   //   rootMargin: '2000px',
   //   fallbackInView: true,

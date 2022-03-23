@@ -2,9 +2,9 @@ import { MELaunchpad, PagingResult } from '../global'
 import { ME_PAGE_LIMIT } from '../constants'
 import { useMyStore } from '../hooks/useMyStore'
 
-export const fetchMeLaunchpad = async ({
+export async function fetchMeLaunchpad({
   pageParam = 0,
-}): Promise<PagingResult<MELaunchpad>> => {
+}): Promise<PagingResult<MELaunchpad>> {
   const apiBaseUrl = useMyStore.getState().apiBaseUrl
   const res = await fetch(`${apiBaseUrl}/graphql`, {
     method: 'POST',

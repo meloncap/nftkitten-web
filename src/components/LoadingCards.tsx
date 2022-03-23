@@ -1,12 +1,17 @@
-import { CSSProperties, FC, useMemo } from 'react'
+import { CSSProperties, useMemo } from 'react'
 import Image from 'next/image'
 
-export const LoadingCards: FC<{
+export function LoadingCards({
+  width,
+  height,
+  limit = 1,
+  style,
+}: {
   width: number
   height: number
   limit?: number | undefined
   style?: CSSProperties | undefined
-}> = ({ width, height, limit = 1, style }) => {
+}) {
   const nums = useMemo(() => {
     const nums: number[] = []
 

@@ -1,6 +1,4 @@
-import { FC } from 'react'
-
-export const LoadingScreen: FC = () => (
+export const LoadingScreen = () => (
   <div className='loading-screen'>
     <p>LOADING...</p>
     <i>

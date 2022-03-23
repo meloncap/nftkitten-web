@@ -1,4 +1,7 @@
+/* eslint-disable react/display-name */
+/* eslint-disable no-unused-vars */
 import {
+  FixedSizeGrid,
   FixedSizeGrid as Grid,
   GridChildComponentProps,
   GridOnItemsRenderedProps,
@@ -7,14 +10,34 @@ import {
 } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import InfinityLoader from 'react-window-infinite-loader'
-import {
+import { useInView } from 'react-intersection-observer'
+import React, {
   ComponentType,
   useCallback,
   useRef,
   useState,
   CSSProperties,
+  HTMLProps,
+  forwardRef,
+  useMemo,
 } from 'react'
 import classNames from 'classnames'
+
+type AutoSizeGridProps<T> = {
+  hasMore?: boolean | undefined
+  pageSize?: number | undefined
+  width: number
+  height: number
+  itemData: T[] | undefined
+  loadMoreItems: (startIndex: number, stopIndex: number) => void | Promise<void>
+  useIsScrolling?: boolean | undefined
+  children: ComponentType<AutoSizeGridChildComponentProps<T>>
+}
+
+type GridWithSizeProps<T> = AutoSizeGridProps<T> & {
+  containerWidth: number
+  containerHeight: number
+}
 
 type AutoSizeGridChildComponentProps<T> = GridChildComponentProps<T> & {
   width: number
@@ -25,15 +48,54 @@ type AutoSizeGridChildComponentProps<T> = GridChildComponentProps<T> & {
   containerHeight: number
 }
 
-type AutoSizeGridWithContainerSizeAndLoaderProps<T> =
-  AutoSizeGridWithContainerSizeProps<T> & {
-    // eslint-disable-next-line no-unused-vars
-    loaderOnItemsRendered: (props: ListOnItemsRenderedProps) => any
-    // eslint-disable-next-line no-unused-vars
-    loaderRef: (ref: any) => void
-  }
+type GridWithLoaderProps<T> = GridWithSizeProps<T> & {
+  loaderOnItemsRendered: (props: ListOnItemsRenderedProps) => any
+  loaderRef: (ref: any) => void
+}
 
-function AutoSizeGridWithContainerSizeAndLoader<T>({
+function OuterElementType({
+  style,
+  forwardedRef,
+  ...props
+}: HTMLProps<HTMLDivElement> & { forwardedRef: any }) {
+  const { ref: inViewRef, inView } = useInView({
+    threshold: 1,
+    fallbackInView: true,
+  })
+  const combineRef = useCallback(
+    (newRef: HTMLDivElement | null) => {
+      inViewRef(newRef)
+      forwardedRef(newRef)
+    },
+    [inViewRef, forwardedRef]
+  )
+  return (
+    <div
+      style={{
+        ...style,
+        height: '100vh',
+        overflow: inView ? 'auto' : 'hidden',
+      }}
+      ref={combineRef}
+      {...props}
+    ></div>
+  )
+}
+
+type GridItemProps<T> = {
+  containerWidth: number
+  containerHeight: number
+  width: number
+  height: number
+  columnIndex: number
+  rowIndex: number
+  isScrolling: boolean | undefined
+  rows: T[]
+  style: CSSProperties
+  Children: ComponentType<AutoSizeGridChildComponentProps<T>>
+}
+
+function GridWithLoader<T>({
   width,
   height,
   itemData,
@@ -43,40 +105,31 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
   containerHeight,
   loaderOnItemsRendered,
   loaderRef,
-}: AutoSizeGridWithContainerSizeAndLoaderProps<T>) {
-  const outerRef = useRef<HTMLDivElement>()
+}: GridWithLoaderProps<T>) {
   const [isScrollBackward, setIsScrollBackward] = useState(false)
-  const [ref, setRef] = useState<Grid | null>(null)
+  const gridRef = useRef<FixedSizeGrid>()
+  const ref = useCallback(
+    (newRef: any) => {
+      loaderRef(newRef)
+      return gridRef
+    },
+    [loaderRef]
+  )
   const onScroll = useCallback(
     (props: GridOnScrollProps) => {
-      if (props.verticalScrollDirection === 'forward' && props.scrollTop > 0) {
-        outerRef.current?.scrollIntoView({
-          behavior: 'smooth',
-        })
-      } else if (
-        props.verticalScrollDirection === 'backward' &&
-        props.scrollTop <= 0
-      ) {
-        window.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: 'smooth',
-        })
+      if (props.verticalScrollDirection === 'forward') {
         setIsScrollBackward(false)
-      } else {
-        setIsScrollBackward(
-          props.verticalScrollDirection === 'backward' &&
-            (window.scrollY > 0 || props.scrollTop > 0)
-        )
+      } else if (window.scrollY > 0) {
+        setIsScrollBackward(true)
       }
     },
-    [outerRef, setIsScrollBackward]
+    [setIsScrollBackward]
   )
   const scrollClickHandler = useCallback(() => {
     window.scrollTo({ left: 0, top: 0, behavior: 'smooth' })
-    ref?.scrollTo({ scrollTop: 0 })
+    gridRef.current?.scrollTo({ scrollTop: 0 })
     setIsScrollBackward(false)
-  }, [ref, setIsScrollBackward])
+  }, [setIsScrollBackward, gridRef])
   const onItemsRendered = useCallback(
     (props: GridOnItemsRenderedProps) => {
       loaderOnItemsRendered({
@@ -88,6 +141,13 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
     },
     [loaderOnItemsRendered]
   )
+  const outerElementType = useMemo(
+    () =>
+      forwardRef<HTMLDivElement>((props, ref) => (
+        <OuterElementType forwardedRef={ref} {...props} />
+      )),
+    []
+  )
   return (
     <>
       <button
@@ -95,7 +155,7 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
         data-mdb-ripple='true'
         data-mdb-ripple-color='light'
         className={classNames(
-          'fixed inline-block right-5 bottom-5 p-3 text-xs font-medium leading-tight text-white uppercase bg-blue-600 hover:bg-blue-700 focus:bg-blu-700 active:bg-blue-800 rounded-full focus:outline-none focus:ring-0 shadow-md hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out z-10',
+          'fixed inline-block right-5 top-5 p-3 text-xs font-medium leading-tight text-white uppercase bg-blue-600 hover:bg-blue-700 focus:bg-blu-700 active:bg-blue-800 rounded-full focus:outline-none focus:ring-0 shadow-md hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out z-10',
           { hidden: !isScrollBackward }
         )}
         onClick={scrollClickHandler}
@@ -116,7 +176,7 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
         </svg>
       </button>
       <Grid
-        outerRef={outerRef}
+        outerElementType={outerElementType}
         onScroll={onScroll}
         columnCount={~~(containerWidth / width)}
         columnWidth={width}
@@ -127,10 +187,7 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
         onItemsRendered={onItemsRendered}
         overscanRowCount={10}
         useIsScrolling={useIsScrolling}
-        ref={(ref) => {
-          setRef(ref)
-          loaderRef(ref)
-        }}
+        ref={ref}
         width={containerWidth}
         height={containerHeight}
         itemData={itemData ?? []}
@@ -152,19 +209,6 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
       </Grid>
     </>
   )
-}
-
-type GridItemProps<T> = {
-  containerWidth: number
-  containerHeight: number
-  width: number
-  height: number
-  columnIndex: number
-  rowIndex: number
-  isScrolling: boolean | undefined
-  rows: T[]
-  style: CSSProperties
-  Children: ComponentType<AutoSizeGridChildComponentProps<T>>
 }
 
 function GridItem<T>({
@@ -204,16 +248,15 @@ function GridItem<T>({
   )
 }
 
-type AutoSizeGridWithContainerSizeProps<T> = AutoSizeGridProps<T> & {
-  containerWidth: number
-  containerHeight: number
-}
-
-function AutoSizeGridWithContainerSize<T>(
-  props: AutoSizeGridWithContainerSizeProps<T>
-) {
-  const { hasMore, pageSize, itemData, loadMoreItems, containerWidth, width } =
-    props
+function GridWithSize<T>({
+  hasMore,
+  pageSize,
+  itemData,
+  loadMoreItems,
+  containerWidth,
+  width,
+  ...props
+}: GridWithSizeProps<T>) {
   const isItemLoaded = useCallback(
     (index: number) => {
       if (!itemData) return true
@@ -233,34 +276,27 @@ function AutoSizeGridWithContainerSize<T>(
       threshold={10}
     >
       {({ onItemsRendered, ref }) => (
-        <AutoSizeGridWithContainerSizeAndLoader
-          {...props}
+        <GridWithLoader
+          hasMore={hasMore}
+          pageSize={pageSize}
+          itemData={itemData}
+          loadMoreItems={loadMoreItems}
+          containerWidth={containerWidth}
+          width={width}
           loaderOnItemsRendered={onItemsRendered}
           loaderRef={ref}
+          {...props}
         />
       )}
     </InfinityLoader>
   )
 }
 
-type AutoSizeGridProps<T> = {
-  hasMore?: boolean | undefined
-  pageSize?: number | undefined
-  width: number
-  height: number
-  itemData: T[] | undefined
-  // eslint-disable-next-line no-unused-vars
-  loadMoreItems: (startIndex: number, stopIndex: number) => void | Promise<void>
-  useIsScrolling?: boolean | undefined
-  // eslint-disable-next-line no-unused-vars
-  children: ComponentType<AutoSizeGridChildComponentProps<T>>
-}
-
 export function AutoSizeGrid<T>(props: AutoSizeGridProps<T>) {
   return (
     <AutoSizer>
       {({ width, height }) => (
-        <AutoSizeGridWithContainerSize
+        <GridWithSize
           {...props}
           containerWidth={width}
           containerHeight={height}

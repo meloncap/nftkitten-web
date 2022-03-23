@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { FC, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useQuery } from 'react-query'
 import { PagingResult, SolscanToken } from '../global'
 import { LoadingScreen } from './LoadingScreen'
@@ -7,7 +7,7 @@ import { fetchSolByTradeTime } from '../services/fetchSolByTradeTime'
 import { MediaCard } from './MediaCard'
 import { AutoSizeGrid } from './AutoSizeGrid'
 
-export const RecentTradePanel: FC = () => {
+export function RecentTradePanel() {
   const { isLoading, isError, data } = useQuery<PagingResult<SolscanToken>>(
     'SolscanTokenByTradeTime',
     fetchSolByTradeTime,

@@ -1,8 +1,12 @@
 import type { AppProps } from 'next/app'
 import Script from 'next/script'
-import { FC } from 'react'
+import { StrictMode } from 'react'
+import { SolWalletProvider } from '../components/SolWalletProvider'
 import { useMyStore } from '../hooks/useMyStore'
 import '../styles/globals.css'
+import { QueryClientProvider } from 'react-query'
+import { ReactQueryDevtools } from 'react-query/devtools'
+import { queryClient } from '../services/queryClient'
 
 const apiBaseUrl: string = process.env.NEXT_PUBLIC_API_BASE_URL ?? ``
 const meApiBasUrl: string = process.env.NEXT_PUBLIC_ME_API_BASE_URL ?? ``
@@ -12,7 +16,7 @@ const solscanApiBaseUrl: string =
 const solscanPublicApiBaseUrl: string =
   process.env.NEXT_PUBLIC_SOLSCAN_PUBLIC_API_BASE_URL ?? ``
 
-export const MyApp: FC<AppProps> = ({ Component, pageProps }) => {
+export function MyApp({ Component, pageProps }: AppProps) {
   useMyStore.setState({
     apiBaseUrl,
     meApiBasUrl,
@@ -21,10 +25,16 @@ export const MyApp: FC<AppProps> = ({ Component, pageProps }) => {
     solscanPublicApiBaseUrl,
   })
   return (
-    <>
-      <Script src='/noflash.js' strategy='beforeInteractive' />
-      <Component {...pageProps} />
-    </>
+    <StrictMode>
+      <SolWalletProvider>
+        <Script src='/noflash.js' strategy='beforeInteractive' />
+        <QueryClientProvider client={queryClient}>
+          {/* Dev tools */}
+          <ReactQueryDevtools initialIsOpen={false} />
+          <Component {...pageProps} />
+        </QueryClientProvider>
+      </SolWalletProvider>
+    </StrictMode>
   )
 }
 

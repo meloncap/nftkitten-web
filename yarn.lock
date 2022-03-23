@@ -4837,6 +4837,11 @@ react-dom@^17.0.2:
     object-assign "^4.1.1"
     scheduler "^0.20.2"
 
+react-intersection-observer@^8.33.1:
+  version "8.33.1"
+  resolved "https://registry.yarnpkg.com/react-intersection-observer/-/react-intersection-observer-8.33.1.tgz#8e6442cac7052ed63056e191b7539e423e7d5c64"
+  integrity sha512-3v+qaJvp3D1MlGHyM+KISVg/CMhPiOlO6FgPHcluqHkx4YFCLuyXNlQ/LE6UkbODXlQcLOppfX6UMxCEkUhDLw==
+
 react-is@^16.13.1:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
@@ -4860,13 +4865,6 @@ react-window-infinite-loader@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/react-window-infinite-loader/-/react-window-infinite-loader-1.0.7.tgz#958ef1a689d20dce122ef377583acd987760aee8"
   integrity sha512-wg3LWkUpG21lhv+cZvNy+p0+vtclZw+9nP2vO6T9PKT50EN1cUq37Dq6FzcM38h/c2domE0gsUhb6jHXtGogAA==
-
-react-window-scroller@^1.0.10:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/react-window-scroller/-/react-window-scroller-1.0.10.tgz#7281b6ba34a2b147f19ba5ffd6de6fb3bfdb60c8"
-  integrity sha512-pgFX6O51cq7JmNVFcho9990dBHJJGgfGXucby7tviTrKqp/CJaKzt5AONYJ3SqWeBMh+N7/W9tvIl/7oMjq+2Q==
-  dependencies:
-    lodash "^4.17.20"
 
 react-window@^1.8.6:
   version "1.8.6"

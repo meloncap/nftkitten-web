@@ -3,13 +3,6 @@ export type RenderingRows<T> = {
   rows: T[]
 }
 
-export type MyStoreState = {
-  apiBaseUrl: string
-  meApiBasUrl: string
-  imageBaseUrl: string
-  solscanApiBaseUrl: string
-  solscanPublicApiBaseUrl: string
-}
 export type CollectionData = {
   name: string | null
   image: string | null

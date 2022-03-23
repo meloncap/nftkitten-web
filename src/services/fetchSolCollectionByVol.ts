@@ -1,9 +1,9 @@
 import { SolscanPayload, PagingResult, SolscanCollection } from '../global'
 import { useMyStore } from '../hooks/useMyStore'
 
-export const fetchSolCollectionByVol = async ({
+export async function fetchSolCollectionByVol({
   pageParam = 0,
-}): Promise<PagingResult<SolscanCollection>> => {
+}): Promise<PagingResult<SolscanCollection>> {
   const solscanBaseUrl = useMyStore.getState().solscanApiBaseUrl
   const res = await fetch(`${solscanBaseUrl}/collection?sortBy=volume`)
   if (res.ok) {

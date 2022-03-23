@@ -1,8 +1,8 @@
-import React, { FC, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import classnames from 'classnames'
 import useDarkMode from 'use-dark-mode'
 
-export const DarkModeSwitcher: FC = () => {
+export function DarkModeSwitcher() {
   const darkMode = useDarkMode(false, {
     classNameDark: 'dark',
     classNameLight: 'light',

@@ -2,9 +2,9 @@ import { MECollection, PagingResult } from '../global'
 import { ME_PAGE_LIMIT } from '../constants'
 import { useMyStore } from '../hooks/useMyStore'
 
-export const fetchMeCollection = async ({
+export async function fetchMeCollection({
   pageParam = 0,
-}): Promise<PagingResult<MECollection>> => {
+}): Promise<PagingResult<MECollection>> {
   const apiBaseUrl = useMyStore.getState().apiBaseUrl
   const res = await fetch(`${apiBaseUrl}/graphql`, {
     method: 'POST',

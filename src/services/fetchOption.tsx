@@ -1,8 +1,8 @@
 import { UseInfiniteQueryOptions } from 'react-query'
 
-export const fetchOption = <
+export function fetchOption<
   T extends { data: unknown[]; pageParam: number }
->(): UseInfiniteQueryOptions<T> => {
+>(): UseInfiniteQueryOptions<T> {
   return {
     getNextPageParam: (lastPage) => {
       if (lastPage.data.length > 0) {
