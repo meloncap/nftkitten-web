@@ -1,5 +1,5 @@
 import {
-  FixedSizeGrid,
+  FixedSizeGrid as Grid,
   GridChildComponentProps,
   GridOnItemsRenderedProps,
   GridOnScrollProps,
@@ -7,10 +7,16 @@ import {
 } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import InfinityLoader from 'react-window-infinite-loader'
-import { ComponentType, useCallback, useRef, useState } from 'react'
+import {
+  ComponentType,
+  useCallback,
+  useRef,
+  useState,
+  CSSProperties,
+} from 'react'
 import classNames from 'classnames'
 
-type ExtraComponentProps<T> = {
+type AutoSizeGridChildComponentProps<T> = GridChildComponentProps<T> & {
   width: number
   height: number
   index: number
@@ -18,18 +24,15 @@ type ExtraComponentProps<T> = {
   containerWidth: number
   containerHeight: number
 }
-type AutoSizeGridProps<T> = {
-  hasMore?: boolean | undefined
-  pageSize?: number | undefined
-  width: number
-  height: number
-  itemData: T[] | undefined
-  // eslint-disable-next-line no-unused-vars
-  loadMoreItems: (startIndex: number, stopIndex: number) => void | Promise<void>
-  useIsScrolling?: boolean | undefined
-  // eslint-disable-next-line no-unused-vars
-  children: ComponentType<GridChildComponentProps<T> & ExtraComponentProps<T>>
-}
+
+type AutoSizeGridWithContainerSizeAndLoaderProps<T> =
+  AutoSizeGridWithContainerSizeProps<T> & {
+    // eslint-disable-next-line no-unused-vars
+    loaderOnItemsRendered: (props: ListOnItemsRenderedProps) => any
+    // eslint-disable-next-line no-unused-vars
+    loaderRef: (ref: any) => void
+  }
+
 function AutoSizeGridWithContainerSizeAndLoader<T>({
   width,
   height,
@@ -38,20 +41,53 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
   children: Children,
   containerWidth,
   containerHeight,
-  onItemsRendered,
+  loaderOnItemsRendered,
   loaderRef,
-}: AutoSizeGridProps<T> & {
-  containerWidth: number
-  containerHeight: number
-  // eslint-disable-next-line no-unused-vars
-  onItemsRendered: (props: ListOnItemsRenderedProps) => any
-  // eslint-disable-next-line no-unused-vars
-  loaderRef: (ref: any) => void
-  // eslint-disable-next-line no-unused-vars
-}) {
+}: AutoSizeGridWithContainerSizeAndLoaderProps<T>) {
   const outerRef = useRef<HTMLDivElement>()
   const [isScrollBackward, setIsScrollBackward] = useState(false)
-  const [ref, setRef] = useState<FixedSizeGrid | null>(null)
+  const [ref, setRef] = useState<Grid | null>(null)
+  const onScroll = useCallback(
+    (props: GridOnScrollProps) => {
+      if (props.verticalScrollDirection === 'forward' && props.scrollTop > 0) {
+        outerRef.current?.scrollIntoView({
+          behavior: 'smooth',
+        })
+      } else if (
+        props.verticalScrollDirection === 'backward' &&
+        props.scrollTop <= 0
+      ) {
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: 'smooth',
+        })
+        setIsScrollBackward(false)
+      } else {
+        setIsScrollBackward(
+          props.verticalScrollDirection === 'backward' &&
+            (window.scrollY > 0 || props.scrollTop > 0)
+        )
+      }
+    },
+    [outerRef, setIsScrollBackward]
+  )
+  const scrollClickHandler = useCallback(() => {
+    window.scrollTo({ left: 0, top: 0, behavior: 'smooth' })
+    ref?.scrollTo({ scrollTop: 0 })
+    setIsScrollBackward(false)
+  }, [ref, setIsScrollBackward])
+  const onItemsRendered = useCallback(
+    (props: GridOnItemsRenderedProps) => {
+      loaderOnItemsRendered({
+        overscanStartIndex: props.overscanRowStartIndex,
+        overscanStopIndex: props.overscanRowStopIndex,
+        visibleStartIndex: props.visibleRowStartIndex,
+        visibleStopIndex: props.visibleRowStopIndex,
+      })
+    },
+    [loaderOnItemsRendered]
+  )
   return (
     <>
       <button
@@ -62,11 +98,7 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
           'fixed inline-block right-5 bottom-5 p-3 text-xs font-medium leading-tight text-white uppercase bg-blue-600 hover:bg-blue-700 focus:bg-blu-700 active:bg-blue-800 rounded-full focus:outline-none focus:ring-0 shadow-md hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out z-10',
           { hidden: !isScrollBackward }
         )}
-        onClick={() => {
-          window.scrollTo({ left: 0, top: 0, behavior: 'smooth' })
-          ref?.scrollTo({ scrollTop: 0 })
-          setIsScrollBackward(false)
-        }}
+        onClick={scrollClickHandler}
       >
         <svg
           aria-hidden='true'
@@ -83,47 +115,16 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
           ></path>
         </svg>
       </button>
-      <FixedSizeGrid
+      <Grid
         outerRef={outerRef}
-        onScroll={(props: GridOnScrollProps) => {
-          if (
-            props.verticalScrollDirection === 'forward' &&
-            props.scrollTop > 0
-          ) {
-            outerRef.current?.scrollIntoView({
-              behavior: 'smooth',
-            })
-          } else if (
-            props.verticalScrollDirection === 'backward' &&
-            props.scrollTop <= 0
-          ) {
-            window.scrollTo({
-              top: 0,
-              left: 0,
-              behavior: 'smooth',
-            })
-            setIsScrollBackward(false)
-          } else {
-            setIsScrollBackward(
-              props.verticalScrollDirection === 'backward' &&
-                (window.scrollY > 0 || props.scrollTop > 0)
-            )
-          }
-        }}
+        onScroll={onScroll}
         columnCount={~~(containerWidth / width)}
         columnWidth={width}
         rowCount={Math.ceil(
           (itemData?.length ?? 0) / ~~(containerWidth / width)
         )}
         rowHeight={height}
-        onItemsRendered={(props: GridOnItemsRenderedProps) => {
-          onItemsRendered({
-            overscanStartIndex: props.overscanRowStartIndex,
-            overscanStopIndex: props.overscanRowStopIndex,
-            visibleStartIndex: props.visibleRowStartIndex,
-            visibleStopIndex: props.visibleRowStopIndex,
-          })
-        }}
+        onItemsRendered={onItemsRendered}
         overscanRowCount={10}
         useIsScrolling={useIsScrolling}
         ref={(ref) => {
@@ -134,41 +135,82 @@ function AutoSizeGridWithContainerSizeAndLoader<T>({
         height={containerHeight}
         itemData={itemData ?? []}
       >
-        {({ columnIndex, rowIndex, isScrolling, data: rows, style }) => {
-          const numOfCol = ~~(containerWidth / width)
-          const index = rowIndex * numOfCol + columnIndex
-          const data = rows[index]
-          const marginLeft =
-            ((1 + columnIndex) * ((containerWidth % width) / 2)) / numOfCol
-          if (!data) {
-            return null
-          }
-          return (
-            <Children
-              columnIndex={columnIndex}
-              rowIndex={rowIndex}
-              index={index}
-              isScrolling={isScrolling}
-              data={data}
-              style={{ ...style, marginLeft }}
-              width={width}
-              height={height}
-              containerWidth={containerWidth}
-              containerHeight={containerHeight}
-              rows={rows}
-            />
-          )
-        }}
-      </FixedSizeGrid>
+        {({ columnIndex, rowIndex, isScrolling, data: rows, style }) => (
+          <GridItem
+            containerWidth={containerWidth}
+            containerHeight={containerHeight}
+            width={width}
+            height={height}
+            columnIndex={columnIndex}
+            rowIndex={rowIndex}
+            isScrolling={isScrolling}
+            rows={rows}
+            style={style}
+            Children={Children}
+          />
+        )}
+      </Grid>
     </>
   )
 }
 
-function AutoSizeGridWithContainerSize<T>(
-  props: AutoSizeGridProps<T> & {
-    containerWidth: number
-    containerHeight: number
+type GridItemProps<T> = {
+  containerWidth: number
+  containerHeight: number
+  width: number
+  height: number
+  columnIndex: number
+  rowIndex: number
+  isScrolling: boolean | undefined
+  rows: T[]
+  style: CSSProperties
+  Children: ComponentType<AutoSizeGridChildComponentProps<T>>
+}
+
+function GridItem<T>({
+  containerWidth,
+  containerHeight,
+  width,
+  height,
+  columnIndex,
+  rowIndex,
+  isScrolling,
+  rows,
+  style,
+  Children,
+}: GridItemProps<T>) {
+  const numOfCol = ~~(containerWidth / width)
+  const index = rowIndex * numOfCol + columnIndex
+  const data = rows[index]
+  const marginLeft =
+    ((1 + columnIndex) * ((containerWidth % width) / 2)) / numOfCol
+  if (!data) {
+    return null
   }
+  return (
+    <Children
+      columnIndex={columnIndex}
+      rowIndex={rowIndex}
+      index={index}
+      isScrolling={isScrolling}
+      data={data}
+      style={{ ...style, marginLeft }}
+      width={width}
+      height={height}
+      containerWidth={containerWidth}
+      containerHeight={containerHeight}
+      rows={rows}
+    />
+  )
+}
+
+type AutoSizeGridWithContainerSizeProps<T> = AutoSizeGridProps<T> & {
+  containerWidth: number
+  containerHeight: number
+}
+
+function AutoSizeGridWithContainerSize<T>(
+  props: AutoSizeGridWithContainerSizeProps<T>
 ) {
   const { hasMore, pageSize, itemData, loadMoreItems, containerWidth, width } =
     props
@@ -193,12 +235,25 @@ function AutoSizeGridWithContainerSize<T>(
       {({ onItemsRendered, ref }) => (
         <AutoSizeGridWithContainerSizeAndLoader
           {...props}
-          onItemsRendered={onItemsRendered}
+          loaderOnItemsRendered={onItemsRendered}
           loaderRef={ref}
         />
       )}
     </InfinityLoader>
   )
+}
+
+type AutoSizeGridProps<T> = {
+  hasMore?: boolean | undefined
+  pageSize?: number | undefined
+  width: number
+  height: number
+  itemData: T[] | undefined
+  // eslint-disable-next-line no-unused-vars
+  loadMoreItems: (startIndex: number, stopIndex: number) => void | Promise<void>
+  useIsScrolling?: boolean | undefined
+  // eslint-disable-next-line no-unused-vars
+  children: ComponentType<AutoSizeGridChildComponentProps<T>>
 }
 
 export function AutoSizeGrid<T>(props: AutoSizeGridProps<T>) {
