@@ -54,14 +54,14 @@ export function RecentTradePanel() {
                 width={100}
                 height={100}
               />
-              <div className='flex overflow-hidden flex-row flex-nowrap items-center text-xs text-ellipsis whitespace-nowrap'>
+              <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
                 <Image
                   alt={data.alt}
                   src='/img/sol.svg'
                   width={12}
                   height={12}
                 />{' '}
-                {data.sol} {data.alt}
+                {data.sol}
               </div>
             </a>
           )}

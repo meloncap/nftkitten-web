@@ -7,6 +7,7 @@ import { fetchOption } from '../services/fetchOption'
 import { AutoSizeGrid } from './AutoSizeGrid'
 import { MediaCard } from './MediaCard'
 import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../constants'
+import Image from 'next/image'
 
 export const MeLaunchpadGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
@@ -30,7 +31,13 @@ export const MeLaunchpadGrid = () => {
     () =>
       data?.pages.reduce(
         (
-          r: RenderingRows<{ id: string; src: string; alt: string | null }>,
+          r: RenderingRows<{
+            id: string
+            src: string
+            alt: string | undefined
+            sol: string
+            featured: boolean
+          }>,
           results: PagingResult<MELaunchpad>
         ) => {
           for (const row of results.data) {
@@ -42,7 +49,13 @@ export const MeLaunchpadGrid = () => {
               r.rows.push({
                 id: row.symbol,
                 src: row.image,
-                alt: row.name,
+                alt: row.name ?? undefined,
+                sol: row.price
+                  ? new Intl.NumberFormat('en-US', {
+                      maximumSignificantDigits: 2,
+                    }).format(row.price / 100000000)
+                  : `0`,
+                featured: !!row.featured,
               })
             }
           }
@@ -91,8 +104,14 @@ export const MeLaunchpadGrid = () => {
                 width={COLLECTION_THUMB_SIZE}
                 height={COLLECTION_THUMB_SIZE}
               ></MediaCard>
-              <div className='flex overflow-hidden flex-row flex-nowrap items-center text-xs text-ellipsis whitespace-nowrap'>
-                {data.alt}
+              <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+                <Image
+                  alt={data.alt}
+                  src='/img/sol.svg'
+                  width={12}
+                  height={12}
+                />{' '}
+                {data.sol}
               </div>
             </a>
           )}

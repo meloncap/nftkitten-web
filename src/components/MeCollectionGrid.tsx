@@ -8,6 +8,7 @@ import { fetchMeCollection } from '../services/fetchMeCollection'
 import { fetchOption } from '../services/fetchOption'
 import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../constants'
 import { AutoSizeGrid } from './AutoSizeGrid'
+import Image from 'next/image'
 
 export const MeCollectionGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
@@ -31,7 +32,11 @@ export const MeCollectionGrid = () => {
     () =>
       data?.pages.reduce(
         (
-          r: RenderingRows<{ id: string; src: string; alt: string | null }>,
+          r: RenderingRows<{
+            id: string
+            src: string
+            alt: string | undefined
+          }>,
           results: PagingResult<MECollection>
         ) => {
           for (const row of results.data) {
@@ -43,7 +48,7 @@ export const MeCollectionGrid = () => {
               r.rows.push({
                 id: row.symbol,
                 src: row.image,
-                alt: row.name,
+                alt: row.name ?? undefined,
               })
             }
           }
@@ -92,7 +97,13 @@ export const MeCollectionGrid = () => {
                 width={COLLECTION_THUMB_SIZE}
                 height={COLLECTION_THUMB_SIZE}
               ></MediaCard>
-              <div className='flex overflow-hidden flex-row flex-nowrap items-center text-xs text-ellipsis whitespace-nowrap'>
+              <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+                <Image
+                  alt={data.alt}
+                  src='/img/sol.svg'
+                  width={12}
+                  height={12}
+                />{' '}
                 {data.alt}
               </div>
             </a>

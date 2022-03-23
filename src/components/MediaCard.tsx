@@ -15,7 +15,7 @@ export const MediaCard = ({
   children,
 }: {
   src: string
-  alt: string | null
+  alt: string | undefined
   width: number
   height: number
   style?: CSSProperties
@@ -73,6 +73,7 @@ export const MediaCard = ({
         <Image
           src={src!}
           alt={alt ?? ``}
+          title={alt ?? ``}
           width={width}
           height={height}
           onLoadingComplete={() => setLoaded(false)}
@@ -82,6 +83,7 @@ export const MediaCard = ({
         <Image
           src={url}
           alt={alt ?? ``}
+          title={alt ?? ``}
           width={width}
           height={height}
           onLoadingComplete={() => setLoaded(true)}
