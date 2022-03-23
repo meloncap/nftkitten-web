@@ -52,14 +52,14 @@ export const HighVolCollectionPanel: FC = () => {
                 width={100}
                 height={100}
               />
-              <div className='flex flex-row flex-nowrap items-center text-xs text-ellipsis'>
+              <div className='flex overflow-hidden flex-row flex-nowrap items-center text-xs text-ellipsis'>
                 <Image
                   alt={data.alt}
                   src='/img/sol.svg'
                   width={12}
                   height={12}
                 />{' '}
-                {data.sol}
+                {data.sol} {data.alt}
               </div>
             </a>
           )}
