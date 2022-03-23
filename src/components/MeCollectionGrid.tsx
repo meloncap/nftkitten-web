@@ -92,7 +92,7 @@ export const MeCollectionGrid = () => {
                 width={COLLECTION_THUMB_SIZE}
                 height={COLLECTION_THUMB_SIZE}
               ></MediaCard>
-              <div className='flex overflow-hidden flex-row flex-nowrap items-center text-xs text-ellipsis'>
+              <div className='flex overflow-hidden flex-row flex-nowrap items-center text-xs text-ellipsis whitespace-nowrap'>
                 {data.alt}
               </div>
             </a>

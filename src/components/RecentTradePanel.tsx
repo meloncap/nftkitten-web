@@ -54,7 +54,7 @@ export function RecentTradePanel() {
                 width={100}
                 height={100}
               />
-              <div className='flex overflow-hidden flex-row flex-nowrap items-center text-xs text-ellipsis'>
+              <div className='flex overflow-hidden flex-row flex-nowrap items-center text-xs text-ellipsis whitespace-nowrap'>
                 <Image
                   alt={data.alt}
                   src='/img/sol.svg'
