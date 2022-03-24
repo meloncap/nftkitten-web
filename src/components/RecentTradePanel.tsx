@@ -25,9 +25,9 @@ export function RecentTradePanel() {
           id: d.info.mint,
           src: d.info.meta.image,
           alt: d.info.data.name,
-          sol: new Intl.NumberFormat('en-US', {
+          sol: d.trade.price ? new Intl.NumberFormat('en-US', {
             maximumSignificantDigits: 2,
-          }).format(d.trade.price / 100000000),
+          }).format(d.trade.price / 100000000) : '',
         })),
     [data]
   )

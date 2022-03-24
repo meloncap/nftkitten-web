@@ -36,7 +36,7 @@ export function SearchBox() {
       document.documentElement.classList.remove('overflow-hidden')
     }
   }, [open])
-  const lookup = useMemo((): {
+  const itemData = useMemo((): {
     [family: string]: Array<SolscanSearch['collection'][0]>
   } => {
     if (data?.collection.length) {
@@ -70,7 +70,7 @@ export function SearchBox() {
           <div className='relative bg-white dark:bg-gray-700 rounded-lg shadow'>
             <div className='flex justify-between items-center p-1 rounded-t border-b dark:border-gray-600'>
               <h3 className='ml-5 text-xl font-medium text-gray-900 dark:text-white'>
-                NFT Search
+                Collection Search
               </h3>
               <button
                 type='button'
@@ -116,7 +116,7 @@ export function SearchBox() {
                 )
               ) : (
                 <div className='w-full bg-gray-50 dark:bg-gray-800'>
-                  {Object.entries(lookup).map(([family, cols], i) =>
+                  {Object.entries(itemData).map(([family, cols], i) =>
                     family ? (
                       <div
                         className='p-2 mb-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 dark:border-blue-100 border-blue'

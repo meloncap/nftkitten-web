@@ -23,9 +23,9 @@ export const HighVolCollectionPanel: FC = () => {
           id: d.data.collectionId,
           src: d.data.avatar,
           alt: d.data.collection,
-          sol: new Intl.NumberFormat('en-US', {
+          sol: d.floorPrice ? new Intl.NumberFormat('en-US', {
             maximumSignificantDigits: 2,
-          }).format(d.floorPrice / 100000000),
+          }).format(d.floorPrice / 100000000) : '',
         })),
     [data]
   )
