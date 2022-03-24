@@ -81,11 +81,15 @@ export const NavMenu = () => {
           id='mobile-menu-4'
         >
           <ul className='flex flex-col mt-4 md:flex-row md:mt-0 md:space-x-8 md:text-sm md:font-medium'>
-            <li className={getMenuStyle(/^\/$|\/sol($|\/)/i)}>
-              <Link href='/'>Home</Link>
+            <li>
+              <Link href='/' passHref>
+                <a className={getMenuStyle(/^\/$|\/sol($|\/)/i)}>Home</a>
+              </Link>
             </li>
-            <li className={getMenuStyle(/^\/magiceden\//)}>
-              <Link href='/magiceden/launchpad'>Magic Eden</Link>
+            <li>
+              <Link href='/magiceden/launchpad' passHref>
+                <a className={getMenuStyle(/^\/magiceden\//)}>Magic Eden</a>
+              </Link>
             </li>
           </ul>
         </div>
