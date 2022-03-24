@@ -87,7 +87,7 @@ export const MeCollectionGrid = () => {
         <AutoSizeGrid
           pageSize={ME_PAGE_LIMIT}
           width={COLLECTION_THUMB_SIZE}
-          height={COLLECTION_THUMB_SIZE + 30}
+          height={COLLECTION_THUMB_SIZE + 45}
           itemData={itemData}
           loadMoreItems={hasNextPage ? loadMoreItems : undefined}
         >
