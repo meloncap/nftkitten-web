@@ -20,6 +20,7 @@ export function RecentTradePanel() {
     () =>
       data?.data
         .filter((d) => d?.info?.meta?.image)
+        .sort((a, b) => (a.trade.price ?? 0) < (b.trade.price ?? 0) ? 1 : (a.trade.price ?? 0) > (b.trade.price ?? 0) ? -1 : 0)
         .map((d) => ({
           id: d.info.mint,
           src: d.info.meta.image,
@@ -39,13 +40,14 @@ export function RecentTradePanel() {
           500 - Something went wrong
         </h1>
       ) : (
-        <AutoSizeGrid width={100} height={130} itemData={itemData}>
+        <AutoSizeGrid width={100} height={145} itemData={itemData}>
           {({ data, style }) => (
             <a
               href={`https://solscan.io/token/` + data.id}
               target='_blank'
               rel='noreferrer'
               style={style}
+              title={data.alt}
             >
               <MediaCard
                 key={data.id}
@@ -54,6 +56,9 @@ export function RecentTradePanel() {
                 width={100}
                 height={100}
               />
+              <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+                {data.alt}
+              </div>
               <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
                 <Image
                   alt={data.alt}

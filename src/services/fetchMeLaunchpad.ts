@@ -11,27 +11,19 @@ export async function fetchMeLaunchpad({
     body: JSON.stringify({
       query: `
 query MyQuery {
-  meLaunchpad(offset: ${pageParam * ME_PAGE_LIMIT}, limit: ${ME_PAGE_LIMIT}) {
-    description
-    edition
-    featured
-    image
-    launchDatetime
-    name
-    price
-    size
-    symbol
+  me_launchpad(offset: ${pageParam * ME_PAGE_LIMIT}, limit: ${ME_PAGE_LIMIT}) {
+    data
   }
 }
 `,
     }),
   })
   if (res.ok) {
-    const result: { data: { meLaunchpad: MELaunchpad[] } } = await res.json()
+    const result: { data: { me_launchpad: { data: MELaunchpad }[] } } = await res.json()
     if (!result) {
       throw JSON.stringify(result)
     }
-    const data = result.data.meLaunchpad
+    const data = result.data.me_launchpad.map(l => l.data)
     return {
       pageParam,
       data,

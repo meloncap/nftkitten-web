@@ -225,7 +225,7 @@ export type MEError = {
   message: string
 }
 
-export type PagingResult<T> = {
+export type PagingResult<T extends unknown | unknown[]> = {
   pageParam: number
   data: T[]
 }

@@ -93,6 +93,7 @@ export const MeLaunchpadGrid = () => {
               target='_blank'
               rel='noreferrer'
               style={style}
+              title={data.alt}
             >
               <MediaCard
                 src={data.src!}
@@ -100,12 +101,12 @@ export const MeLaunchpadGrid = () => {
                 width={COLLECTION_THUMB_SIZE}
                 height={COLLECTION_THUMB_SIZE}
               ></MediaCard>
+              <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+                {data.alt}
+              </div>
               <div className='flex overflow-hidden justify-between text-xs text-ellipsis whitespace-nowrap'>
                 <b>{data.date?.substring(0, 10)}</b>
                 <b>{data.featured && `⭐ `}</b>
-              </div>
-              <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-                {data.alt}
               </div>
             </a>
           )}

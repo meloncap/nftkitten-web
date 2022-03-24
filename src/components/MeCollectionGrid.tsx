@@ -1,7 +1,12 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { useCallback, useMemo } from 'react'
 import { useInfiniteQuery } from 'react-query'
-import { MECollection, PagingResult, RenderingRows } from '../global'
+import {
+  MECollection,
+  MECollectionStats,
+  PagingResult,
+  RenderingRows,
+} from '../global'
 import { LoadingScreen } from './LoadingScreen'
 import { MediaCard } from './MediaCard'
 import { fetchMeCollection } from '../services/fetchMeCollection'
@@ -12,10 +17,14 @@ import Image from 'next/image'
 
 export const MeCollectionGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
-    useInfiniteQuery<PagingResult<MECollection>>(
+    useInfiniteQuery<
+      PagingResult<{ data: MECollection; stats: MECollectionStats }>
+    >(
       'MeCollection',
       fetchMeCollection,
-      fetchOption<PagingResult<MECollection>>()
+      fetchOption<
+        PagingResult<{ data: MECollection; stats: MECollectionStats }>
+      >()
     )
   // const [scrollY, scrollHeight, viewportHeight] = useScrollPosition()
 
@@ -39,24 +48,27 @@ export const MeCollectionGrid = () => {
             sol: string
             count: number
           }>,
-          results: PagingResult<MECollection>
+          results: PagingResult<{
+            data: MECollection
+            stats: MECollectionStats
+          }>
         ) => {
-          for (const row of results.data) {
-            if (!row.image) continue
-            if (row.symbol in r) {
-              r.ids[row.symbol]++
+          for (const { data, stats } of results.data) {
+            if (!data.image) continue
+            if (data.symbol in r) {
+              r.ids[data.symbol]++
             } else {
-              r.ids[row.symbol] = 1
+              r.ids[data.symbol] = 1
               r.rows.push({
-                id: row.symbol,
-                src: row.image,
-                alt: row.name ?? undefined,
-                sol: !row.stats?.floorPrice
+                id: data.symbol,
+                src: data.image,
+                alt: data.name ?? undefined,
+                sol: !stats?.floorPrice
                   ? ''
                   : new Intl.NumberFormat('en-US', {
                       maximumSignificantDigits: 2,
-                    }).format(row.stats.floorPrice / 100000000),
-                count: row.stats?.listedCount ?? 0,
+                    }).format(stats.floorPrice / 100000000),
+                count: stats?.listedCount ?? 0,
               })
             }
           }
@@ -97,6 +109,7 @@ export const MeCollectionGrid = () => {
               target='_blank'
               rel='noreferrer'
               style={style}
+              title={data.alt}
             >
               <MediaCard
                 src={data.src}
@@ -104,6 +117,9 @@ export const MeCollectionGrid = () => {
                 width={COLLECTION_THUMB_SIZE}
                 height={COLLECTION_THUMB_SIZE}
               ></MediaCard>
+              <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+                {data.alt}
+              </div>
               {!!data.sol && (
                 <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
                   <Image
@@ -113,11 +129,6 @@ export const MeCollectionGrid = () => {
                     height={12}
                   />{' '}
                   {data.sol}
-                </div>
-              )}
-              {!!data.count && (
-                <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-                  {data.count} listed
                 </div>
               )}
             </a>

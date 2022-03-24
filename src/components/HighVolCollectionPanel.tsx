@@ -18,6 +18,7 @@ export const HighVolCollectionPanel: FC = () => {
     () =>
       data?.data
         .filter((d) => d?.data?.avatar)
+        .sort((a, b) => (a.floorPrice ?? 0) < (b.floorPrice ?? 0) ? 1 : (a.floorPrice ?? 0) > (b.floorPrice ?? 0) ? -1 : 0)
         .map((d) => ({
           id: d.data.collectionId,
           src: d.data.avatar,
@@ -37,13 +38,14 @@ export const HighVolCollectionPanel: FC = () => {
           500 - Something went wrong
         </h1>
       ) : (
-        <AutoSizeGrid width={100} height={130} itemData={itemData}>
+        <AutoSizeGrid width={100} height={145} itemData={itemData}>
           {({ data, style }) => (
             <a
               href={`https://solscan.io/collection/` + data.id}
               target='_blank'
               rel='noreferrer'
               style={style}
+              title={data.alt}
             >
               <MediaCard
                 key={data.id}
@@ -52,6 +54,9 @@ export const HighVolCollectionPanel: FC = () => {
                 width={100}
                 height={100}
               />
+              <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+                {data.alt}
+              </div>
               <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
                 <Image
                   alt={data.alt}

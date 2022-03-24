@@ -41,7 +41,8 @@ export const SolanaStatsBar = () => {
               <span className='hidden md:inline'>
                 VOL $
                 {new Intl.NumberFormat('en-US', {
-                  maximumSignificantDigits: 3,
+                  notation: "compact",
+                  maximumFractionDigits: 1,
                 }).format(dataSol?.volumeUsdt ?? 0)}
               </span>
             </>
@@ -64,7 +65,8 @@ export const SolanaStatsBar = () => {
               <span className='hidden md:inline'>
                 VOL $
                 {new Intl.NumberFormat('en-US', {
-                  maximumSignificantDigits: 3,
+                  notation: "compact",
+                  maximumFractionDigits: 1,
                 }).format(dataEth?.volumeUsdt ?? 0)}
               </span>
             </>
