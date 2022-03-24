@@ -27,7 +27,7 @@ const Home: NextPage = () => {
     [tab]
   )
   return (
-    <Layout
+  <Layout
       header={
         <h1 className='m-4 text-3xl dark:text-white md:w-auto'>
           {tabs

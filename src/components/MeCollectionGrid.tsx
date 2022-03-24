@@ -54,7 +54,7 @@ export const MeCollectionGrid = () => {
           }>
         ) => {
           for (const { data, stats } of results.data) {
-            if (!data.image) continue
+            if (!data?.image) continue
             if (data.symbol in r) {
               r.ids[data.symbol]++
             } else {

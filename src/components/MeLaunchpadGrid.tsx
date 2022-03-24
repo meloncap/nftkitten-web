@@ -11,7 +11,7 @@ import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../constants'
 export const MeLaunchpadGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
     useInfiniteQuery<PagingResult<MELaunchpad>>(
-      'MeCollection',
+      'MeLaunchpad',
       fetchMeLaunchpad,
       fetchOption<PagingResult<MELaunchpad>>()
     )
