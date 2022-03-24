@@ -8,7 +8,7 @@ import { MediaCard } from './MediaCard'
 import { AutoSizeGrid } from './AutoSizeGrid'
 import Image from 'next/image'
 
-export function RecentTradePanel() {
+export function RecentTradeGrid() {
   const { isLoading, isError, data } = useQuery<PagingResult<SolscanToken>>(
     'SolscanTokenByTradeTime',
     fetchSolByTradeTime,

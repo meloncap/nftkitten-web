@@ -1,8 +1,8 @@
 import type { NextPage } from 'next'
-import { RecentTradePanel } from '../../components/RecentTradePanel'
+import { RecentTradeGrid } from '../../components/RecentTradeGrid'
 import { useMemo } from 'react'
 import { TabPanel } from '../../components/TabPanel'
-import { HighVolCollectionPanel } from '../../components/HighVolCollectionPanel'
+import { CollectionGrid } from '../../components/CollectionGrid'
 import { useRouter } from 'next/router'
 import { Layout } from '../../components/Layout'
 
@@ -14,14 +14,14 @@ const Home: NextPage = () => {
       {
         url: '/',
         isActive: /^home$/.test(`${tab}`),
-        title: () => <>Popular NFT</>,
-        content: () => <HighVolCollectionPanel />,
+        title: () => <>Collection</>,
+        content: () => <CollectionGrid />,
       },
       {
         url: '/sol/recenttrade',
         isActive: /^recenttrade$/.test(`${tab}`),
         title: () => <>Recent Trades</>,
-        content: () => <RecentTradePanel />,
+        content: () => <RecentTradeGrid />,
       },
     ],
     [tab]
