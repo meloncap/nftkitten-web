@@ -57,7 +57,7 @@ export const CollectionGrid: FC = () => {
             },
             'focus:z-10 py-2 px-4 text-sm font-medium text-blue-700 focus:text-blue-700 dark:text-white dark:focus:text-white bg-white dark:bg-gray-700 rounded-l-lg border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-700 dark:focus:ring-blue-500'
           )}
-          onClick={() => setFilterType('30day')}
+          onClick={() => filterType !== '30day' && setFilterType('30day')}
         >
           30 days volume
         </a>
@@ -71,7 +71,7 @@ export const CollectionGrid: FC = () => {
             },
             'focus:z-10 py-2 px-4 text-sm font-medium text-gray-900 focus:text-blue-700 dark:text-white dark:focus:text-white bg-white dark:bg-gray-700 dark:border-y border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-700 dark:focus:ring-blue-500'
           )}
-          onClick={() => setFilterType('7day')}
+          onClick={() => filterType !== '7day' && setFilterType('7day')}
         >
           7 days volume
         </a>
@@ -85,7 +85,7 @@ export const CollectionGrid: FC = () => {
             },
             'focus:z-10 py-2 px-4 text-sm font-medium text-gray-900 focus:text-blue-700 dark:text-white dark:dark:focus:text-white bg-white dark:bg-gray-700 rounded-r-md border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-700 dark:focus:ring-blue-500'
           )}
-          onClick={() => setFilterType('')}
+          onClick={() => filterType !== '' && setFilterType('')}
         >
           24 hours volume
         </a>
