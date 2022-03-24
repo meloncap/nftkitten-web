@@ -73,6 +73,12 @@ export type MECollection = {
   discord: string | null
   website: string | null
   categories: [string]
+  stats?: {
+    symbol: string
+    volumeAll: number
+    floorPrice: number
+    listedCount: number
+  }
 }
 
 export type MECollectionActivity = {

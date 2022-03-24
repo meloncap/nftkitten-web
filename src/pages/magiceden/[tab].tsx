@@ -34,7 +34,6 @@ const MagicEden: NextPage = () => {
             href='https://www.magiceden.io'
             target='_blank'
             rel='noreferrer'
-            className='underline'
           >
             MagicEden.io
           </a>{' '}

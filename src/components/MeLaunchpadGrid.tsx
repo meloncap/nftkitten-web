@@ -7,8 +7,6 @@ import { fetchOption } from '../services/fetchOption'
 import { AutoSizeGrid } from './AutoSizeGrid'
 import { MediaCard } from './MediaCard'
 import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../constants'
-import Image from 'next/image'
-import { features } from 'process'
 
 export const MeLaunchpadGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
@@ -30,36 +28,38 @@ export const MeLaunchpadGrid = () => {
   // }, [hasNextPage, shouldLoadNext, fetchNextPage])
   const itemData = useMemo(
     () =>
-      data?.pages.reduce(
-        (
-          r: RenderingRows<{
-            id: string
-            src: string
-            alt: string | undefined
-            date: string | null
-            featured: boolean
-          }>,
-          results: PagingResult<MELaunchpad>
-        ) => {
-          for (const row of results.data) {
-            if (!row.image) continue
-            if (row.symbol in r) {
-              r.ids[row.symbol]++
-            } else {
-              r.ids[row.symbol] = 1
-              r.rows.push({
-                id: row.symbol,
-                src: row.image,
-                alt: row.name ?? undefined,
-                date: row.launchDatetime,
-                featured: !!row.featured,
-              })
+      data?.pages
+        .reduce(
+          (
+            r: RenderingRows<{
+              id: string
+              src: string
+              alt: string | undefined
+              date: string
+              featured: boolean
+            }>,
+            results: PagingResult<MELaunchpad>
+          ) => {
+            for (const row of results.data) {
+              if (!row.image) continue
+              if (row.symbol in r) {
+                r.ids[row.symbol]++
+              } else {
+                r.ids[row.symbol] = 1
+                r.rows.push({
+                  id: row.symbol,
+                  src: row.image,
+                  alt: row.name ?? undefined,
+                  date: row.launchDatetime ?? ``,
+                  featured: !!row.featured,
+                })
+              }
             }
-          }
-          return r
-        },
-        { ids: {}, rows: [] }
-      ).rows,
+            return r
+          },
+          { ids: {}, rows: [] }
+        )
+        .rows.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0)),
     [data]
   )
   const loadMoreItems = useCallback(
@@ -83,7 +83,7 @@ export const MeLaunchpadGrid = () => {
         <AutoSizeGrid
           pageSize={ME_PAGE_LIMIT}
           width={COLLECTION_THUMB_SIZE}
-          height={COLLECTION_THUMB_SIZE + 30}
+          height={COLLECTION_THUMB_SIZE + 45}
           itemData={itemData}
           loadMoreItems={hasNextPage ? loadMoreItems : undefined}
         >
@@ -92,7 +92,6 @@ export const MeLaunchpadGrid = () => {
               href={`https://magiceden.io/launchpad/` + data.id}
               target='_blank'
               rel='noreferrer'
-              className='underline'
               style={style}
             >
               <MediaCard
@@ -101,9 +100,12 @@ export const MeLaunchpadGrid = () => {
                 width={COLLECTION_THUMB_SIZE}
                 height={COLLECTION_THUMB_SIZE}
               ></MediaCard>
+              <div className='flex overflow-hidden justify-between text-xs text-ellipsis whitespace-nowrap'>
+                <b>{data.date?.substring(0, 10)}</b>
+                <b>{data.featured && `⭐ `}</b>
+              </div>
               <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-                {data.featured && `⭐ `}
-                {data.date}
+                {data.alt}
               </div>
             </a>
           )}

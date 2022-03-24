@@ -36,6 +36,8 @@ export const MeCollectionGrid = () => {
             id: string
             src: string
             alt: string | undefined
+            sol: string
+            count: number
           }>,
           results: PagingResult<MECollection>
         ) => {
@@ -49,6 +51,12 @@ export const MeCollectionGrid = () => {
                 id: row.symbol,
                 src: row.image,
                 alt: row.name ?? undefined,
+                sol: !row.stats?.floorPrice
+                  ? ''
+                  : new Intl.NumberFormat('en-US', {
+                      maximumSignificantDigits: 2,
+                    }).format(row.stats.floorPrice / 100000000),
+                count: row.stats?.listedCount ?? 0,
               })
             }
           }
@@ -88,7 +96,6 @@ export const MeCollectionGrid = () => {
               href={`https://magiceden.io/marketplace/` + data.id}
               target='_blank'
               rel='noreferrer'
-              className='underline'
               style={style}
             >
               <MediaCard
@@ -97,15 +104,22 @@ export const MeCollectionGrid = () => {
                 width={COLLECTION_THUMB_SIZE}
                 height={COLLECTION_THUMB_SIZE}
               ></MediaCard>
-              <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-                <Image
-                  alt={data.alt}
-                  src='/img/sol.svg'
-                  width={12}
-                  height={12}
-                />{' '}
-                {data.alt}
-              </div>
+              {!!data.sol && (
+                <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+                  <Image
+                    alt={data.alt}
+                    src='/img/sol.svg'
+                    width={12}
+                    height={12}
+                  />{' '}
+                  {data.sol}
+                </div>
+              )}
+              {!!data.count && (
+                <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+                  {data.count} listed
+                </div>
+              )}
             </a>
           )}
         </AutoSizeGrid>
