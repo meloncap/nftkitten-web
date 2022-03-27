@@ -13,7 +13,6 @@ import { AutoSizeGrid } from './AutoSizeGrid'
 import Image from 'next/image'
 import classNames from 'classnames'
 import { RangeSlider } from './RangeSilder'
-import { LoadingCards } from './LoadingCards'
 import { COLLECTION_THUMB_SIZE } from '../constants'
 
 export const CollectionGrid: FC = () => {
@@ -49,13 +48,7 @@ export const CollectionGrid: FC = () => {
   }, [data, xDomain, silderValues])
   const gridCallback = useCallback(
     ({ data, style }) =>
-      !data ? (
-        <LoadingCards
-          width={COLLECTION_THUMB_SIZE}
-          height={COLLECTION_THUMB_SIZE}
-          style={style}
-        />
-      ) : (
+      !!data && (
         <a
           href={`https://solscan.io/collection/` + data.id}
           target='_blank'

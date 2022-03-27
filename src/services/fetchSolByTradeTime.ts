@@ -24,13 +24,7 @@ export async function fetchSolByTradeTime({
   }
   const data = result.data
     .filter((d) => d?.info?.meta?.image)
-    .sort((a, b) =>
-      a.trade.tradeTime < b.trade.tradeTime
-        ? 1
-        : a.trade.tradeTime > b.trade.tradeTime
-        ? -1
-        : 0
-    )
+    .sort((a, b) => b.trade.tradeTime - a.trade.tradeTime)
     .map((d) => ({
       id: d.info.mint,
       src: d.info.meta.image,

@@ -42,7 +42,7 @@ export const MeLaunchpadGrid = () => {
   )
   const gridCallback = useCallback(
     ({ data, style }) =>
-      !data ? (
+      !data && !hasNextPage ? null : !data ? (
         <LoadingCards
           width={COLLECTION_THUMB_SIZE}
           height={COLLECTION_THUMB_SIZE}

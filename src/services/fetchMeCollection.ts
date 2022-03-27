@@ -43,15 +43,17 @@ query MyQuery {
   if (!result?.data?.me_collection) {
     throw JSON.stringify(result)
   }
-  const data = result.data.me_collection.map(({ data, stats }) => ({
-    id: data.symbol,
-    src: data.image ?? '',
-    alt: data.name ?? undefined,
-    sol: stats?.floorPrice ?? 0,
-    solFormatted: formatSol(stats?.floorPrice),
-    count: stats?.listedCount ?? 0,
-    volumeAll: stats?.volumeAll,
-  }))
+  const data = result.data.me_collection
+    .sort((a, b) => (b.stats?.volumeAll ?? 0) - (a.stats?.volumeAll ?? 0))
+    .map(({ data, stats }) => ({
+      id: data.symbol,
+      src: data.image ?? '',
+      alt: data.name ?? undefined,
+      sol: stats?.floorPrice ?? 0,
+      solFormatted: formatSol(stats?.floorPrice),
+      count: stats?.listedCount ?? 0,
+      volumeAll: stats?.volumeAll,
+    }))
   return {
     pageParam,
     data,

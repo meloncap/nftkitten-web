@@ -48,11 +48,7 @@ export const MediaCard = ({
   return (
     <div
       className='flex'
-      style={{
-        width,
-        height,
-        ...style,
-      }}
+      style={style}
       // ref={ref}
     >
       <Image
@@ -66,7 +62,7 @@ export const MediaCard = ({
         style={{
           backgroundImage: loaded === 0 ? 'url(/img/loading.webp)' : 'none',
           backgroundRepeat: 'no-repeat',
-          backgroundSize: '100px 100px',
+          backgroundSize: `${width}px ${height}px`,
         }}
         onLoadingComplete={onLoadingComplete}
         onError={onError}

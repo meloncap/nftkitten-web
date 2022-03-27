@@ -12,7 +12,6 @@ import { MediaType } from './MediaType'
 import { AutoSizeGrid } from './AutoSizeGrid'
 import Image from 'next/image'
 import { RangeSlider } from './RangeSilder'
-import { LoadingCards } from './LoadingCards'
 import { COLLECTION_THUMB_SIZE } from '../constants'
 
 export function RecentTradeGrid() {
@@ -44,13 +43,7 @@ export function RecentTradeGrid() {
   }, [data, xDomain, silderValues])
   const gridCallback = useCallback(
     ({ data, style }) =>
-      !data ? (
-        <LoadingCards
-          width={COLLECTION_THUMB_SIZE}
-          height={COLLECTION_THUMB_SIZE}
-          style={style}
-        />
-      ) : (
+      !!data && (
         <a
           href={`https://solscan.io/token/` + data.id}
           target='_blank'

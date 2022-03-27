@@ -1,5 +1,4 @@
 import { CSSProperties, useMemo } from 'react'
-import Image from 'next/image'
 
 export function LoadingCards({
   width,
@@ -22,14 +21,16 @@ export function LoadingCards({
   return (
     <>
       {nums.map((_, i) => (
-        <div className='flex' key={i} style={style}>
-          <Image
-            src='/img/loading.webp'
-            alt='Loading...'
-            width={width}
-            height={height}
-          />
-        </div>
+        <div
+          className='flex'
+          key={i}
+          style={{
+            ...style,
+            backgroundImage: 'url(/img/loading.webp)',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: `${width}px ${height}px`,
+          }}
+        ></div>
       ))}
     </>
   )

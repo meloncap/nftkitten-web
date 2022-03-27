@@ -25,7 +25,7 @@ export function fetchSolCollectionByVol(type: string) {
     }
     const data = result.data
       .filter((d) => d?.data?.avatar)
-      .sort((a, b) => (a.volume < b.volume ? 1 : a.volume > b.volume ? -1 : 0))
+      .sort((a, b) => b.volume - a.volume)
       .map((d) => ({
         id: d.data.collectionId,
         src: d.data.avatar,
