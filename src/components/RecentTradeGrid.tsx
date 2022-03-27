@@ -12,6 +12,8 @@ import { MediaType } from './MediaType'
 import { AutoSizeGrid } from './AutoSizeGrid'
 import Image from 'next/image'
 import { RangeSlider } from './RangeSilder'
+import { LoadingCards } from './LoadingCards'
+import { COLLECTION_THUMB_SIZE } from '../constants'
 
 export function RecentTradeGrid() {
   const { isLoading, isError, data } = useQuery<
@@ -41,30 +43,33 @@ export function RecentTradeGrid() {
     return data?.data.filter((d) => d.sol >= min && d.sol <= max) ?? []
   }, [data, xDomain, silderValues])
   const gridCallback = useCallback(
-    ({ data, style }) => (
-      <a
-        href={`https://solscan.io/token/` + data.id}
-        target='_blank'
-        rel='noreferrer'
-        style={style}
-        title={data.alt}
-      >
-        <MediaCard
-          key={data.id}
-          src={data.src}
-          alt={data.alt}
-          width={100}
-          height={100}
-        />
-        <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-          <MediaType src={data.src} /> {data.alt}
-        </div>
-        <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-          <Image alt={data.alt} src='/img/sol.svg' width={12} height={12} />{' '}
-          {data.solFormatted}
-        </div>
-      </a>
-    ),
+    ({ data, style }) =>
+      !data ? (
+        <LoadingCards width={COLLECTION_THUMB_SIZE} height={COLLECTION_THUMB_SIZE} />
+      ) : (
+        <a
+          href={`https://solscan.io/token/` + data.id}
+          target='_blank'
+          rel='noreferrer'
+          style={style}
+          title={data.alt}
+        >
+          <MediaCard
+            key={data.id}
+            src={data.src}
+            alt={data.alt}
+            width={COLLECTION_THUMB_SIZE}
+            height={COLLECTION_THUMB_SIZE}
+          />
+          <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+            <MediaType src={data.src} /> {data.alt}
+          </div>
+          <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+            <Image alt={data.alt} src='/img/sol.svg' width={12} height={12} />{' '}
+            {data.solFormatted}
+          </div>
+        </a>
+      ),
     []
   )
   return (

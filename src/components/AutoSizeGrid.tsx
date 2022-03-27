@@ -213,9 +213,6 @@ function GridWithLoader<T>({
       const numOfCol = getNumOfCol(containerWidth, width)
       const index = rowIndex * numOfCol + columnIndex
       const data = rows[index]
-      if (!data) {
-        return null
-      }
       const marginLeft =
         ((1 + columnIndex) * (containerWidth - numOfCol * width)) /
         (1 + numOfCol)

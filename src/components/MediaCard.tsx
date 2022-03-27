@@ -56,6 +56,7 @@ export const MediaCard = ({
       // ref={ref}
     >
       <Image
+        className='hover:z-10 hover:shadow-inner hover:scale-110'
         layout='raw'
         src={loaded < 0 ? src : url}
         alt={alt ?? ``}

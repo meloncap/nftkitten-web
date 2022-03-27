@@ -10,6 +10,7 @@ import { fetchOption } from '../services/fetchOption'
 import { AutoSizeGrid } from './AutoSizeGrid'
 import { MediaCard } from './MediaCard'
 import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../constants'
+import { LoadingCards } from './LoadingCards'
 
 export const MeLaunchpadGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
@@ -40,29 +41,32 @@ export const MeLaunchpadGrid = () => {
     [hasNextPage, fetchNextPage]
   )
   const gridCallback = useCallback(
-    ({ data, style }) => (
-      <a
-        href={`https://magiceden.io/launchpad/` + data.id}
-        target='_blank'
-        rel='noreferrer'
-        style={style}
-        title={data.alt}
-      >
-        <MediaCard
-          src={data.src!}
-          alt={data.alt}
-          width={COLLECTION_THUMB_SIZE}
-          height={COLLECTION_THUMB_SIZE}
-        ></MediaCard>
-        <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-          {data.alt}
-        </div>
-        <div className='flex overflow-hidden justify-between text-xs text-ellipsis whitespace-nowrap'>
-          <b>{data.date?.substring(0, 10)}</b>
-          <b>{data.featured && `⭐ `}</b>
-        </div>
-      </a>
-    ),
+    ({ data, style }) =>
+      !data ? (
+        <LoadingCards width={COLLECTION_THUMB_SIZE} height={COLLECTION_THUMB_SIZE} />
+      ) : (
+        <a
+          href={`https://magiceden.io/launchpad/` + data.id}
+          target='_blank'
+          rel='noreferrer'
+          style={style}
+          title={data.alt}
+        >
+          <MediaCard
+            src={data.src!}
+            alt={data.alt}
+            width={COLLECTION_THUMB_SIZE}
+            height={COLLECTION_THUMB_SIZE}
+          ></MediaCard>
+          <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+            {data.alt}
+          </div>
+          <div className='flex overflow-hidden justify-between text-xs text-ellipsis whitespace-nowrap'>
+            <b>{data.date?.substring(0, 10)}</b>
+            <b>{data.featured && `⭐ `}</b>
+          </div>
+        </a>
+      ),
     []
   )
   return (

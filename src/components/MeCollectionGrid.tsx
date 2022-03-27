@@ -13,6 +13,7 @@ import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../constants'
 import { AutoSizeGrid } from './AutoSizeGrid'
 import Image from 'next/image'
 import { RangeSlider } from './RangeSilder'
+import { LoadingCards } from './LoadingCards'
 
 export const MeCollectionGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
@@ -60,31 +61,34 @@ export const MeCollectionGrid = () => {
     [hasNextPage, fetchNextPage]
   )
   const gridCallback = useCallback(
-    ({ data, style }) => (
-      <a
-        href={`https://magiceden.io/marketplace/` + data.id}
-        target='_blank'
-        rel='noreferrer'
-        style={style}
-        title={data.alt}
-      >
-        <MediaCard
-          src={data.src}
-          alt={data.alt}
-          width={COLLECTION_THUMB_SIZE}
-          height={COLLECTION_THUMB_SIZE}
-        ></MediaCard>
-        <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-          {data.alt}
-        </div>
-        {!!data.sol && (
+    ({ data, style }) =>
+      !data ? (
+        <LoadingCards width={COLLECTION_THUMB_SIZE} height={COLLECTION_THUMB_SIZE} />
+      ) : (
+        <a
+          href={`https://magiceden.io/marketplace/` + data.id}
+          target='_blank'
+          rel='noreferrer'
+          style={style}
+          title={data.alt}
+        >
+          <MediaCard
+            src={data.src}
+            alt={data.alt}
+            width={COLLECTION_THUMB_SIZE}
+            height={COLLECTION_THUMB_SIZE}
+          ></MediaCard>
           <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-            <Image alt={data.alt} src='/img/sol.svg' width={12} height={12} />{' '}
-            {data.solFormatted}
+            {data.alt}
           </div>
-        )}
-      </a>
-    ),
+          {!!data.sol && (
+            <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+              <Image alt={data.alt} src='/img/sol.svg' width={12} height={12} />{' '}
+              {data.solFormatted}
+            </div>
+          )}
+        </a>
+      ),
     []
   )
   return (

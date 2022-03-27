@@ -41,6 +41,7 @@ export function SearchBox() {
   useEffect(() => {
     if (open) {
       if (inputRef.current) {
+        inputRef.current.select()
         inputRef.current.focus()
       }
       document.documentElement.classList.add('overflow-hidden')
@@ -104,9 +105,7 @@ export function SearchBox() {
                 onChange={handleSearch}
                 ref={inputRef}
               />
-              {((!!filter && !itemData) || isLoading || isFetching) && (
-                <>loading...</>
-              )}
+              {(isLoading || isFetching) && <>loading...</>}
             </div>
             <div className='flex items-center p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600'>
               {isError ? (
