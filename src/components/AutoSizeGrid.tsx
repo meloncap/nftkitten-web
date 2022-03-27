@@ -4,6 +4,7 @@ import {
   FixedSizeGrid as Grid,
   GridChildComponentProps,
   GridOnItemsRenderedProps,
+  GridProps,
   ListOnItemsRenderedProps,
 } from 'react-window'
 import InfinityLoader from 'react-window-infinite-loader'
@@ -270,7 +271,7 @@ export function AutoSizeGrid<T>({
   loadMoreItems,
   useIsScrolling,
   children,
-}: GridWithSizeProps<T>) {
+}: AutoSizeGridProps<T>) {
   const { width: containerWidth, height: containerHeight } = useWindowSize()
   const isItemLoaded = useCallback(
     (index: number) => {

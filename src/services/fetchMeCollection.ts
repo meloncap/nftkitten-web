@@ -44,7 +44,7 @@ query MyQuery {
     throw JSON.stringify(result)
   }
   const data = result.data.me_collection.map(({ data, stats }) => ({
-    id: data.name,
+    id: data.symbol,
     src: data.image ?? '',
     alt: data.name ?? undefined,
     sol: stats?.floorPrice ?? 0,
