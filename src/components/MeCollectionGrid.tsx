@@ -1,83 +1,55 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useInfiniteQuery } from 'react-query'
-import {
-  MECollection,
-  MECollectionStats,
-  PagingResult,
-  RenderingRows,
-} from '../global'
+import { PagingResult } from '../global'
 import { LoadingScreen } from './LoadingScreen'
 import { MediaCard } from './MediaCard'
-import { fetchMeCollection } from '../services/fetchMeCollection'
+import {
+  fetchMeCollection,
+  fetchMeCollectionResult,
+} from '../services/fetchMeCollection'
 import { fetchOption } from '../services/fetchOption'
 import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../constants'
 import { AutoSizeGrid } from './AutoSizeGrid'
 import Image from 'next/image'
+import { RangeSlider } from './RangeSilder'
 
 export const MeCollectionGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
-    useInfiniteQuery<
-      PagingResult<{ data: MECollection; stats: MECollectionStats }>
-    >(
+    useInfiniteQuery<PagingResult<fetchMeCollectionResult>>(
       'MeCollection',
       fetchMeCollection,
-      fetchOption<
-        PagingResult<{ data: MECollection; stats: MECollectionStats }>
-      >()
+      fetchOption<PagingResult<fetchMeCollectionResult>>()
     )
-  // const [scrollY, scrollHeight, viewportHeight] = useScrollPosition()
-
-  // const shouldLoadNext = useMemo(
-  //   () => scrollY + viewportHeight * 2 >= scrollHeight,
-  //   [scrollY, viewportHeight, scrollHeight]
-  // )
-  // useEffect(() => {
-  //   if (hasNextPage && shouldLoadNext) {
-  //     fetchNextPage()
-  //   }
-  // }, [hasNextPage, shouldLoadNext, fetchNextPage])
-  const itemData = useMemo(
+  const [silderValues, setSilderValues] = useState<ReadonlyArray<number>>([
+    0, 100,
+  ])
+  const sliderData = useMemo(
     () =>
-      data?.pages.reduce(
-        (
-          r: RenderingRows<{
-            id: string
-            src: string
-            alt: string | undefined
-            sol: string
-            count: number
-          }>,
-          results: PagingResult<{
-            data: MECollection
-            stats: MECollectionStats
-          }>
-        ) => {
-          for (const { data, stats } of results.data) {
-            if (!data?.image) continue
-            if (data.symbol in r) {
-              r.ids[data.symbol]++
-            } else {
-              r.ids[data.symbol] = 1
-              r.rows.push({
-                id: data.symbol,
-                src: data.image,
-                alt: data.name ?? undefined,
-                sol: !stats?.floorPrice
-                  ? ''
-                  : new Intl.NumberFormat('en-US', {
-                      maximumSignificantDigits: 2,
-                    }).format(stats.floorPrice / 100000000),
-                count: stats?.listedCount ?? 0,
-              })
-            }
-          }
-          return r
-        },
-        { ids: {}, rows: [] }
-      ).rows,
+      data?.pages
+        ?.map((d) => d.data)
+        .flat()
+        .map((d) => d.sol ?? 0) ?? [],
     [data]
   )
+  const xDomain = useMemo(
+    () =>
+      sliderData.reduce(
+        (r, d) => [Math.min(r[0], d), Math.max(r[1], d)],
+        [Infinity, -Infinity]
+      ),
+    [sliderData]
+  )
+  const itemData = useMemo(() => {
+    const min = xDomain[0] + ((xDomain[1] - xDomain[0]) * silderValues[0]) / 100
+    const max = xDomain[0] + ((xDomain[1] - xDomain[0]) * silderValues[1]) / 100
+    return (
+      data?.pages
+        ?.map((d) => d.data)
+        .flat()
+        .filter((d) => d.sol >= min && d.sol <= max) ?? []
+    )
+  }, [data, xDomain, silderValues])
   const loadMoreItems = useCallback(
     // eslint-disable-next-line no-unused-vars
     (startIndex: number, stopIndex: number) => {
@@ -87,8 +59,45 @@ export const MeCollectionGrid = () => {
     },
     [hasNextPage, fetchNextPage]
   )
+  const gridCallback = useCallback(
+    ({ data, style }) => (
+      <a
+        href={`https://magiceden.io/marketplace/` + data.id}
+        target='_blank'
+        rel='noreferrer'
+        style={style}
+        title={data.alt}
+      >
+        <MediaCard
+          src={data.src}
+          alt={data.alt}
+          width={COLLECTION_THUMB_SIZE}
+          height={COLLECTION_THUMB_SIZE}
+        ></MediaCard>
+        <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+          {data.alt}
+        </div>
+        {!!data.sol && (
+          <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+            <Image alt={data.alt} src='/img/sol.svg' width={12} height={12} />{' '}
+            {data.solFormatted}
+          </div>
+        )}
+      </a>
+    ),
+    []
+  )
   return (
     <div className='grow min-h-screen'>
+      <RangeSlider
+        xDomain={xDomain}
+        values={silderValues}
+        onValuesChange={useCallback(
+          (values) => setSilderValues(values),
+          [setSilderValues]
+        )}
+        sliderData={sliderData}
+      />
       {isLoading ? (
         <LoadingScreen />
       ) : isError ? (
@@ -103,36 +112,7 @@ export const MeCollectionGrid = () => {
           itemData={itemData}
           loadMoreItems={hasNextPage ? loadMoreItems : undefined}
         >
-          {({ data, style }) => (
-            <a
-              href={`https://magiceden.io/marketplace/` + data.id}
-              target='_blank'
-              rel='noreferrer'
-              style={style}
-              title={data.alt}
-            >
-              <MediaCard
-                src={data.src}
-                alt={data.alt}
-                width={COLLECTION_THUMB_SIZE}
-                height={COLLECTION_THUMB_SIZE}
-              ></MediaCard>
-              <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-                {data.alt}
-              </div>
-              {!!data.sol && (
-                <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-                  <Image
-                    alt={data.alt}
-                    src='/img/sol.svg'
-                    width={12}
-                    height={12}
-                  />{' '}
-                  {data.sol}
-                </div>
-              )}
-            </a>
-          )}
+          {gridCallback}
         </AutoSizeGrid>
       )}
     </div>

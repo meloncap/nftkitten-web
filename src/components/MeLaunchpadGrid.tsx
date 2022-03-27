@@ -1,8 +1,11 @@
 import { useCallback, useMemo } from 'react'
 import { useInfiniteQuery } from 'react-query'
-import { MELaunchpad, PagingResult, RenderingRows } from '../global'
+import { PagingResult } from '../global'
 import { LoadingScreen } from './LoadingScreen'
-import { fetchMeLaunchpad } from '../services/fetchMeLaunchpad'
+import {
+  fetchMeLaunchpad,
+  fetchMeLaunchpadResult,
+} from '../services/fetchMeLaunchpad'
 import { fetchOption } from '../services/fetchOption'
 import { AutoSizeGrid } from './AutoSizeGrid'
 import { MediaCard } from './MediaCard'
@@ -10,10 +13,10 @@ import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../constants'
 
 export const MeLaunchpadGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
-    useInfiniteQuery<PagingResult<MELaunchpad>>(
+    useInfiniteQuery<PagingResult<fetchMeLaunchpadResult>>(
       'MeLaunchpad',
       fetchMeLaunchpad,
-      fetchOption<PagingResult<MELaunchpad>>()
+      fetchOption<PagingResult<fetchMeLaunchpadResult>>()
     )
   // const [scrollY, scrollHeight, viewportHeight] = useScrollPosition()
 
@@ -26,42 +29,7 @@ export const MeLaunchpadGrid = () => {
   //     fetchNextPage()
   //   }
   // }, [hasNextPage, shouldLoadNext, fetchNextPage])
-  const itemData = useMemo(
-    () =>
-      data?.pages
-        .reduce(
-          (
-            r: RenderingRows<{
-              id: string
-              src: string
-              alt: string | undefined
-              date: string
-              featured: boolean
-            }>,
-            results: PagingResult<MELaunchpad>
-          ) => {
-            for (const row of results.data) {
-              if (!row.image) continue
-              if (row.symbol in r) {
-                r.ids[row.symbol]++
-              } else {
-                r.ids[row.symbol] = 1
-                r.rows.push({
-                  id: row.symbol,
-                  src: row.image,
-                  alt: row.name ?? undefined,
-                  date: row.launchDatetime ?? ``,
-                  featured: !!row.featured,
-                })
-              }
-            }
-            return r
-          },
-          { ids: {}, rows: [] }
-        )
-        .rows.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0)),
-    [data]
-  )
+  const itemData = useMemo(() => data?.pages?.map((d) => d.data).flat(), [data])
   const loadMoreItems = useCallback(
     // eslint-disable-next-line no-unused-vars
     (startIndex: number, stopIndex: number) => {
@@ -70,6 +38,32 @@ export const MeLaunchpadGrid = () => {
       }
     },
     [hasNextPage, fetchNextPage]
+  )
+  const gridCallback = useCallback(
+    ({ data, style }) => (
+      <a
+        href={`https://magiceden.io/launchpad/` + data.id}
+        target='_blank'
+        rel='noreferrer'
+        style={style}
+        title={data.alt}
+      >
+        <MediaCard
+          src={data.src!}
+          alt={data.alt}
+          width={COLLECTION_THUMB_SIZE}
+          height={COLLECTION_THUMB_SIZE}
+        ></MediaCard>
+        <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+          {data.alt}
+        </div>
+        <div className='flex overflow-hidden justify-between text-xs text-ellipsis whitespace-nowrap'>
+          <b>{data.date?.substring(0, 10)}</b>
+          <b>{data.featured && `⭐ `}</b>
+        </div>
+      </a>
+    ),
+    []
   )
   return (
     <div className='grow min-h-screen'>
@@ -87,29 +81,7 @@ export const MeLaunchpadGrid = () => {
           itemData={itemData}
           loadMoreItems={hasNextPage ? loadMoreItems : undefined}
         >
-          {({ data, style }) => (
-            <a
-              href={`https://magiceden.io/launchpad/` + data.id}
-              target='_blank'
-              rel='noreferrer'
-              style={style}
-              title={data.alt}
-            >
-              <MediaCard
-                src={data.src!}
-                alt={data.alt}
-                width={COLLECTION_THUMB_SIZE}
-                height={COLLECTION_THUMB_SIZE}
-              ></MediaCard>
-              <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-                {data.alt}
-              </div>
-              <div className='flex overflow-hidden justify-between text-xs text-ellipsis whitespace-nowrap'>
-                <b>{data.date?.substring(0, 10)}</b>
-                <b>{data.featured && `⭐ `}</b>
-              </div>
-            </a>
-          )}
+          {gridCallback}
         </AutoSizeGrid>
       )}
     </div>

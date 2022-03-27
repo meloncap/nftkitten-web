@@ -29,12 +29,8 @@ const MagicEden: NextPage = () => {
   return (
     <Layout
       header={
-        <h1 className='m-4 text-3xl dark:text-white md:w-auto'>
-          <a
-            href='https://www.magiceden.io'
-            target='_blank'
-            rel='noreferrer'
-          >
+        <h1 className='m-0 text-3xl text-center dark:text-white sm:m-4 sm:text-left md:w-auto'>
+          <a href='https://www.magiceden.io' target='_blank' rel='noreferrer'>
             MagicEden.io
           </a>{' '}
           {tabs

@@ -1,10 +1,8 @@
-import { CSSProperties, ReactNode, useState } from 'react'
-import { useMyStore } from '../hooks/useMyStore'
+import { CSSProperties, ReactNode, useCallback, useState } from 'react'
+import { useMyStore, MyStoreState } from '../hooks/useMyStore'
 import Image from 'next/image'
-import classNames from 'classnames'
-import styles from '../styles/loading.module.css'
 
-const imageBaseUrlSelector = (x: any): string => x.imageBaseUrl
+const imageBaseUrlSelector = (x: MyStoreState) => x.imageBaseUrl
 
 export const MediaCard = ({
   src,
@@ -21,8 +19,7 @@ export const MediaCard = ({
   style?: CSSProperties
   children?: ReactNode | ReactNode[]
 }) => {
-  const [loaded, setLoaded] = useState(false)
-  const [isError, setIsError] = useState(false)
+  const [loaded, setLoaded] = useState(0)
   const imageBaseUrl = useMyStore(imageBaseUrlSelector)
   // const [ref, inView] = useInView({
   //   rootMargin: '2000px',
@@ -32,19 +29,8 @@ export const MediaCard = ({
   // useEffect(() => {
   //   if (!inView && loaded) setLoaded(false)
   // }, [loaded, inView, setLoaded])
-  const loadingStyle: CSSProperties =
-    // loaded && inView
-    loaded
-      ? {
-          ...style,
-          width: `${width}px`,
-          height: `${height}px`,
-        }
-      : {
-          ...style,
-          width: `${width}px`,
-          height: `${height}px`,
-        }
+  const onLoadingComplete = useCallback(() => setLoaded(1), [])
+  const onError = useCallback(() => setLoaded(-1), [])
   const f = /\.svg($|\?)/i.test(src) ? 'f_auto' : 'f_webp'
   const q = width <= 100 && height <= 100 ? 'q_auto:low' : 'q_auto'
   let url =
@@ -61,35 +47,30 @@ export const MediaCard = ({
     src
   return (
     <div
-      className={classNames('flex', {
-        // [styles['loading-background']]: !(loaded && inView),
-        [styles['loading-background']]: !loaded,
-      })}
-      style={loadingStyle}
+      className='flex'
+      style={{
+        width,
+        height,
+        ...style,
+      }}
       // ref={ref}
     >
-      {/* {!inView ? null : isError ? ( */}
-      {isError ? (
-        <Image
-          src={src!}
-          alt={alt ?? ``}
-          title={alt ?? ``}
-          width={width}
-          height={height}
-          onLoadingComplete={() => setLoaded(false)}
-          unoptimized
-        />
-      ) : (
-        <Image
-          src={url}
-          alt={alt ?? ``}
-          title={alt ?? ``}
-          width={width}
-          height={height}
-          onLoadingComplete={() => setLoaded(true)}
-          onError={() => setIsError(true)}
-        />
-      )}
+      <Image
+        layout='raw'
+        src={loaded < 0 ? src : url}
+        alt={alt ?? ``}
+        title={alt ?? ``}
+        width={width}
+        height={height}
+        style={{
+          backgroundImage: loaded === 0 ? 'url(/img/loading.webp)' : 'none',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '100px 100px',
+        }}
+        onLoadingComplete={onLoadingComplete}
+        onError={onError}
+        unoptimized={loaded < 0}
+      />
       {children}
     </div>
   )

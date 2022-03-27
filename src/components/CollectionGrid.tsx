@@ -1,18 +1,22 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { FC, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import { useQuery } from 'react-query'
-import { PagingResult, SolscanCollection } from '../global'
+import { PagingResult } from '../global'
 import { LoadingScreen } from './LoadingScreen'
 import { MediaCard } from './MediaCard'
-import { fetchSolCollectionByVol } from '../services/fetchSolCollectionByVol'
+import {
+  fetchSolCollectionByVolResult,
+  fetchSolCollectionByVol,
+} from '../services/fetchSolCollectionByVol'
 import { AutoSizeGrid } from './AutoSizeGrid'
 import Image from 'next/image'
 import classNames from 'classnames'
+import { RangeSlider } from './RangeSilder'
 
 export const CollectionGrid: FC = () => {
   const [filterType, setFilterType] = useState('30day')
   const { isLoading, isError, data } = useQuery<
-    PagingResult<SolscanCollection>
+    PagingResult<fetchSolCollectionByVolResult>
   >(
     `SolscanCollectionByVol${filterType}`,
     fetchSolCollectionByVol(filterType),
@@ -20,76 +24,121 @@ export const CollectionGrid: FC = () => {
       refetchInterval: 1000 * 20,
     }
   )
-  const itemData = useMemo(
-    () =>
-      data?.data
-        .filter((d) => d?.data?.avatar)
-        .sort((a, b) =>
-          (a.floorPrice ?? 0) < (b.floorPrice ?? 0)
-            ? 1
-            : (a.floorPrice ?? 0) > (b.floorPrice ?? 0)
-            ? -1
-            : 0
-        )
-        .map((d) => ({
-          id: d.data.collectionId,
-          src: d.data.avatar,
-          alt: d.data.collection,
-          sol: d.floorPrice
-            ? new Intl.NumberFormat('en-US', {
-                maximumSignificantDigits: 2,
-              }).format(d.floorPrice / 100000000)
-            : '',
-        })),
+  const [silderValues, setSilderValues] = useState<ReadonlyArray<number>>([
+    0, 100,
+  ])
+  const sliderData = useMemo(
+    () => data?.data.map((d) => d.sol ?? 0) ?? [],
     [data]
+  )
+  const xDomain = useMemo(
+    () =>
+      sliderData.reduce(
+        (r, d) => [Math.min(r[0], d), Math.max(r[1], d)],
+        [Infinity, -Infinity]
+      ),
+    [sliderData]
+  )
+  const itemData = useMemo(() => {
+    const min = xDomain[0] + ((xDomain[1] - xDomain[0]) * silderValues[0]) / 100
+    const max = xDomain[0] + ((xDomain[1] - xDomain[0]) * silderValues[1]) / 100
+    return data?.data.filter((d) => d.sol >= min && d.sol <= max) ?? []
+  }, [data, xDomain, silderValues])
+  const gridCallback = useCallback(
+    ({ data, style }) => (
+      <a
+        href={`https://solscan.io/collection/` + data.id}
+        target='_blank'
+        rel='noreferrer'
+        title={data.alt}
+        style={style}
+      >
+        <MediaCard
+          key={data.id}
+          src={data.src}
+          alt={data.alt}
+          width={100}
+          height={100}
+        />
+        <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+          {data.alt}
+        </div>
+        <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
+          <Image alt={data.alt} src='/img/sol.svg' width={12} height={12} />{' '}
+          {data.solFormatted}
+        </div>
+      </a>
+    ),
+    []
   )
   return (
     <div className='grow min-h-screen'>
-      <div className='flex justify-end p-4'>
+      <div className='flex justify-end py-2 px-4'>
         <a
           href='#'
           aria-current='page'
           className={classNames(
+            'py-2 px-4 text-xs sm:text-sm font-medium bg-transparent rounded-l-lg border border-gray-900 hover:bg-gray-900 dark:border-white dark:hover:bg-gray-700',
             {
-              'bg-blue-400 dark:bg-blue-500': filterType === '30day',
-              'dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-600':
+              'text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800':
+                filterType === '30day',
+              'focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 text-gray-900 focus:text-white hover:text-white dark:text-white dark:hover:text-white dark:focus:bg-gray-700':
                 filterType !== '30day',
-            },
-            'focus:z-10 py-2 px-4 text-sm font-medium text-blue-700 focus:text-blue-700 dark:text-white dark:focus:text-white bg-white dark:bg-gray-700 rounded-l-lg border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-700 dark:focus:ring-blue-500'
+            }
           )}
-          onClick={() => filterType !== '30day' && setFilterType('30day')}
+          onClick={useCallback(
+            () => filterType !== '30day' && setFilterType('30day'),
+            [filterType, setFilterType]
+          )}
         >
-          30 days volume
+          30d VOL
         </a>
         <a
           href='#'
           className={classNames(
+            'py-2 px-4 text-xs sm:text-sm font-medium bg-transparent border-t border-b border-gray-900 hover:bg-gray-900 dark:border-white dark:hover:bg-gray-700',
             {
-              'bg-blue-400 dark:bg-blue-500': filterType === '7day',
-              'dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-600':
+              'text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800':
+                filterType === '7day',
+              'focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 text-gray-900 focus:text-white hover:text-white dark:text-white dark:hover:text-white dark:focus:bg-gray-700':
                 filterType !== '7day',
-            },
-            'focus:z-10 py-2 px-4 text-sm font-medium text-gray-900 focus:text-blue-700 dark:text-white dark:focus:text-white bg-white dark:bg-gray-700 dark:border-y border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-700 dark:focus:ring-blue-500'
+            }
           )}
-          onClick={() => filterType !== '7day' && setFilterType('7day')}
+          onClick={useCallback(
+            () => filterType !== '7day' && setFilterType('7day'),
+            [filterType, setFilterType]
+          )}
         >
-          7 days volume
+          7d VOL
         </a>
         <a
           href='#'
           className={classNames(
+            'py-2 px-4 text-xs sm:text-sm font-medium bg-transparent rounded-r-md border border-gray-900 hover:bg-gray-900 dark:border-white dark:hover:bg-gray-700',
             {
-              'bg-blue-400 dark:bg-blue-500': filterType === '',
-              'dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-600':
+              'text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800':
+                filterType === '',
+              'focus:z-10 focus:ring-2 focus:ring-gray-500 text-gray-900 focus:bg-gray-900 focus:text-white hover:text-white dark:text-white dark:hover:text-white dark:focus:bg-gray-700':
                 filterType !== '',
-            },
-            'focus:z-10 py-2 px-4 text-sm font-medium text-gray-900 focus:text-blue-700 dark:text-white dark:dark:focus:text-white bg-white dark:bg-gray-700 rounded-r-md border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-700 dark:focus:ring-blue-500'
+            }
           )}
-          onClick={() => filterType !== '' && setFilterType('')}
+          onClick={useCallback(
+            () => filterType !== '' && setFilterType(''),
+            [filterType, setFilterType]
+          )}
         >
-          24 hours volume
+          24h VOL
         </a>
       </div>
+      <RangeSlider
+        xDomain={xDomain}
+        values={silderValues}
+        onValuesChange={useCallback(
+          (values) => setSilderValues(values),
+          [setSilderValues]
+        )}
+        sliderData={sliderData}
+      />
       {isLoading ? (
         <LoadingScreen />
       ) : isError ? (
@@ -98,35 +147,7 @@ export const CollectionGrid: FC = () => {
         </h1>
       ) : (
         <AutoSizeGrid width={100} height={145} itemData={itemData}>
-          {({ data, style }) => (
-            <a
-              href={`https://solscan.io/collection/` + data.id}
-              target='_blank'
-              rel='noreferrer'
-              style={style}
-              title={data.alt}
-            >
-              <MediaCard
-                key={data.id}
-                src={data.src}
-                alt={data.alt}
-                width={100}
-                height={100}
-              />
-              <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-                {data.alt}
-              </div>
-              <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-                <Image
-                  alt={data.alt}
-                  src='/img/sol.svg'
-                  width={12}
-                  height={12}
-                />{' '}
-                {data.sol}
-              </div>
-            </a>
-          )}
+          {gridCallback}
         </AutoSizeGrid>
       )}
     </div>

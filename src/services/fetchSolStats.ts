@@ -4,12 +4,12 @@ import { useMyStore } from '../hooks/useMyStore'
 export async function fetchSolStats(): Promise<SolscanMarket> {
   const solscanBaseUrl = useMyStore.getState().solscanApiBaseUrl
   const res = await fetch(`${solscanBaseUrl}/market?symbol=SOL`)
-  if (res.ok) {
-    const result: SolscanPayload<SolscanMarket> = await res.json()
-    if (!result.success) {
-      throw JSON.stringify(result)
-    }
-    return result.data
+  if (!res.ok) {
+    throw JSON.stringify(res)
   }
-  throw JSON.stringify(res)
+  const result: SolscanPayload<SolscanMarket> = await res.json()
+  if (!result.success) {
+    throw JSON.stringify(result)
+  }
+  return result.data
 }

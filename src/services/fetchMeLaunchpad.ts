@@ -2,9 +2,17 @@ import { MELaunchpad, PagingResult } from '../global'
 import { ME_PAGE_LIMIT } from '../constants'
 import { useMyStore } from '../hooks/useMyStore'
 
+export type fetchMeLaunchpadResult = {
+  id: string
+  src: string
+  alt: string | undefined
+  date: string
+  featured: boolean
+}
+
 export async function fetchMeLaunchpad({
   pageParam = 0,
-}): Promise<PagingResult<MELaunchpad>> {
+}): Promise<PagingResult<fetchMeLaunchpadResult>> {
   const apiBaseUrl = useMyStore.getState().apiBaseUrl
   const res = await fetch(`${apiBaseUrl}/graphql`, {
     method: 'POST',
@@ -18,16 +26,33 @@ query MyQuery {
 `,
     }),
   })
-  if (res.ok) {
-    const result: { data: { me_launchpad: { data: MELaunchpad }[] } } = await res.json()
-    if (!result) {
-      throw JSON.stringify(result)
-    }
-    const data = result.data.me_launchpad.map(l => l.data)
-    return {
-      pageParam,
-      data,
-    }
+  if (!res.ok) {
+    throw JSON.stringify(res)
   }
-  throw JSON.stringify(res)
+  const result: { data: { me_launchpad: Array<{ data: MELaunchpad }> } } =
+    await res.json()
+  if (!result?.data?.me_launchpad) {
+    throw JSON.stringify(result)
+  }
+  const data = result.data.me_launchpad
+    .map((d) => d.data)
+    .filter((row) => row?.image)
+    .sort((a, b) =>
+      (a.launchDatetime ?? '') < (b.launchDatetime ?? '')
+        ? 1
+        : (a.launchDatetime ?? '') > (b.launchDatetime ?? '')
+        ? -1
+        : 0
+    )
+    .map((row) => ({
+      id: row.symbol,
+      src: row.image ?? '',
+      alt: row.name ?? undefined,
+      date: row.launchDatetime ?? ``,
+      featured: !!row.featured,
+    }))
+  return {
+    pageParam,
+    data,
+  }
 }

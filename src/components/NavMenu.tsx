@@ -20,6 +20,10 @@ export const NavMenu = () => {
     },
     [router.pathname]
   )
+  const handleToggleMenu = useCallback(
+    () => setHiddenMenu(!hiddenMenu),
+    [hiddenMenu]
+  )
   return (
     <nav className='py-2.5 px-2 bg-slate-300 dark:bg-gray-800 rounded border-gray-200 sm:px-4'>
       <div className='flex flex-wrap justify-between items-center mx-auto'>
@@ -44,7 +48,7 @@ export const NavMenu = () => {
             className='inline-flex items-center p-2 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 md:hidden'
             aria-controls='mobile-menu-4'
             aria-expanded='false'
-            onClick={() => setHiddenMenu(!hiddenMenu)}
+            onClick={handleToggleMenu}
           >
             <span className='sr-only'>Open main menu</span>
             <svg

@@ -1,27 +1,37 @@
 /* eslint-disable tailwindcss/no-custom-classname */
 import { useDebounce } from './../../useDebounce'
-import { useEffect, useState, useRef, useMemo } from 'react'
+import {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+  ChangeEvent,
+} from 'react'
 import classNames from 'classnames'
 import { useQuery } from 'react-query'
-import { fetchNFTSearch } from '../services/fetchNFTSearch'
-import { SolscanSearch } from '../global'
+import {
+  fetchNFTSearch,
+  fetchNFTSearchResult,
+} from '../services/fetchNFTSearch'
 import { CollectionRow } from './CollectionRow'
 
 export function SearchBox() {
-  const inputRef = useRef<any>()
+  const inputRef = useRef<HTMLInputElement>(null)
   const [open, setOpen] = useState(false)
   const [filter, setFilter] = useState<string>('')
   const debouncedFilter = useDebounce(filter, 500) as string
-  const { data, isError, isLoading, isFetching } = useQuery<SolscanSearch>(
-    ['products', debouncedFilter],
-    () => fetchNFTSearch(debouncedFilter),
-    { enabled: Boolean(debouncedFilter) }
-  )
+  const { data, isError, isLoading, isFetching } =
+    useQuery<fetchNFTSearchResult>(
+      ['products', debouncedFilter],
+      () => fetchNFTSearch(debouncedFilter),
+      { enabled: Boolean(debouncedFilter) }
+    )
   useEffect(() => {
-    function handler(e: any) {
-      if (e.keyCode === 75 && e.metaKey) {
+    function handler(e: KeyboardEvent) {
+      if (e.code === 'KeyK' && e.metaKey) {
         setOpen(true)
-      } else if (e.keyCode == 27) {
+      } else if (e.code == 'Escape') {
         setOpen(false)
       }
     }
@@ -30,33 +40,21 @@ export function SearchBox() {
   }, [])
   useEffect(() => {
     if (open) {
-      inputRef.current.focus()
+      if (inputRef.current) {
+        inputRef.current.focus()
+      }
       document.documentElement.classList.add('overflow-hidden')
     } else {
       document.documentElement.classList.remove('overflow-hidden')
     }
   }, [open])
-  const itemData = useMemo((): {
-    [family: string]: Array<SolscanSearch['collection'][0]>
-  } => {
-    if (data?.collection.length) {
-      return data?.collection.reduce(
-        (
-          g: { [family: string]: Array<SolscanSearch['collection'][0]> },
-          i: SolscanSearch['collection'][0]
-        ) => {
-          if (i.family && i.family in g) {
-            g[i.family].push(i)
-          } else {
-            g[i.family ?? ``] = [i]
-          }
-          return g
-        },
-        {}
-      )
-    }
-    return {}
-  }, [data])
+  const itemData = useMemo(() => data ?? {}, [data])
+  const handleClose = useCallback(() => setOpen(false), [])
+  const handleSearch = useCallback(
+    (ev: ChangeEvent<HTMLInputElement>) => setFilter(ev.target.value),
+    []
+  )
+  const handleOpen = useCallback(() => setOpen(true), [])
   return (
     <>
       <div
@@ -76,7 +74,7 @@ export function SearchBox() {
                 type='button'
                 className='inline-flex items-center p-1.5 ml-auto text-sm text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg'
                 data-modal-toggle='large-modal'
-                onClick={() => setOpen(false)}
+                onClick={handleClose}
               >
                 <span className='hidden pl-3 mr-2 ml-auto text-xs font-semibold md:inline'>
                   ESC
@@ -100,7 +98,7 @@ export function SearchBox() {
                 type='text'
                 className='block p-2.5 w-full text-sm text-gray-900 dark:placeholder:text-gray-400 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg border  border-gray-300 focus:border-blue-500 dark:border-gray-600 dark:focus:border-blue-500 focus:ring-blue-500 dark:focus:ring-blue-500'
                 placeholder='Search'
-                onChange={(ev) => setFilter(ev.target.value)}
+                onChange={handleSearch}
                 ref={inputRef}
               />
               {((!!filter && !data) || isLoading || isFetching) && (
@@ -155,7 +153,7 @@ export function SearchBox() {
           <button
             type='button'
             className='flex items-center py-1.5 pr-3 pl-2 w-full text-sm leading-6 text-slate-400 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-md ring-1 ring-slate-900/10 hover:ring-slate-300 shadow-sm'
-            onClick={() => setOpen(true)}
+            onClick={handleOpen}
           >
             <svg
               width='24'
