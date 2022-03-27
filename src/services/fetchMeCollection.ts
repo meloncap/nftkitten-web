@@ -34,14 +34,17 @@ query MyQuery {
   }
   const result: {
     data: {
-      me_collection: Array<{ data: MECollection; stats: MECollectionStats | null }>
+      me_collection: Array<{
+        data: MECollection
+        stats: MECollectionStats | null
+      }>
     }
   } = await res.json()
   if (!result?.data?.me_collection) {
     throw JSON.stringify(result)
   }
   const data = result.data.me_collection.map(({ data, stats }) => ({
-    id: stats?.symbol,
+    id: data.name,
     src: data.image ?? '',
     alt: data.name ?? undefined,
     sol: stats?.floorPrice ?? 0,

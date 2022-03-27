@@ -74,25 +74,28 @@ export function RangeSlider({
     }
     return data
   }, [xDomain, sliderData])
-  const clickHandler = useCallback((ev: MouseEvent<HTMLDivElement>) => {
-    const rect = ev.currentTarget.getBoundingClientRect()
-    const evX = ev.clientX - rect.left
-    const minDiff = Math.abs(evX - xMin.get())
-    const maxDiff = Math.abs(rect.width - evX + xMax.get())
-    if (minDiff < maxDiff) {
-      xMin.set(evX)
-      onValuesChange([
-        (evX / rect.width) * 100,
-        (1 + xMax.get() / rect.width) * 100,
-      ])
-    } else {
-      xMax.set(evX - rect.width)
-      onValuesChange([
-        (xMin.get() / rect.width) * 100,
-        (1 + (evX - rect.width) / rect.width) * 100,
-      ])
-    }
-  }, [])
+  const clickHandler = useCallback(
+    (ev: MouseEvent<HTMLDivElement>) => {
+      const rect = ev.currentTarget.getBoundingClientRect()
+      const evX = ev.clientX - rect.left
+      const minDiff = Math.abs(evX - xMin.get())
+      const maxDiff = Math.abs(rect.width - evX + xMax.get())
+      if (minDiff < maxDiff) {
+        xMin.set(evX)
+        onValuesChange([
+          (evX / rect.width) * 100,
+          (1 + xMax.get() / rect.width) * 100,
+        ])
+      } else {
+        xMax.set(evX - rect.width)
+        onValuesChange([
+          (xMin.get() / rect.width) * 100,
+          (1 + (evX - rect.width) / rect.width) * 100,
+        ])
+      }
+    },
+    [onValuesChange, xMax, xMin]
+  )
   const minSolVal =
     xDomain[0] + (xDomain[1] - xDomain[0]) * (xMin.get() / innerWidth)
   const minSol = useMemo(() => formatSol(minSolVal), [minSolVal])
