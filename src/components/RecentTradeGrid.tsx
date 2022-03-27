@@ -43,7 +43,7 @@ export function RecentTradeGrid() {
   }, [data, xDomain, silderValues])
   const gridCallback = useCallback(
     ({ data, style }) =>
-      !!data && (
+      !data ? null : (
         <a
           href={`https://solscan.io/token/` + data.id}
           target='_blank'

@@ -48,7 +48,7 @@ export const CollectionGrid: FC = () => {
   }, [data, xDomain, silderValues])
   const gridCallback = useCallback(
     ({ data, style }) =>
-      !!data && (
+      !data ? null : (
         <a
           href={`https://solscan.io/collection/` + data.id}
           target='_blank'
