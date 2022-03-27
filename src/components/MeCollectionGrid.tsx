@@ -87,7 +87,14 @@ export const MeCollectionGrid = () => {
           </div>
           {!!data.sol && (
             <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-              <Image alt={data.alt} src='/img/sol.svg' width={12} height={12} />{' '}
+              <Image
+                className='inline'
+                layout='raw'
+                alt={data.alt}
+                src='/img/sol.svg'
+                width={12}
+                height={12}
+              />{' '}
               {data.solFormatted}
             </div>
           )}
