@@ -43,7 +43,11 @@ export const MeLaunchpadGrid = () => {
   const gridCallback = useCallback(
     ({ data, style }) =>
       !data ? (
-        <LoadingCards width={COLLECTION_THUMB_SIZE} height={COLLECTION_THUMB_SIZE} />
+        <LoadingCards
+          width={COLLECTION_THUMB_SIZE}
+          height={COLLECTION_THUMB_SIZE}
+          style={style}
+        />
       ) : (
         <a
           href={`https://magiceden.io/launchpad/` + data.id}

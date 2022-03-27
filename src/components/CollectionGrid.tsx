@@ -53,6 +53,7 @@ export const CollectionGrid: FC = () => {
         <LoadingCards
           width={COLLECTION_THUMB_SIZE}
           height={COLLECTION_THUMB_SIZE}
+          style={style}
         />
       ) : (
         <a
