@@ -48,7 +48,10 @@ export function SearchBox() {
       document.documentElement.classList.remove('overflow-hidden')
     }
   }, [open])
-  const itemData = useMemo(() => data && Object.keys(data).length ? data : null, [data])
+  const itemData = useMemo(
+    () => (data && Object.keys(data).length ? data : null),
+    [data]
+  )
   const handleClose = useCallback(() => setOpen(false), [])
   const handleSearch = useCallback(
     (ev: ChangeEvent<HTMLInputElement>) => setFilter(ev.target.value),

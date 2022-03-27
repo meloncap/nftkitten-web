@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { useCallback, useMemo, useState } from 'react'
 import { useInfiniteQuery } from 'react-query'
-import { url as isIPFSurl } from 'is-ipfs'
 import { PagingResult } from '../global'
 import { LoadingScreen } from './LoadingScreen'
 import { MediaCard } from './MediaCard'

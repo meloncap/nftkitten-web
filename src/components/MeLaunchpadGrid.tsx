@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react'
 import { useInfiniteQuery } from 'react-query'
-import { url as isIPFSurl } from 'is-ipfs'
 import { PagingResult } from '../global'
 import { LoadingScreen } from './LoadingScreen'
 import {
@@ -11,7 +10,6 @@ import { fetchOption } from '../services/fetchOption'
 import { AutoSizeGrid } from './AutoSizeGrid'
 import { MediaCard } from './MediaCard'
 import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../constants'
-import Image from 'next/image'
 
 export const MeLaunchpadGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
