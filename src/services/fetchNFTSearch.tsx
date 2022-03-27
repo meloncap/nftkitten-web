@@ -25,10 +25,11 @@ export async function fetchNFTSearch(
         g: { [family: string]: Array<SolscanSearch['collection'][0]> },
         i: SolscanSearch['collection'][0]
       ) => {
-        if (i.family && i.family in g) {
-          g[i.family].push(i)
+        const family = i.family ?? ''
+        if (family in g) {
+          g[family].push(i)
         } else {
-          g[i.family ?? ``] = [i]
+          g[family] = [i]
         }
         return g
       },

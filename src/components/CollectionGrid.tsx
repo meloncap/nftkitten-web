@@ -4,6 +4,7 @@ import { useQuery } from 'react-query'
 import { PagingResult } from '../global'
 import { LoadingScreen } from './LoadingScreen'
 import { MediaCard } from './MediaCard'
+import { MediaType } from './MediaType'
 import {
   fetchSolCollectionByVolResult,
   fetchSolCollectionByVol,
@@ -50,7 +51,6 @@ export const CollectionGrid: FC = () => {
         href={`https://solscan.io/collection/` + data.id}
         target='_blank'
         rel='noreferrer'
-        title={data.alt}
         style={style}
       >
         <MediaCard
@@ -61,7 +61,7 @@ export const CollectionGrid: FC = () => {
           height={100}
         />
         <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-          {data.alt}
+          <MediaType src={data.src} /> {data.alt}
         </div>
         <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
           <Image alt={data.alt} src='/img/sol.svg' width={12} height={12} />{' '}

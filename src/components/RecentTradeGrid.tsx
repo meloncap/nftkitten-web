@@ -8,6 +8,7 @@ import {
   fetchSolByTradeTimeResult,
 } from '../services/fetchSolByTradeTime'
 import { MediaCard } from './MediaCard'
+import { MediaType } from './MediaType'
 import { AutoSizeGrid } from './AutoSizeGrid'
 import Image from 'next/image'
 import { RangeSlider } from './RangeSilder'
@@ -17,6 +18,7 @@ export function RecentTradeGrid() {
     PagingResult<fetchSolByTradeTimeResult>
   >('SolscanTokenByTradeTime', fetchSolByTradeTime, {
     refetchInterval: 1000 * 20,
+    keepPreviousData: true,
   })
   const [silderValues, setSilderValues] = useState<ReadonlyArray<number>>([
     0, 100,
@@ -55,7 +57,7 @@ export function RecentTradeGrid() {
           height={100}
         />
         <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-          {data.alt}
+          <MediaType src={data.src} /> {data.alt}
         </div>
         <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
           <Image alt={data.alt} src='/img/sol.svg' width={12} height={12} />{' '}

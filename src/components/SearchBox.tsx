@@ -14,7 +14,7 @@ import {
   fetchNFTSearch,
   fetchNFTSearchResult,
 } from '../services/fetchNFTSearch'
-import { CollectionRow } from './CollectionRow'
+import { SearchResultRow } from './SearchResultRow'
 
 export function SearchBox() {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -48,7 +48,7 @@ export function SearchBox() {
       document.documentElement.classList.remove('overflow-hidden')
     }
   }, [open])
-  const itemData = useMemo(() => data ?? {}, [data])
+  const itemData = useMemo(() => data && Object.keys(data).length ? data : null, [data])
   const handleClose = useCallback(() => setOpen(false), [])
   const handleSearch = useCallback(
     (ev: ChangeEvent<HTMLInputElement>) => setFilter(ev.target.value),
@@ -68,7 +68,7 @@ export function SearchBox() {
           <div className='relative bg-white dark:bg-gray-700 rounded-lg shadow'>
             <div className='flex justify-between items-center p-1 rounded-t border-b dark:border-gray-600'>
               <h3 className='ml-5 text-xl font-medium text-gray-900 dark:text-white'>
-                Collection Search
+                NFT Search
               </h3>
               <button
                 type='button'
@@ -101,14 +101,14 @@ export function SearchBox() {
                 onChange={handleSearch}
                 ref={inputRef}
               />
-              {((!!filter && !data) || isLoading || isFetching) && (
+              {((!!filter && !itemData) || isLoading || isFetching) && (
                 <>loading...</>
               )}
             </div>
             <div className='flex items-center p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600'>
               {isError ? (
                 <>Opps - something go wrong.</>
-              ) : isLoading ? null : !data?.collection?.length ? (
+              ) : isLoading ? null : !itemData ? (
                 !!debouncedFilter && (
                   <>cannot find anything for &quot;{debouncedFilter}&quot;</>
                 )
@@ -125,7 +125,7 @@ export function SearchBox() {
                         </h2>
                         <div className='mt-3 divide-y dark:divide-gray-700 divider-gray-200'>
                           {cols.map((r, i) => (
-                            <CollectionRow col={r} key={i} />
+                            <SearchResultRow col={r} key={i} />
                           ))}
                         </div>
                       </div>
@@ -136,7 +136,7 @@ export function SearchBox() {
                           key={r._id}
                         >
                           <div className='mt-3 divide-y dark:divide-gray-700 divider-gray-200'>
-                            <CollectionRow col={r} />
+                            <SearchResultRow col={r} />
                           </div>
                         </div>
                       ))

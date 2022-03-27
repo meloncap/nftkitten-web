@@ -1,7 +1,8 @@
 import { SolscanSearch } from '../global'
 import { MediaCard } from './MediaCard'
+import { MediaType } from './MediaType'
 
-export function CollectionRow({
+export function SearchResultRow({
   col,
 }: {
   col: SolscanSearch['collection'][0]
@@ -25,7 +26,7 @@ export function CollectionRow({
       )}
       <div className='flex flex-col justify-between pt-4 leading-normal'>
         <h5 className='text-2xl font-bold tracking-tight text-gray-900 dark:text-white md:pl-3'>
-          {col.collection}
+          <MediaType src={col.avatar} /> {col.collection}
           <p className='flex items-center mt-1 mb-0 text-sm font-normal text-gray-700 dark:text-gray-400'>
             Creators {col.creators?.length ?? 0}
             <br />
