@@ -44,7 +44,6 @@ type AutoSizeGridChildComponentProps<T> = GridChildComponentProps<T> & {
   width: number
   height: number
   index: number
-  rows: T[]
   containerWidth: number
   containerHeight: number
 }
@@ -141,8 +140,9 @@ function InnerElementType({
   forwardedRef,
   ...props
 }: HTMLProps<HTMLDivElement> & { forwardedRef: ForwardedRef<HTMLDivElement> }) {
-  if (style?.height === Infinity) {
-    return null
+  if (style && !style.width) {
+    style.width = '100%'
+    style.height = '100%'
   }
   return <div style={style} ref={forwardedRef} {...props}></div>
 }
@@ -228,7 +228,6 @@ function GridWithLoader<T>({
           height={height}
           containerWidth={containerWidth}
           containerHeight={containerHeight}
-          rows={[]}
         />
       )
     },

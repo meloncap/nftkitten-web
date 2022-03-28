@@ -63,7 +63,7 @@ export const MeCollectionGrid = () => {
   )
   const gridCallback = useCallback(
     ({ data, style }) =>
-      !data?.src && !hasNextPage ? null : !data ? (
+      !data?.src && !hasNextPage ? null : !data?.src ? (
         <LoadingCards
           width={COLLECTION_THUMB_SIZE}
           height={COLLECTION_THUMB_SIZE}
@@ -84,7 +84,7 @@ export const MeCollectionGrid = () => {
             height={COLLECTION_THUMB_SIZE}
           ></MediaCard>
           <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-            <MediaType src={data.icon} /> {data.alt}
+            <MediaType src={data.tokenimage} /> {data.alt}
           </div>
           {!!data.sol && (
             <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
@@ -101,7 +101,7 @@ export const MeCollectionGrid = () => {
           )}
         </a>
       ),
-    []
+    [hasNextPage]
   )
   return (
     <div className='grow min-h-screen'>

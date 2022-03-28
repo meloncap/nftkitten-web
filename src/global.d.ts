@@ -79,7 +79,7 @@ export type MECollection = {
     floorPrice: number
     listedCount: number
   }
-  icon: string | null
+  tokenimage: string | null
 }
 
 export type MECollectionActivity = {
@@ -163,7 +163,7 @@ export type MELaunchpad = {
   price: number | null
   size: number | null
   launchDatetime: string | null
-  icon: string | null
+  tokenimage: string | null
 }
 
 export type MECollectionStats = {
@@ -374,4 +374,78 @@ export type SolscanCollection = {
     }>
   }>
   totalAttributes: number
+}
+
+export type SolscanAccount = {
+  lamports: number
+  ownerProgram: string
+  type: string
+  rentEpoch: number
+  account: string
+  tokenInfo?: {
+    name: string
+    symbol: string
+    decimals: number
+    tokenAuthority: string
+    supply: number
+    type: string
+  } | undefined,
+  metadata?: {
+    key: number
+    updateAuthority: string
+    mint: string
+    data?: {
+      name: string
+      symbol: string
+      description: string
+      seller_fee_basis_points: number
+      image: string
+      external_url: string
+      collection?: {
+        name: string
+        family: string
+      } | undefined
+      attributes: unknown[],
+      properties?: {
+        files: [
+          {
+            uri: string
+            type: string
+          }
+        ],
+        category: string
+        creators?: Array<
+          {
+            address: string
+            share: number
+          }
+        > | undefined
+      } | undefined
+      uri: string
+    } | undefined
+    primarySaleHappened: number
+    isMutable: number
+    type: string
+  } | undefined
+  onchainMetadata?: {
+    key: number
+    updateAuthority: string,
+    mint: string
+    data?: {
+      name: string
+      symbol: string
+      uri: string
+      sellerFeeBasisPoints: number
+      creators?: Array<
+        {
+          address: string
+          verified: number
+          share: number
+        }
+      >
+    }
+    primarySaleHappened: number
+    isMutable: number
+    type: string
+  } | undefined
 }

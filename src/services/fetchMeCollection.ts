@@ -10,6 +10,8 @@ export type fetchMeCollectionResult = {
   sol: number
   solFormatted: string
   count: number
+  volumeAll: number
+  tokenimage: string | null
 }
 
 export async function fetchMeCollection({
@@ -28,7 +30,7 @@ query MyQuery {
     floorPrice:stats(path: "$.floorPrice")
     listedCount:stats(path: "$.listedCount")
     volumeAll:stats(path: "$.volumeAll")
-    icon:stats(path: "$.meta.icon")
+    tokenimage:stats(path: "$.meta.meatadata.data.image")
   }
 }
 `,
@@ -55,7 +57,7 @@ query MyQuery {
       solFormatted: formatSol(data.floorPrice),
       count: data.listedCount ?? 0,
       volumeAll: data.volumeAll,
-      icon: data.icon ?? null,
+      tokenimage: data.tokenimage ?? null,
     }))
   return {
     pageParam,

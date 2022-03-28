@@ -8,6 +8,7 @@ export type fetchMeLaunchpadResult = {
   alt: string | undefined
   date: string
   featured: boolean
+  tokenimage: string | null
 }
 
 export async function fetchMeLaunchpad({
@@ -25,7 +26,7 @@ query MyQuery {
     name: data(path: "$.name")
     launchDatetime:stats(path: "$.launchDatetime")
     featured:stats(path: "$.featured")
-    icon:stats(path: "$.meta.icon")
+    tokenimage:stats(path: "$.meta.meatadata.data.image")
   }
 }
 `,
@@ -54,7 +55,7 @@ query MyQuery {
       alt: row.name ?? undefined,
       date: row.launchDatetime ?? ``,
       featured: !!row.featured,
-      icon: row.icon ?? null,
+      tokenimage: row.tokenimage ?? null,
     }))
   return {
     pageParam,
