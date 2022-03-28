@@ -1,2 +1,4 @@
 #!/bin/sh
 npx lint-staged
+npx prettier --write "./src/**/*.{js,jsx,ts,tsx,json,md,html,css}"
+npx next lint --fix --dir src
