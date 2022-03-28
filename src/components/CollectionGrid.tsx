@@ -155,7 +155,11 @@ export const CollectionGrid: FC = () => {
           500 - Something went wrong
         </h1>
       ) : (
-        <AutoSizeGrid width={COLLECTION_THUMB_SIZE} height={COLLECTION_THUMB_SIZE} itemData={itemData}>
+        <AutoSizeGrid
+          width={COLLECTION_THUMB_SIZE}
+          height={COLLECTION_THUMB_SIZE}
+          itemData={itemData}
+        >
           {gridCallback}
         </AutoSizeGrid>
       )}

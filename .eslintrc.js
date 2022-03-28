@@ -5,5 +5,5 @@ module.exports = {
     "no-console": "warn",
     "no-var": "error"
   },
-  "plugins": ["tailwindcss"]
+  "plugins": ["tailwindcss", "cypress"]
 }

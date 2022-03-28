@@ -24,12 +24,7 @@ export const SolanaStatsBar = () => {
   return (
     <div className='flex flex-row flex-wrap justify-between items-center p-2 text-white bg-slate-900'>
       <div className='flex flex-row items-center'>
-        <Image
-          alt='Solana'
-          src='/img/sol.svg'
-          width={16}
-          height={16}
-        />
+        <Image alt='Solana' src='/img/sol.svg' width={16} height={16} />
         <div className='mr-2 ml-1 text-xs'>
           {isLoadingSol ? (
             <Image
@@ -54,12 +49,7 @@ export const SolanaStatsBar = () => {
             </>
           )}
         </div>
-        <Image
-          alt='Ethereum'
-          src='/img/eth.svg'
-          width={16}
-          height={16}
-        />
+        <Image alt='Ethereum' src='/img/eth.svg' width={16} height={16} />
         <div className='mr-2 ml-1 text-xs'>
           {isLoadingEth ? (
             <Image
