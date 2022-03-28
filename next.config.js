@@ -19,6 +19,7 @@ const nextConfig = {
     {
       source: '/original',
       destination: '/img/original.jpg',
+      permanent: true,
     },
   ],
 }
