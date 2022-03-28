@@ -14,7 +14,7 @@ export function SearchResultRow({
       target='_blank'
       rel='noreferrer'
     >
-      {!!col.avatar && (
+      {!col.avatar ? null : (
         <div className='object-cover w-auto h-auto rounded-none'>
           <MediaCard
             src={col.avatar}

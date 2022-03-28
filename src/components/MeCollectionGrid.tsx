@@ -14,6 +14,7 @@ import { AutoSizeGrid } from './AutoSizeGrid'
 import Image from 'next/image'
 import { RangeSlider } from './RangeSilder'
 import { LoadingCards } from './LoadingCards'
+import { MediaType } from './MediaType'
 
 export const MeCollectionGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
@@ -62,7 +63,7 @@ export const MeCollectionGrid = () => {
   )
   const gridCallback = useCallback(
     ({ data, style }) =>
-      !data && !hasNextPage ? null : !data ? (
+      !data?.src && !hasNextPage ? null : !data ? (
         <LoadingCards
           width={COLLECTION_THUMB_SIZE}
           height={COLLECTION_THUMB_SIZE}
@@ -83,7 +84,7 @@ export const MeCollectionGrid = () => {
             height={COLLECTION_THUMB_SIZE}
           ></MediaCard>
           <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>
-            {data.alt}
+            <MediaType src={data.icon} /> {data.alt}
           </div>
           {!!data.sol && (
             <div className='overflow-hidden text-xs text-ellipsis whitespace-nowrap'>

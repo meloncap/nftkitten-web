@@ -22,8 +22,13 @@ export async function fetchMeCollection({
       query: `
 query MyQuery {
   me_collection(offset: ${pageParam * ME_PAGE_LIMIT}, limit: ${ME_PAGE_LIMIT}) {
-    data
-    stats
+    symbol: data(path: "$.symbol")
+    image: data(path: "$.image")
+    name: data(path: "$.name")
+    floorPrice:stats(path: "$.floorPrice")
+    listedCount:stats(path: "$.listedCount")
+    volumeAll:stats(path: "$.volumeAll")
+    icon:stats(path: "$.meta.icon")
   }
 }
 `,
@@ -34,10 +39,7 @@ query MyQuery {
   }
   const result: {
     data: {
-      me_collection: Array<{
-        data: MECollection
-        stats: MECollectionStats | null
-      }>
+      me_collection: Array<MECollection & MECollectionStats>
     }
   } = await res.json()
   if (!result?.data?.me_collection) {
@@ -45,14 +47,15 @@ query MyQuery {
   }
   const data = result.data.me_collection
     .sort((a, b) => (b.stats?.volumeAll ?? 0) - (a.stats?.volumeAll ?? 0))
-    .map(({ data, stats }) => ({
+    .map((data) => ({
       id: data.symbol,
       src: data.image ?? '',
       alt: data.name ?? undefined,
-      sol: stats?.floorPrice ?? 0,
-      solFormatted: formatSol(stats?.floorPrice),
-      count: stats?.listedCount ?? 0,
-      volumeAll: stats?.volumeAll,
+      sol: data.floorPrice ?? 0,
+      solFormatted: formatSol(data.floorPrice),
+      count: data.listedCount ?? 0,
+      volumeAll: data.volumeAll,
+      icon: data.icon ?? null,
     }))
   return {
     pageParam,

@@ -79,6 +79,7 @@ export type MECollection = {
     floorPrice: number
     listedCount: number
   }
+  icon: string | null
 }
 
 export type MECollectionActivity = {
@@ -162,6 +163,7 @@ export type MELaunchpad = {
   price: number | null
   size: number | null
   launchDatetime: string | null
+  icon: string | null
 }
 
 export type MECollectionStats = {

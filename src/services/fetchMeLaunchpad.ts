@@ -20,7 +20,12 @@ export async function fetchMeLaunchpad({
       query: `
 query MyQuery {
   me_launchpad(offset: ${pageParam * ME_PAGE_LIMIT}, limit: ${ME_PAGE_LIMIT}) {
-    data
+    symbol: data(path: "$.symbol")
+    image: data(path: "$.image")
+    name: data(path: "$.name")
+    launchDatetime:stats(path: "$.launchDatetime")
+    featured:stats(path: "$.featured")
+    icon:stats(path: "$.meta.icon")
   }
 }
 `,
@@ -29,13 +34,12 @@ query MyQuery {
   if (!res.ok) {
     throw JSON.stringify(res)
   }
-  const result: { data: { me_launchpad: Array<{ data: MELaunchpad }> } } =
+  const result: { data: { me_launchpad: Array<MELaunchpad> } } =
     await res.json()
   if (!result?.data?.me_launchpad) {
     throw JSON.stringify(result)
   }
   const data = result.data.me_launchpad
-    .map((d) => d.data)
     .filter((row) => row?.image)
     .sort((a, b) =>
       (a.launchDatetime ?? '') < (b.launchDatetime ?? '')
@@ -50,6 +54,7 @@ query MyQuery {
       alt: row.name ?? undefined,
       date: row.launchDatetime ?? ``,
       featured: !!row.featured,
+      icon: row.icon ?? null,
     }))
   return {
     pageParam,

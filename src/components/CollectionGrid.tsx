@@ -48,7 +48,7 @@ export const CollectionGrid: FC = () => {
   }, [data, xDomain, silderValues])
   const gridCallback = useCallback(
     ({ data, style }) =>
-      !data ? null : (
+      !data?.src ? null : (
         <a
           href={`https://solscan.io/collection/` + data.id}
           target='_blank'
@@ -155,7 +155,7 @@ export const CollectionGrid: FC = () => {
           500 - Something went wrong
         </h1>
       ) : (
-        <AutoSizeGrid width={100} height={145} itemData={itemData}>
+        <AutoSizeGrid width={COLLECTION_THUMB_SIZE} height={COLLECTION_THUMB_SIZE} itemData={itemData}>
           {gridCallback}
         </AutoSizeGrid>
       )}

@@ -4,7 +4,6 @@ import {
   FixedSizeGrid as Grid,
   GridChildComponentProps,
   GridOnItemsRenderedProps,
-  GridProps,
   ListOnItemsRenderedProps,
 } from 'react-window'
 import InfinityLoader from 'react-window-infinite-loader'
@@ -229,7 +228,7 @@ function GridWithLoader<T>({
           height={height}
           containerWidth={containerWidth}
           containerHeight={containerHeight}
-          rows={rows}
+          rows={[]}
         />
       )
     },

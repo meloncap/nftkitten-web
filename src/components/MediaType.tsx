@@ -2,6 +2,9 @@ import { url as isIPFSurl } from 'is-ipfs'
 import Image from 'next/image'
 
 export function MediaType({ src }: { src: string }) {
+  if (!src) {
+    return null
+  }
   if (/^[^/]*\/\/(?:[^/]+.|)arweave\.net\//.test(src)) {
     return (
       <Image
