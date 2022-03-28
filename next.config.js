@@ -4,19 +4,21 @@ const withOptimizedImages = require('next-optimized-images')
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    images: { layoutRaw: true }
+    images: { layoutRaw: true },
   },
   images: {
-    domains: ["nftkitten.mo.cloudinary.net"],
+    domains: ['nftkitten.mo.cloudinary.net'],
   },
   rewrites: async () => [
     {
-      source: '/original',
-      destination: '/img/original.jpg',
-    },
-    {
       source: '/',
       destination: '/sol/home',
+    },
+  ],
+  redirects: async () => [
+    {
+      source: '/original',
+      destination: '/img/original.jpg',
     },
   ],
 }
