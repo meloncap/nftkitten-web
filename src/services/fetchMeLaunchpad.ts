@@ -26,7 +26,7 @@ query MyQuery {
     name: data(path: "$.name")
     launchDatetime:stats(path: "$.launchDatetime")
     featured:stats(path: "$.featured")
-    tokenimage:stats(path: "$.meta.meatadata.data.image")
+    tokenimage:stats(path: "$.meta.metadata.data.image")
   }
 }
 `,

@@ -30,7 +30,7 @@ query MyQuery {
     floorPrice:stats(path: "$.floorPrice")
     listedCount:stats(path: "$.listedCount")
     volumeAll:stats(path: "$.volumeAll")
-    tokenimage:stats(path: "$.meta.meatadata.data.image")
+    tokenimage:stats(path: "$.meta.metadata.data.image")
   }
 }
 `,
