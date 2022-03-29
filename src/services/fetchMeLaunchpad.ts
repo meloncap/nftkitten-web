@@ -24,9 +24,9 @@ query MyQuery {
     symbol: data(path: "$.symbol")
     image: data(path: "$.image")
     name: data(path: "$.name")
-    launchDatetime:stats(path: "$.launchDatetime")
-    featured:stats(path: "$.featured")
-    tokenimage:stats(path: "$.meta.metadata.data.image")
+    launchDatetime: data(path: "$.launchDatetime")
+    featured: data(path: "$.featured")
+    tokenimage: stats(path: "$.meta.metadata.data.image")
   }
 }
 `,
