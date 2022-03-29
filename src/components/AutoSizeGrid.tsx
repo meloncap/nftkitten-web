@@ -18,6 +18,7 @@ import {
   ForwardedRef,
   MutableRefObject,
   CSSProperties,
+  useEffect,
 } from 'react'
 import classNames from 'classnames'
 import { useScroll } from '@use-gesture/react'
@@ -277,6 +278,14 @@ export function AutoSizeGrid<T>({
     },
     [itemData, containerWidth, width]
   )
+  useEffect(() => {
+    if (loadMoreItems && itemData) {
+      const numOfCol = getNumOfCol(containerWidth, width)
+      if (~~(itemData.length / numOfCol) * height <= containerHeight) {
+        loadMoreItems(0, 0)
+      }
+    }
+  }, [loadMoreItems, itemData, containerWidth, width, height, containerHeight])
   return (
     <InfinityLoader
       isItemLoaded={isItemLoaded}
