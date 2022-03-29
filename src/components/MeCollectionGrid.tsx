@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useInfiniteQuery } from 'react-query'
 import { PagingResult } from '../global'
 import { LoadingScreen } from './LoadingScreen'
@@ -17,7 +17,7 @@ import { LoadingCards } from './LoadingCards'
 import { MediaType } from './MediaType'
 
 export const MeCollectionGrid = () => {
-  const { isLoading, isError, fetchNextPage, data, hasNextPage } =
+  const { isLoading, isError, isFetching, fetchNextPage, data, hasNextPage } =
     useInfiniteQuery<PagingResult<fetchMeCollectionResult>>(
       'MeCollection',
       fetchMeCollection,
@@ -61,6 +61,17 @@ export const MeCollectionGrid = () => {
     },
     [hasNextPage, fetchNextPage]
   )
+  useEffect(() => {
+    if (
+      !isFetching &&
+      hasNextPage &&
+      (silderValues[0] > 0 || silderValues[1] < 100) &&
+      data
+    ) {
+      const lastPage = data.pages[data.pages.length - 1]
+      loadMoreItems(lastPage.pageParam, lastPage.pageParam + ME_PAGE_LIMIT)
+    }
+  }, [isFetching, hasNextPage, silderValues, data, loadMoreItems])
   const gridCallback = useCallback(
     ({ data, style }) =>
       !data?.src && !hasNextPage ? null : !data?.src ? (

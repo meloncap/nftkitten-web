@@ -100,6 +100,7 @@ function OuterElementType({
       <div
         style={{
           ...style,
+          width: '100vw',
           height: '100vh',
         }}
         ref={forwardedRef}

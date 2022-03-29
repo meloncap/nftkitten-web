@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
-import { useCallback, useState } from 'react'
+import { useCallback, useState, MouseEvent } from 'react'
 import Image from 'next/image'
 import classNames from 'classnames'
 import { useRouter } from 'next/router'
@@ -25,7 +25,8 @@ export const NavMenu = () => {
   const { authenticate, isAuthenticated, isAuthenticating, logout } =
     useMoralis()
   const handleLogin = useCallback(
-    (type?: 'sol' | undefined) => async () => {
+    (type?: 'sol' | undefined) => async (ev: MouseEvent<HTMLAnchorElement>) => {
+      ev.preventDefault()
       if (!isAuthenticated) {
         await authenticate({ signingMessage: 'Log in NFTKitten', type })
           .then(function (user) {
@@ -43,11 +44,15 @@ export const NavMenu = () => {
     [authenticate, isAuthenticated]
   )
 
-  const handleLogout = useCallback(async () => {
-    await logout()
-    // eslint-disable-next-line no-console
-    console.log('logged out')
-  }, [logout])
+  const handleLogout = useCallback(
+    async (ev: MouseEvent<HTMLAnchorElement>) => {
+      ev.preventDefault()
+      await logout()
+      // eslint-disable-next-line no-console
+      console.log('logged out')
+    },
+    [logout]
+  )
 
   return (
     <nav className='py-2.5 px-2 bg-slate-300 dark:bg-gray-800 rounded border-gray-200 sm:px-4'>
@@ -123,7 +128,7 @@ export const NavMenu = () => {
             <li className={classNames({ hidden: isAuthenticating })}>
               <a
                 className='flex py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0'
-                href='javascript:void(0)'
+                href='#'
                 onClick={handleLogin('sol')}
               >
                 <span className='pr-1'>Connect</span>
@@ -133,7 +138,7 @@ export const NavMenu = () => {
             <li className={classNames({ hidden: isAuthenticating })}>
               <a
                 className='flex py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0'
-                href='javascript:void(0)'
+                href='#'
                 onClick={handleLogin()}
               >
                 <span className='pr-1'>Connect</span>
@@ -148,7 +153,7 @@ export const NavMenu = () => {
             <li className={classNames({ hidden: !isAuthenticating })}>
               <a
                 className='block py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0'
-                href='javascript:void(0)'
+                href='#'
                 type='button'
                 onClick={handleLogout}
               >
