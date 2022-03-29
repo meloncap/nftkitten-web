@@ -24,8 +24,8 @@ export const MediaCard = ({
   return (
     <div className='flex' style={style}>
       <Image
+        layout='fixed'
         className='hover:z-10 hover:shadow-inner hover:scale-110'
-        layout='raw'
         src={loaded < 0 ? src : url}
         alt={alt ?? ``}
         title={alt ?? ``}
@@ -38,7 +38,7 @@ export const MediaCard = ({
         }}
         onLoadingComplete={onLoadingComplete}
         onError={onError}
-        unoptimized={loaded < 0}
+        unoptimized
       />
       {children}
     </div>

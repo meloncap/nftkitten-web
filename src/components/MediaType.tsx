@@ -9,7 +9,6 @@ export function MediaType({ src }: { src: string }) {
     return (
       <Image
         className='inline'
-        layout='raw'
         alt='arweave'
         src='/img/arweave.webp'
         title={src}
@@ -21,7 +20,6 @@ export function MediaType({ src }: { src: string }) {
     return (
       <Image
         className='inline'
-        layout='raw'
         alt='IPFS'
         src='/img/ipfs.webp'
         title={src}
@@ -33,7 +31,6 @@ export function MediaType({ src }: { src: string }) {
   return (
     <Image
       className='inline'
-      layout='raw'
       alt='404'
       src='/img/404.webp'
       title={src}

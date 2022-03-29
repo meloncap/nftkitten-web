@@ -1,14 +1,12 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
-// import { useAnchorWallet } from '@solana/wallet-adapter-react'
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { useCallback, useState } from 'react'
 import Image from 'next/image'
 import classNames from 'classnames'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { useMoralis } from 'react-moralis'
 
 export const NavMenu = () => {
-  // const anchorWallet = useAnchorWallet()
   const router = useRouter()
   const [hiddenMenu, setHiddenMenu] = useState(true)
 
@@ -24,12 +22,40 @@ export const NavMenu = () => {
     () => setHiddenMenu(!hiddenMenu),
     [hiddenMenu]
   )
+  const { authenticate, isAuthenticated, isAuthenticating, logout } =
+    useMoralis()
+  const handleLogin = useCallback(
+    (type?: 'sol' | undefined) => async () => {
+      if (!isAuthenticated) {
+        await authenticate({ signingMessage: 'Log in NFTKitten', type })
+          .then(function (user) {
+            // eslint-disable-next-line no-console
+            console.log('logged in user:', user)
+            // eslint-disable-next-line no-console
+            console.log(user!.get('ethAddress'))
+          })
+          .catch(function (error) {
+            // eslint-disable-next-line no-console
+            console.error(error)
+          })
+      }
+    },
+    [authenticate, isAuthenticated]
+  )
+
+  const handleLogout = useCallback(async () => {
+    await logout()
+    // eslint-disable-next-line no-console
+    console.log('logged out')
+  }, [logout])
+
   return (
     <nav className='py-2.5 px-2 bg-slate-300 dark:bg-gray-800 rounded border-gray-200 sm:px-4'>
       <div className='flex flex-wrap justify-between items-center mx-auto'>
         <Link href='/' passHref>
           <a className='flex items-center'>
             <Image
+              layout='responsive'
               src='/img/meow.webp'
               className='mr-3 h-6 rounded sm:h-10'
               alt='NFTKitten.io'
@@ -42,10 +68,9 @@ export const NavMenu = () => {
           </a>
         </Link>
         <div className='flex md:order-2'>
-          <WalletMultiButton className='py-2.5 px-5 mr-3 text-sm font-medium text-center text-white bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 md:mr-0' />
           <button
             type='button'
-            className='inline-flex items-center p-2 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 md:hidden'
+            className='inline-flex items-center p-2 text-sm rounded-lg focus:outline-none md:hidden'
             aria-controls='mobile-menu-4'
             aria-expanded='false'
             onClick={handleToggleMenu}
@@ -94,6 +119,41 @@ export const NavMenu = () => {
               <Link href='/magiceden/launchpad' passHref>
                 <a className={getMenuStyle(/^\/magiceden\//)}>Magic Eden</a>
               </Link>
+            </li>
+            <li className={classNames({ hidden: isAuthenticating })}>
+              <a
+                className='flex py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0'
+                href='javascript:void(0)'
+                onClick={handleLogin('sol')}
+              >
+                <span className='pr-1'>Connect</span>
+                <Image alt='Solana' src='/img/sol.svg' width={16} height={16} />
+              </a>
+            </li>
+            <li className={classNames({ hidden: isAuthenticating })}>
+              <a
+                className='flex py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0'
+                href='javascript:void(0)'
+                onClick={handleLogin()}
+              >
+                <span className='pr-1'>Connect</span>
+                <Image
+                  alt='Ethereum'
+                  src='/img/eth.svg'
+                  width={16}
+                  height={16}
+                />
+              </a>
+            </li>
+            <li className={classNames({ hidden: !isAuthenticating })}>
+              <a
+                className='block py-2 pr-4 pl-3 text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 md:p-0 md:hover:text-blue-700 md:dark:hover:text-white md:hover:bg-transparent md:dark:hover:bg-transparent md:border-0'
+                href='javascript:void(0)'
+                type='button'
+                onClick={handleLogout}
+              >
+                Logout
+              </a>
             </li>
           </ul>
         </div>
