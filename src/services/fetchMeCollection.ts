@@ -27,10 +27,10 @@ query MyQuery {
     symbol: data(path: "$.symbol")
     image: data(path: "$.image")
     name: data(path: "$.name")
-    floorPrice:stats(path: "$.floorPrice")
-    listedCount:stats(path: "$.listedCount")
-    volumeAll:stats(path: "$.volumeAll")
-    tokenimage:stats(path: "$.meta.metadata.data.image")
+    floorPrice: stats(path: "$.floorPrice")
+    listedCount: stats(path: "$.listedCount")
+    volumeAll: stats(path: "$.volumeAll")
+    tokenimage: stats(path: "$.meta.metadata.data.image")
   }
 }
 `,
