@@ -157,7 +157,7 @@ export const CollectionGrid: FC = () => {
       ) : (
         <AutoSizeGrid
           width={COLLECTION_THUMB_SIZE}
-          height={COLLECTION_THUMB_SIZE}
+          height={COLLECTION_THUMB_SIZE + 45}
           itemData={itemData}
         >
           {gridCallback}

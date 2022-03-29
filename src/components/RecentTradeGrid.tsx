@@ -87,7 +87,7 @@ export function RecentTradeGrid() {
           500 - Something went wrong
         </h1>
       ) : (
-        <AutoSizeGrid width={100} height={145} itemData={itemData}>
+        <AutoSizeGrid width={100} height={100 + 45} itemData={itemData}>
           {gridCallback}
         </AutoSizeGrid>
       )}
