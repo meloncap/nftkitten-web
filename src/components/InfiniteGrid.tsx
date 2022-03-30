@@ -103,7 +103,7 @@ function OuterElementType({
           style={{ width: offsetY.to((y) => `${y * 100}%`) }}
         ></animated.div>
       </div>
-      <div className='overflow-hidden relative w-screen h-screen'>
+      <div className='overflow-visible relative w-screen h-screen'>
         {children}
       </div>
       <animated.button
