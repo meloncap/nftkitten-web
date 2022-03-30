@@ -65,11 +65,13 @@ function OuterElementType({
   onScroll,
   containerWidth,
   containerHeight,
+  itemCount,
   forwardedRef,
   children,
 }: HTMLProps<HTMLElement> & {
   containerWidth: number
   containerHeight: number
+  itemCount: number
   forwardedRef: MutableRefObject<HTMLElement>
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -117,7 +119,7 @@ function OuterElementType({
     offsetYApi.start({
       offsetY: scrollTop / (scrollHeight - containerHeight),
     })
-  }, [offsetYApi, containerHeight])
+  }, [offsetYApi, containerHeight, itemCount])
   forwardedRef.current = document.documentElement
   return (
     <>
@@ -214,11 +216,12 @@ function GridWithLoader<T>({
         <OuterElementType
           containerWidth={containerWidth}
           containerHeight={containerHeight}
+          itemCount={itemData?.length ?? 0}
           forwardedRef={ref as MutableRefObject<HTMLDivElement>}
           {...props}
         />
       )),
-    [containerHeight]
+    [containerWidth, containerHeight, itemData?.length]
   )
   const innerElementType = useMemo(
     () =>
