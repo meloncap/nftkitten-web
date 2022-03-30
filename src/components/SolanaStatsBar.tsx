@@ -1,9 +1,7 @@
-/* eslint-disable jsx-a11y/alt-text */
 import { useQuery } from 'react-query'
-import { SolscanMarket } from '../global'
+import { SolscanMarket } from '../types'
 import Image from 'next/image'
-import { fetchSolStats } from '../services/fetchSolStats'
-import { fetchEthStats } from '../services/fetchEthStats'
+import { solanaPriceApi, ethereumPriceApi } from '../services/solscanApi'
 import { DarkModeSwitcher } from './DarkModeSwitcher'
 
 export const SolanaStatsBar = () => {
@@ -11,14 +9,14 @@ export const SolanaStatsBar = () => {
     isLoading: isLoadingSol,
     isError: isErrorSol,
     data: dataSol,
-  } = useQuery<SolscanMarket>('SolStats', fetchSolStats, {
+  } = useQuery<SolscanMarket>('SolStats', solanaPriceApi, {
     refetchInterval: 1000 * 5,
   })
   const {
     isLoading: isLoadingEth,
     isError: isErrorEth,
     data: dataEth,
-  } = useQuery<SolscanMarket>('EthStats', fetchEthStats, {
+  } = useQuery<SolscanMarket>('EthStats', ethereumPriceApi, {
     refetchInterval: 1000 * 5,
   })
   return (

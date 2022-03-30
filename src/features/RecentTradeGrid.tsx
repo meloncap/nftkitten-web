@@ -1,23 +1,19 @@
-/* eslint-disable jsx-a11y/alt-text */
 import { useCallback, useMemo, useState } from 'react'
 import { useQuery } from 'react-query'
-import { PagingResult } from '../global'
-import { LoadingScreen } from './LoadingScreen'
-import {
-  fetchSolByTradeTime,
-  fetchSolByTradeTimeResult,
-} from '../services/fetchSolByTradeTime'
-import { MediaCard } from './MediaCard'
-import { MediaType } from './MediaType'
-import { AutoSizeGrid } from './AutoSizeGrid'
+import { PagingResult } from '../types'
+import { LoadingScreen } from '../components/LoadingScreen'
+import { tradeByTimeApi, TradeByTimeApiOutput } from '../services/solscanApi'
+import { MediaCard } from '../components/MediaCard'
+import { MediaType } from '../components/MediaType'
+import { InfiniteGrid } from '../components/InfiniteGrid'
 import Image from 'next/image'
-import { RangeSlider } from './RangeSilder'
-import { COLLECTION_THUMB_SIZE } from '../constants'
+import { MultiRangeSlider } from './multiRangeSlider/MultiRangeSilder'
+import { COLLECTION_THUMB_SIZE } from '../contants'
 
 export function RecentTradeGrid() {
   const { isLoading, isError, data } = useQuery<
-    PagingResult<fetchSolByTradeTimeResult>
-  >('SolscanTokenByTradeTime', fetchSolByTradeTime, {
+    PagingResult<TradeByTimeApiOutput>
+  >('SolscanTokenByTradeTime', tradeByTimeApi, {
     refetchInterval: 1000 * 20,
     keepPreviousData: true,
   })
@@ -71,7 +67,7 @@ export function RecentTradeGrid() {
   )
   return (
     <div className='grow min-h-screen'>
-      <RangeSlider
+      <MultiRangeSlider
         xDomain={xDomain}
         values={silderValues}
         onValuesChange={useCallback(
@@ -87,9 +83,12 @@ export function RecentTradeGrid() {
           500 - Something went wrong
         </h1>
       ) : (
-        <AutoSizeGrid width={100} height={100 + 45} itemData={itemData}>
-          {gridCallback}
-        </AutoSizeGrid>
+        <InfiniteGrid
+          width={100}
+          height={100 + 45}
+          itemData={itemData}
+          gridCallback={gridCallback}
+        />
       )}
     </div>
   )

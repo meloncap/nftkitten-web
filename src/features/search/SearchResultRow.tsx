@@ -1,6 +1,6 @@
-import { SolscanSearch } from '../global'
-import { MediaCard } from './MediaCard'
-import { MediaType } from './MediaType'
+import { SolscanSearch } from '../../types'
+import { MediaCard } from '../../components/MediaCard'
+import { MediaType } from '../../components/MediaType'
 
 export function SearchResultRow({
   col,

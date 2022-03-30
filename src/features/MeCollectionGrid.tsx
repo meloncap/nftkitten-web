@@ -1,27 +1,23 @@
-/* eslint-disable jsx-a11y/alt-text */
 import { useCallback, useMemo, useState } from 'react'
 import { useInfiniteQuery } from 'react-query'
-import { PagingResult } from '../global'
-import { LoadingScreen } from './LoadingScreen'
-import { MediaCard } from './MediaCard'
-import {
-  fetchMeCollection,
-  fetchMeCollectionResult,
-} from '../services/fetchMeCollection'
-import { fetchOption } from '../services/fetchOption'
-import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../constants'
-import { AutoSizeGrid } from './AutoSizeGrid'
+import { PagingResult } from '../types'
+import { LoadingScreen } from '../components/LoadingScreen'
+import { MediaCard } from '../components/MediaCard'
+import { collectionApi, CollectionApiOutput } from '../services/magicEdenApi'
+import { queryOption } from '../services/queryOption'
+import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../contants'
+import { InfiniteGrid } from '../components/InfiniteGrid'
 import Image from 'next/image'
-import { RangeSlider } from './RangeSilder'
-import { LoadingCards } from './LoadingCards'
-import { MediaType } from './MediaType'
+import { MultiRangeSlider } from './multiRangeSlider/MultiRangeSilder'
+import { LoadingCards } from '../components/LoadingCards'
+import { MediaType } from '../components/MediaType'
 
 export const MeCollectionGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
-    useInfiniteQuery<PagingResult<fetchMeCollectionResult>>(
+    useInfiniteQuery<PagingResult<CollectionApiOutput>>(
       'MeCollection',
-      fetchMeCollection,
-      fetchOption<PagingResult<fetchMeCollectionResult>>()
+      collectionApi,
+      queryOption<PagingResult<CollectionApiOutput>>()
     )
   const [silderValues, setSilderValues] = useState<ReadonlyArray<number>>([
     0, 100,
@@ -53,10 +49,11 @@ export const MeCollectionGrid = () => {
     )
   }, [data, xDomain, silderValues])
   const loadMoreItems = useCallback(
-    // eslint-disable-next-line no-unused-vars
-    (startIndex: number, stopIndex: number) => {
+    (_startIndex: number, _stopIndex: number) => {
       if (hasNextPage) {
-        return fetchNextPage().then(() => {})
+        return fetchNextPage().then(() => {
+          return
+        })
       }
     },
     [hasNextPage, fetchNextPage]
@@ -98,7 +95,7 @@ export const MeCollectionGrid = () => {
   )
   return (
     <div className='grow min-h-screen'>
-      <RangeSlider
+      <MultiRangeSlider
         xDomain={xDomain}
         values={silderValues}
         onValuesChange={useCallback(
@@ -114,15 +111,14 @@ export const MeCollectionGrid = () => {
           500 - Something went wrong
         </h1>
       ) : (
-        <AutoSizeGrid
+        <InfiniteGrid
           pageSize={ME_PAGE_LIMIT}
           width={COLLECTION_THUMB_SIZE}
           height={COLLECTION_THUMB_SIZE + 45}
           itemData={itemData}
           loadMoreItems={hasNextPage ? loadMoreItems : undefined}
-        >
-          {gridCallback}
-        </AutoSizeGrid>
+          gridCallback={gridCallback}
+        />
       )}
     </div>
   )

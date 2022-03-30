@@ -1,4 +1,4 @@
-import { CSSProperties, useMemo } from 'react'
+import { CSSProperties } from 'react'
 
 export function LoadingCards({
   width,
@@ -11,16 +11,9 @@ export function LoadingCards({
   limit?: number | undefined
   style?: CSSProperties | undefined
 }) {
-  const nums = useMemo(() => {
-    const nums: number[] = []
-
-    for (let i = 0; i < limit; i++) nums.push(i)
-
-    return nums
-  }, [limit])
   return (
     <>
-      {nums.map((_, i) => (
+      {new Array(limit).fill(true).map((_, i) => (
         <div
           className='flex'
           key={i}

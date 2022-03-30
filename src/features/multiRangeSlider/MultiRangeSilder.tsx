@@ -2,11 +2,11 @@ import { useSpring, animated } from 'react-spring'
 import { HistogramChart } from './HistogramChart'
 import { useDrag } from '@use-gesture/react'
 import { useElementSize } from 'usehooks-ts'
-import { formatSol } from '../services/numberFormatter'
+import { formatSol } from '../../utils/numberFormatter'
 import { useCallback, useMemo, MouseEvent } from 'react'
 import Image from 'next/image'
 
-export function RangeSlider({
+export function MultiRangeSlider({
   xDomain,
   values,
   onValuesChange,
@@ -14,7 +14,6 @@ export function RangeSlider({
 }: {
   xDomain: ReadonlyArray<number>
   values: ReadonlyArray<number>
-  // eslint-disable-next-line no-unused-vars
   onValuesChange: (values: ReadonlyArray<number>) => void
   sliderData: Array<number>
 }) {

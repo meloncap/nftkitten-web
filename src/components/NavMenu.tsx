@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-html-link-for-pages */
 import { useCallback, useState, MouseEvent } from 'react'
 import Image from 'next/image'
 import classNames from 'classnames'
@@ -30,10 +29,11 @@ export const NavMenu = () => {
       if (!isAuthenticated) {
         await authenticate({ signingMessage: 'Log in NFTKitten', type })
           .then(function (user) {
+            if (!user) return
             // eslint-disable-next-line no-console
             console.log('logged in user:', user)
             // eslint-disable-next-line no-console
-            console.log(user!.get('ethAddress'))
+            console.log(user.get('ethAddress'))
           })
           .catch(function (error) {
             // eslint-disable-next-line no-console

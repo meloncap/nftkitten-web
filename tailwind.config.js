@@ -1,10 +1,6 @@
 module.exports = {
   mode: 'jit',
-  content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx}",
-    "./src/components/**/*.{js,ts,jsx,tsx}",
-    "./node_modules/flowbite/**/*.js",
-  ],
+  content: ['./src/**/*.{js,ts,jsx,tsx}', './node_modules/flowbite/**/*.js'],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {},
@@ -12,7 +8,5 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [
-    require('flowbite/plugin'),
-  ],
+  plugins: [require('flowbite/plugin')],
 }

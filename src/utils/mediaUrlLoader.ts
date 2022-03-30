@@ -7,7 +7,7 @@ export function mediaUrlLoader(src: string, width: number, height: number) {
   }
   const f = /\.svg($|\?)/i.test(src) ? 'f_auto' : 'f_webp'
   const q = width <= 100 && height <= 100 ? 'q_auto:low' : 'q_auto'
-  let url = [
+  const url = [
     imageBaseUrl,
     '/image/',
     f,

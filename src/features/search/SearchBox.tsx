@@ -1,5 +1,5 @@
 /* eslint-disable tailwindcss/no-custom-classname */
-import { useDebounce } from './../../useDebounce'
+import { useDebounce } from '../../../useDebounce'
 import {
   useEffect,
   useState,
@@ -11,9 +11,9 @@ import {
 import classNames from 'classnames'
 import { useQuery } from 'react-query'
 import {
-  fetchNFTSearch,
-  fetchNFTSearchResult,
-} from '../services/fetchNFTSearch'
+  CollectionSearchApi,
+  CollectionSearchApiOutput,
+} from '../../services/solscanApi'
 import { SearchResultRow } from './SearchResultRow'
 
 export function SearchBox() {
@@ -22,9 +22,9 @@ export function SearchBox() {
   const [filter, setFilter] = useState<string>('')
   const debouncedFilter = useDebounce(filter, 500) as string
   const { data, isError, isLoading, isFetching } =
-    useQuery<fetchNFTSearchResult>(
+    useQuery<CollectionSearchApiOutput>(
       ['products', debouncedFilter],
-      () => fetchNFTSearch(debouncedFilter),
+      () => CollectionSearchApi(debouncedFilter),
       { enabled: Boolean(debouncedFilter) }
     )
   useEffect(() => {

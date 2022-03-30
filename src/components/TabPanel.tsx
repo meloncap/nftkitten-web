@@ -4,7 +4,6 @@ import classNames from 'classnames'
 
 type Tab = {
   url: string
-  // eslint-disable-next-line no-unused-vars
   isActive: boolean
   title: ComponentType
   content: ComponentType

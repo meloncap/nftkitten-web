@@ -1,10 +1,10 @@
 import { PropsWithChildren, ReactNode } from 'react'
 import { GlobalHead } from './GlobalHead'
-import { NavMenu } from './NavMenu'
-import { SearchBox } from './SearchBox'
-import { SolanaStatsBar } from './SolanaStatsBar'
+import { NavMenu } from '../components/NavMenu'
+import { SearchBox } from './search/SearchBox'
+import { SolanaStatsBar } from '../components/SolanaStatsBar'
 
-export function Layout({
+export function GridLayout({
   header,
   children,
 }: PropsWithChildren<{

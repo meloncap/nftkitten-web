@@ -157,7 +157,7 @@ export type MELaunchpad = {
   symbol: string
   name: string | null
   description: string | null
-  featured: Boolean
+  featured: boolean
   edition: string | null
   image: string | null
   price: number | null
@@ -331,7 +331,7 @@ export type SolscanSearch = {
     }>
     family?: string
   }>
-  nft: any | null
+  nft: unknown | null
 }
 
 export type SolscanCollection = {

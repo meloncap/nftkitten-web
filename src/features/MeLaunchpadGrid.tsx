@@ -1,31 +1,29 @@
 import { useCallback, useMemo } from 'react'
 import { useInfiniteQuery } from 'react-query'
-import { PagingResult } from '../global'
-import { LoadingScreen } from './LoadingScreen'
-import {
-  fetchMeLaunchpad,
-  fetchMeLaunchpadResult,
-} from '../services/fetchMeLaunchpad'
-import { fetchOption } from '../services/fetchOption'
-import { AutoSizeGrid } from './AutoSizeGrid'
-import { MediaCard } from './MediaCard'
-import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../constants'
-import { LoadingCards } from './LoadingCards'
-import { MediaType } from './MediaType'
+import { PagingResult } from '../types'
+import { LoadingScreen } from '../components/LoadingScreen'
+import { launchpadApi, LaunchpadApiOutput } from '../services/magicEdenApi'
+import { queryOption } from '../services/queryOption'
+import { InfiniteGrid } from '../components/InfiniteGrid'
+import { MediaCard } from '../components/MediaCard'
+import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../contants'
+import { LoadingCards } from '../components/LoadingCards'
+import { MediaType } from '../components/MediaType'
 
 export const MeLaunchpadGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
-    useInfiniteQuery<PagingResult<fetchMeLaunchpadResult>>(
+    useInfiniteQuery<PagingResult<LaunchpadApiOutput>>(
       'MeLaunchpad',
-      fetchMeLaunchpad,
-      fetchOption<PagingResult<fetchMeLaunchpadResult>>()
+      launchpadApi,
+      queryOption<PagingResult<LaunchpadApiOutput>>()
     )
   const itemData = useMemo(() => data?.pages?.map((d) => d.data).flat(), [data])
   const loadMoreItems = useCallback(
-    // eslint-disable-next-line no-unused-vars
-    (startIndex: number, stopIndex: number) => {
+    (_startIndex: number, _stopIndex: number) => {
       if (hasNextPage) {
-        return fetchNextPage().then(() => {})
+        return fetchNextPage().then(() => {
+          return
+        })
       }
     },
     [hasNextPage, fetchNextPage]
@@ -47,7 +45,7 @@ export const MeLaunchpadGrid = () => {
           title={data.alt}
         >
           <MediaCard
-            src={data.src!}
+            src={data.src}
             alt={data.alt}
             width={COLLECTION_THUMB_SIZE}
             height={COLLECTION_THUMB_SIZE}
@@ -72,15 +70,14 @@ export const MeLaunchpadGrid = () => {
           500 - Something went wrong
         </h1>
       ) : (
-        <AutoSizeGrid
+        <InfiniteGrid
           pageSize={ME_PAGE_LIMIT}
           width={COLLECTION_THUMB_SIZE}
           height={COLLECTION_THUMB_SIZE + 45}
           itemData={itemData}
           loadMoreItems={hasNextPage ? loadMoreItems : undefined}
-        >
-          {gridCallback}
-        </AutoSizeGrid>
+          gridCallback={gridCallback}
+        />
       )}
     </div>
   )

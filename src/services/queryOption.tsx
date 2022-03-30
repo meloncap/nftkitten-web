@@ -1,6 +1,6 @@
 import { UseInfiniteQueryOptions } from 'react-query'
 
-export function fetchOption<
+export function queryOption<
   T extends { data: unknown[]; pageParam: number }
 >(): UseInfiniteQueryOptions<T> {
   return {

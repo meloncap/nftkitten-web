@@ -1,6 +1,6 @@
 import { CSSProperties, ReactNode, useCallback, useState } from 'react'
 import Image from 'next/image'
-import { mediaUrlLoader } from '../services/mediaUrlLoader'
+import { mediaUrlLoader } from '../utils/mediaUrlLoader'
 
 export const MediaCard = ({
   src,

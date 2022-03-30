@@ -1,9 +1,9 @@
 import type { NextPage } from 'next'
-import { MeCollectionGrid } from '../../components/MeCollectionGrid'
+import { MeCollectionGrid } from '../../features/MeCollectionGrid'
 import { useMemo } from 'react'
 import { useRouter } from 'next/router'
-import { MeLaunchpadGrid } from '../../components/MeLaunchpadGrid'
-import { Layout } from '../../components/Layout'
+import { MeLaunchpadGrid } from '../../features/MeLaunchpadGrid'
+import { GridLayout } from '../../features/GridLayout'
 import { TabPanel } from '../../components/TabPanel'
 
 const MagicEden: NextPage = () => {
@@ -27,7 +27,7 @@ const MagicEden: NextPage = () => {
     [tab]
   )
   return (
-    <Layout
+    <GridLayout
       header={
         <h1 className='m-0 text-3xl text-center dark:text-white sm:m-4 sm:text-left md:w-auto'>
           <a href='https://www.magiceden.io' target='_blank' rel='noreferrer'>
@@ -42,7 +42,7 @@ const MagicEden: NextPage = () => {
       }
     >
       <TabPanel tabs={tabs} />
-    </Layout>
+    </GridLayout>
   )
 }
 

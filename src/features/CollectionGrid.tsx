@@ -1,31 +1,26 @@
-/* eslint-disable jsx-a11y/alt-text */
 import { FC, useCallback, useMemo, useState } from 'react'
 import { useQuery } from 'react-query'
-import { PagingResult } from '../global'
-import { LoadingScreen } from './LoadingScreen'
-import { MediaCard } from './MediaCard'
-import { MediaType } from './MediaType'
+import { PagingResult } from '../types'
+import { LoadingScreen } from '../components/LoadingScreen'
+import { MediaCard } from '../components/MediaCard'
+import { MediaType } from '../components/MediaType'
 import {
-  fetchSolCollectionByVolResult,
-  fetchSolCollectionByVol,
-} from '../services/fetchSolCollectionByVol'
-import { AutoSizeGrid } from './AutoSizeGrid'
+  CollectionByVolApiOutput,
+  collectionByVolApi,
+} from '../services/solscanApi'
+import { InfiniteGrid } from '../components/InfiniteGrid'
 import Image from 'next/image'
 import classNames from 'classnames'
-import { RangeSlider } from './RangeSilder'
-import { COLLECTION_THUMB_SIZE } from '../constants'
+import { MultiRangeSlider } from './multiRangeSlider/MultiRangeSilder'
+import { COLLECTION_THUMB_SIZE } from '../contants'
 
 export const CollectionGrid: FC = () => {
   const [filterType, setFilterType] = useState('30day')
   const { isLoading, isError, data } = useQuery<
-    PagingResult<fetchSolCollectionByVolResult>
-  >(
-    `SolscanCollectionByVol${filterType}`,
-    fetchSolCollectionByVol(filterType),
-    {
-      refetchInterval: 1000 * 20,
-    }
-  )
+    PagingResult<CollectionByVolApiOutput>
+  >(`SolscanCollectionByVol${filterType}`, collectionByVolApi(filterType), {
+    refetchInterval: 1000 * 20,
+  })
   const [silderValues, setSilderValues] = useState<ReadonlyArray<number>>([
     0, 100,
   ])
@@ -132,7 +127,7 @@ export const CollectionGrid: FC = () => {
           24h VOL
         </a>
       </div>
-      <RangeSlider
+      <MultiRangeSlider
         xDomain={xDomain}
         values={silderValues}
         onValuesChange={useCallback(
@@ -148,13 +143,12 @@ export const CollectionGrid: FC = () => {
           500 - Something went wrong
         </h1>
       ) : (
-        <AutoSizeGrid
+        <InfiniteGrid
           width={COLLECTION_THUMB_SIZE}
           height={COLLECTION_THUMB_SIZE + 45}
           itemData={itemData}
-        >
-          {gridCallback}
-        </AutoSizeGrid>
+          gridCallback={gridCallback}
+        />
       )}
     </div>
   )

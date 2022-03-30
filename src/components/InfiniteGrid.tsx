@@ -1,17 +1,13 @@
-/* eslint-disable react/display-name */
-/* eslint-disable no-unused-vars */
 import {
   FixedSizeGrid as Grid,
   GridChildComponentProps,
   GridOnItemsRenderedProps,
   ListOnItemsRenderedProps,
 } from 'react-window'
-import InfinityLoader from 'react-window-infinite-loader'
+import InfiniteLoader from 'react-window-infinite-loader'
 import {
-  ComponentType,
   useCallback,
   useRef,
-  useState,
   HTMLProps,
   forwardRef,
   useMemo,
@@ -19,12 +15,29 @@ import {
   MutableRefObject,
   CSSProperties,
   useEffect,
+  ReactNode,
+  FC,
+  UIEvent,
 } from 'react'
-import classNames from 'classnames'
 import { useScroll } from '@use-gesture/react'
 import { useWindowSize } from 'usehooks-ts'
+import { useSpring, animated } from 'react-spring'
 
-type AutoSizeGridProps<T> = {
+type GridWithSizeProps<T> = InfiniteGridProps<T> & {
+  containerWidth: number
+  containerHeight: number
+}
+
+type GridCallbackProps<T> = GridChildComponentProps<T> & {
+  width: number
+  height: number
+  index: number
+  containerWidth: number
+  containerHeight: number
+  children: ReactNode
+}
+
+type InfiniteGridProps<T> = {
   pageSize?: number | undefined
   width: number
   height: number
@@ -33,20 +46,8 @@ type AutoSizeGridProps<T> = {
     | ((startIndex: number, stopIndex: number) => void | Promise<void>)
     | undefined
   useIsScrolling?: boolean | undefined
-  children: ComponentType<AutoSizeGridChildComponentProps<T>>
-}
-
-type GridWithSizeProps<T> = AutoSizeGridProps<T> & {
-  containerWidth: number
-  containerHeight: number
-}
-
-type AutoSizeGridChildComponentProps<T> = GridChildComponentProps<T> & {
-  width: number
-  height: number
-  index: number
-  containerWidth: number
-  containerHeight: number
+  gridCallback: FC<GridCallbackProps<T>>
+  children?: ReactNode | undefined
 }
 
 type GridWithLoaderProps<T> = GridWithSizeProps<T> & {
@@ -54,74 +55,64 @@ type GridWithLoaderProps<T> = GridWithSizeProps<T> & {
   loaderRef: (ref: Grid) => void
 }
 
-function clamp(value: number, clampAt: number = 20) {
-  if (value > 0) {
-    return value > clampAt ? clampAt : value
-  } else {
-    return value < -clampAt ? -clampAt : value
-  }
-}
-
 function getNumOfCol(containerWidth: number, width: number) {
   return ~~(containerWidth / width)
 }
 
 function OuterElementType({
-  style,
+  className: _className,
+  style: _style,
+  onScroll,
   forwardedRef,
-  ...props
-}: HTMLProps<HTMLDivElement> & {
-  forwardedRef: MutableRefObject<HTMLDivElement>
+  children,
+}: HTMLProps<HTMLElement> & {
+  forwardedRef: MutableRefObject<HTMLElement>
 }) {
-  const [isScrollBackward, setIsScrollBackward] = useState(false)
+  const [{ offsetY }, offsetYApi] = useSpring(() => ({ offsetY: 0 }))
+  const [{ opacity }, opacityApi] = useSpring(() => ({ opacity: 0 }))
   const scrollClickHandler = useCallback(() => {
+    opacityApi.start({ opacity: 0, immediate: true })
     window.scrollTo({ top: 0, behavior: 'smooth' })
-    setIsScrollBackward(false)
-  }, [setIsScrollBackward])
-  const bind = useScroll(
-    ({ movement: [_deltaX, deltaY] }) => {
-      const newIsScrollBackward = deltaY < 0
-      if (newIsScrollBackward != isScrollBackward) {
-        setIsScrollBackward(newIsScrollBackward)
-      }
-      if (
-        deltaY > 0 &&
-        window.scrollY <
-          document.documentElement.scrollHeight - window.innerHeight
-      ) {
-        window.scrollBy({ top: deltaY, behavior: 'auto' })
+  }, [opacityApi])
+  useScroll(
+    ({ offset: [_offsetX, offsetY], movement: [_deltaX, deltaY] }) => {
+      const currentTarget = document.documentElement
+      const isBackward = deltaY < 0
+      offsetYApi.start({
+        offsetY:
+          offsetY / (currentTarget.scrollHeight - currentTarget.clientHeight),
+      })
+      opacityApi.start({
+        opacity: offsetY < 100 || !isBackward ? 0 : 1,
+        immediate: offsetY < 100 || isBackward,
+      })
+      if (onScroll instanceof Function) {
+        onScroll({ currentTarget } as UIEvent<HTMLElement, globalThis.UIEvent>)
       }
     },
     {
-      eventOptions: { capture: true },
+      target: window,
     }
   )
+  forwardedRef.current = document.documentElement
   return (
     <>
-      <div
-        style={{
-          ...style,
-          width: '100vw',
-          height: '100vh',
-        }}
-        ref={forwardedRef}
-        {...props}
-        {...bind()}
-      ></div>
-      <button
+      <div className='sticky top-0 z-10 w-full h-2.5 bg-gray-200 dark:bg-gray-700 rounded-full'>
+        <animated.div
+          className='h-2.5 bg-blue-600 rounded-full'
+          style={{ width: offsetY.to((y) => `${y * 100}%`) }}
+        ></animated.div>
+      </div>
+      <div className='relative'>{children}</div>
+      <animated.button
         type='button'
-        data-mdb-ripple='true'
-        data-mdb-ripple-color='light'
-        className={classNames(
-          'fixed inline-block right-5 bottom-5 p-3 text-xs font-medium leading-tight text-white uppercase bg-blue-600 hover:bg-blue-700 focus:bg-blu-700 active:bg-blue-800 rounded-full focus:outline-none focus:ring-0 shadow-md hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out z-10',
-          { hidden: !isScrollBackward }
-        )}
+        className='inline-block fixed right-5 bottom-5 z-10 p-3 text-xs font-medium leading-tight text-white uppercase bg-blue-600 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 rounded-full focus:outline-none focus:ring-0 shadow-md hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out'
+        style={{ opacity: opacity.to((x) => x) }}
         onClick={scrollClickHandler}
       >
         <svg
           aria-hidden='true'
           focusable='false'
-          data-prefix='fas'
           className='w-4 h-4'
           role='img'
           xmlns='http://www.w3.org/2000/svg'
@@ -132,7 +123,7 @@ function OuterElementType({
             d='M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z'
           ></path>
         </svg>
-      </button>
+      </animated.button>
     </>
   )
 }
@@ -142,7 +133,7 @@ function InnerElementType({
   forwardedRef,
   ...props
 }: HTMLProps<HTMLDivElement> & { forwardedRef: ForwardedRef<HTMLDivElement> }) {
-  if (style && !style.width) {
+  if (style && (!style.width || !style.height)) {
     style.width = '100%'
     style.height = '100%'
   }
@@ -154,7 +145,7 @@ function GridWithLoader<T>({
   height,
   itemData,
   useIsScrolling,
-  children: Children,
+  gridCallback,
   containerWidth,
   containerHeight,
   loadMoreItems,
@@ -170,12 +161,17 @@ function GridWithLoader<T>({
     [loaderRef]
   )
   const onItemsRendered = useCallback(
-    (props: GridOnItemsRenderedProps) => {
+    ({
+      overscanRowStartIndex,
+      overscanRowStopIndex,
+      visibleRowStartIndex,
+      visibleRowStopIndex,
+    }: GridOnItemsRenderedProps) => {
       loaderOnItemsRendered({
-        overscanStartIndex: props.overscanRowStartIndex,
-        overscanStopIndex: props.overscanRowStopIndex,
-        visibleStartIndex: props.visibleRowStartIndex,
-        visibleStopIndex: props.visibleRowStopIndex,
+        overscanStartIndex: overscanRowStartIndex,
+        overscanStopIndex: overscanRowStopIndex,
+        visibleStartIndex: visibleRowStartIndex,
+        visibleStopIndex: visibleRowStopIndex,
       })
     },
     [loaderOnItemsRendered]
@@ -192,7 +188,7 @@ function GridWithLoader<T>({
   )
   const innerElementType = useMemo(
     () =>
-      forwardRef<HTMLDivElement>((props, ref) => (
+      forwardRef<HTMLDivElement>(({ ...props }, ref) => (
         <InnerElementType forwardedRef={ref} {...props} />
       )),
     []
@@ -218,22 +214,21 @@ function GridWithLoader<T>({
         ((1 + columnIndex) * (containerWidth - numOfCol * width)) /
         (1 + numOfCol)
       const style = { ...gridStyle, marginLeft }
-      return (
-        <Children
-          columnIndex={columnIndex}
-          rowIndex={rowIndex}
-          index={index}
-          isScrolling={isScrolling}
-          data={data}
-          style={style}
-          width={width}
-          height={height}
-          containerWidth={containerWidth}
-          containerHeight={containerHeight}
-        />
-      )
+      return gridCallback({
+        columnIndex,
+        rowIndex,
+        index,
+        isScrolling,
+        data,
+        style,
+        width,
+        height,
+        containerWidth,
+        containerHeight,
+        children: undefined,
+      })
     },
-    [width, height, containerWidth, containerHeight, Children]
+    [width, height, containerWidth, containerHeight, gridCallback]
   )
   const columnCount = getNumOfCol(containerWidth, width)
   return (
@@ -260,19 +255,22 @@ function GridWithLoader<T>({
   )
 }
 
-export function AutoSizeGrid<T>({
+export function InfiniteGrid<T>({
   pageSize,
   width,
   height,
   itemData,
   loadMoreItems,
   useIsScrolling,
+  gridCallback,
   children,
-}: AutoSizeGridProps<T>) {
+}: InfiniteGridProps<T>) {
   const { width: containerWidth, height: containerHeight } = useWindowSize()
   const isItemLoaded = useCallback(
     (index: number) => {
-      if (!itemData) return true
+      if (!itemData) {
+        return true
+      }
       const numOfCol = getNumOfCol(containerWidth, width)
       return Math.ceil(itemData.length / numOfCol) >= index
     },
@@ -287,13 +285,18 @@ export function AutoSizeGrid<T>({
     }
   }, [loadMoreItems, itemData, containerWidth, width, height, containerHeight])
   return (
-    <InfinityLoader
+    <InfiniteLoader
       isItemLoaded={isItemLoaded}
       itemCount={
         (itemData?.length ?? 0) +
         (loadMoreItems ? getNumOfCol(containerWidth, width) : 0)
       }
-      loadMoreItems={loadMoreItems ?? (() => {})}
+      loadMoreItems={
+        loadMoreItems ??
+        (() => {
+          return
+        })
+      }
       minimumBatchSize={
         pageSize ? pageSize / getNumOfCol(containerWidth, width) : undefined
       }
@@ -312,8 +315,9 @@ export function AutoSizeGrid<T>({
             loaderRef={ref}
             height={height}
             useIsScrolling={useIsScrolling}
+            gridCallback={gridCallback}
           >
-            {children}
+            <div className='relative'>{children}</div>
           </GridWithLoader>
         ),
         [
@@ -325,9 +329,10 @@ export function AutoSizeGrid<T>({
           width,
           height,
           useIsScrolling,
+          gridCallback,
           children,
         ]
       )}
-    </InfinityLoader>
+    </InfiniteLoader>
   )
 }
