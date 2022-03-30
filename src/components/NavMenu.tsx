@@ -60,7 +60,6 @@ export const NavMenu = () => {
         <Link href='/' passHref>
           <a className='flex items-center'>
             <Image
-              layout='responsive'
               src='/img/meow.webp'
               className='mr-3 h-6 rounded sm:h-10'
               alt='NFTKitten.io'
