@@ -3,7 +3,7 @@ import { HistogramChart } from './HistogramChart'
 import { useDrag } from '@use-gesture/react'
 import { useElementSize } from 'usehooks-ts'
 import { formatSol } from '../../utils/numberFormatter'
-import { useCallback, useMemo, MouseEvent } from 'react'
+import { useCallback, useMemo, MouseEvent, useEffect, useState } from 'react'
 import Image from 'next/image'
 
 export function MultiRangeSlider({
@@ -17,6 +17,8 @@ export function MultiRangeSlider({
   onValuesChange: (values: ReadonlyArray<number>) => void
   sliderData: Array<number>
 }) {
+  const [xDomainAdj, setXDomainAdj] = useState(xDomain)
+  useEffect(() => setXDomainAdj(xDomain), [xDomain, setXDomainAdj])
   const [containerRef, { width }] = useElementSize()
   const [{ x: xMin }, apiMin] = useSpring({ x: 0 }, [])
   const innerWidth = width - 40
@@ -58,7 +60,7 @@ export function MultiRangeSlider({
     let maxCount = -Infinity
     for (const val of sliderData) {
       const percent = Math.ceil(
-        ((val - xDomain[0]) / (xDomain[1] - xDomain[0])) * 100
+        ((val - xDomainAdj[0]) / (xDomainAdj[1] - xDomainAdj[0])) * 100
       ).toString()
       stats[percent] = (stats[percent] ?? 0) + 1
       if (stats[percent] > maxCount) maxCount = stats[percent]
@@ -72,7 +74,7 @@ export function MultiRangeSlider({
       }
     }
     return data
-  }, [xDomain, sliderData])
+  }, [xDomainAdj, sliderData])
   const clickHandler = useCallback(
     (ev: MouseEvent<HTMLDivElement>) => {
       const rect = ev.currentTarget.getBoundingClientRect()
@@ -96,17 +98,18 @@ export function MultiRangeSlider({
     [onValuesChange, xMax, xMin]
   )
   const minSolVal =
-    xDomain[0] + (xDomain[1] - xDomain[0]) * (xMin.get() / innerWidth)
+    xDomainAdj[0] + (xDomainAdj[1] - xDomainAdj[0]) * (xMin.get() / innerWidth)
   const minSol = useMemo(() => formatSol(minSolVal), [minSolVal])
   const maxSolVal =
-    xDomain[0] + (xDomain[1] - xDomain[0]) * (1 + xMax.get() / innerWidth)
+    xDomainAdj[0] +
+    (xDomainAdj[1] - xDomainAdj[0]) * (1 + xMax.get() / innerWidth)
   const maxSol = useMemo(() => formatSol(maxSolVal), [maxSolVal])
   return (
     <div className='relative' style={{ margin: 16, height: 100 }}>
-      {data.length && xDomain[0] !== Infinity && (
+      {data.length && xDomainAdj[0] !== Infinity && (
         <>
           <HistogramChart
-            xDomain={xDomain}
+            xDomain={xDomainAdj}
             data={data}
             highlight={values}
             width={innerWidth}

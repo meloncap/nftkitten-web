@@ -19,8 +19,8 @@ import {
   FC,
   UIEvent,
 } from 'react'
+import { useWindowSize } from '../hooks/useWindowSize'
 import { useScroll } from '@use-gesture/react'
-import { useWindowSize } from 'usehooks-ts'
 import { useSpring, animated } from 'react-spring'
 
 type GridWithSizeProps<T> = InfiniteGridProps<T> & {
@@ -124,7 +124,7 @@ function OuterElementType({
         ></animated.div>
       </div>
       <div
-        className='overflow-visible overflow-x-hidden relative w-screen h-screen'
+        className='overflow-visible relative w-screen h-screen'
         ref={containerRef}
       >
         {children}
