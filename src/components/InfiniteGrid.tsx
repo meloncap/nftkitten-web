@@ -124,7 +124,7 @@ function OuterElementType({
         ></animated.div>
       </div>
       <div
-        className='overflow-visible relative w-screen h-screen'
+        className='overflow-visible relative w-screen min-h-screen'
         ref={containerRef}
       >
         {children}
