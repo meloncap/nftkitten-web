@@ -299,10 +299,14 @@ export function InfiniteGrid<T>({
   gridCallback,
   children,
 }: InfiniteGridProps<T>) {
-  const { width: winWidth, height: containerHeight } = useWindowSize()
+  const { width: winWidth, height: winHeight } = useWindowSize()
   const containerWidth = Math.min(
     winWidth,
     document.documentElement.clientWidth
+  )
+  const containerHeight = Math.min(
+    winHeight,
+    document.documentElement.clientHeight
   )
   const isItemLoaded = useCallback(
     (index: number) => {
