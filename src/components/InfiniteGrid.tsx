@@ -94,14 +94,6 @@ function OuterElementType({
         immediate: offsetY < 100 || isBackward,
       })
       if (onScroll instanceof Function) {
-        console.log({
-          clientHeight,
-          clientWidth,
-          scrollLeft,
-          scrollTop,
-          scrollHeight,
-          scrollWidth,
-        })
         onScroll({
           currentTarget: {
             clientHeight,
@@ -132,7 +124,7 @@ function OuterElementType({
         ></animated.div>
       </div>
       <div
-        className='overflow-visible relative w-screen h-screen'
+        className='overflow-visible overflow-x-hidden relative w-screen h-screen'
         ref={containerRef}
       >
         {children}
