@@ -68,6 +68,7 @@ function OuterElementType({
 }: HTMLProps<HTMLElement> & {
   forwardedRef: MutableRefObject<HTMLElement>
 }) {
+  const containerRef = useRef<HTMLDivElement>(null)
   const [{ offsetY }, offsetYApi] = useSpring(() => ({ offsetY: 0 }))
   const [{ opacity }, opacityApi] = useSpring(() => ({ opacity: 0 }))
   const scrollClickHandler = useCallback(() => {
@@ -76,18 +77,45 @@ function OuterElementType({
   }, [opacityApi])
   useScroll(
     ({ offset: [_offsetX, offsetY], movement: [_deltaX, deltaY] }) => {
-      const currentTarget = document.documentElement
+      const {
+        clientHeight,
+        clientWidth,
+        scrollLeft,
+        scrollTop,
+        scrollHeight,
+        scrollWidth,
+      } = document.documentElement
       const isBackward = deltaY < 0
       offsetYApi.start({
-        offsetY:
-          offsetY / (currentTarget.scrollHeight - currentTarget.clientHeight),
+        offsetY: offsetY / (scrollHeight - clientHeight),
       })
       opacityApi.start({
         opacity: offsetY < 100 || !isBackward ? 0 : 1,
         immediate: offsetY < 100 || isBackward,
       })
       if (onScroll instanceof Function) {
-        onScroll({ currentTarget } as UIEvent<HTMLElement, globalThis.UIEvent>)
+        console.log({
+          clientHeight,
+          clientWidth,
+          scrollLeft,
+          scrollTop,
+          scrollHeight,
+          scrollWidth,
+        })
+        onScroll({
+          currentTarget: {
+            clientHeight,
+            clientWidth,
+            scrollLeft,
+            scrollTop:
+              scrollTop -
+              (containerRef.current
+                ? containerRef.current.getBoundingClientRect().top + scrollTop
+                : 0),
+            scrollHeight,
+            scrollWidth,
+          },
+        } as UIEvent<HTMLElement, globalThis.UIEvent>)
       }
     },
     {
@@ -103,7 +131,10 @@ function OuterElementType({
           style={{ width: offsetY.to((y) => `${y * 100}%`) }}
         ></animated.div>
       </div>
-      <div className='overflow-visible relative w-screen h-screen'>
+      <div
+        className='overflow-visible relative w-screen h-screen'
+        ref={containerRef}
+      >
         {children}
       </div>
       <animated.button
@@ -135,8 +166,11 @@ function InnerElementType({
   forwardedRef,
   ...props
 }: HTMLProps<HTMLDivElement> & { forwardedRef: ForwardedRef<HTMLDivElement> }) {
-  if (style && (!style.width || !style.height)) {
-    style.width = '100%'
+  if (!style) {
+    style = {}
+  }
+  style.width = '100%'
+  if (!style.height || style.height === Infinity) {
     style.height = '100%'
   }
   return <div style={style} ref={forwardedRef} {...props}></div>
