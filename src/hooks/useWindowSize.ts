@@ -13,8 +13,8 @@ export function useWindowSize(): WindowSize {
 
   const handleSize = useCallback(() => {
     setWindowSize({
-      width: screen.availWidth,
-      height: screen.availHeight,
+      width: window.innerWidth,
+      height: window.innerHeight,
     })
   }, [])
 

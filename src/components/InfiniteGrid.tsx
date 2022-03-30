@@ -63,9 +63,13 @@ function OuterElementType({
   className: _className,
   style: _style,
   onScroll,
+  containerWidth,
+  containerHeight,
   forwardedRef,
   children,
 }: HTMLProps<HTMLElement> & {
+  containerWidth: number
+  containerHeight: number
   forwardedRef: MutableRefObject<HTMLElement>
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -76,28 +80,22 @@ function OuterElementType({
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [opacityApi])
   useScroll(
-    ({ offset: [_offsetX, offsetY], movement: [_deltaX, deltaY] }) => {
-      const {
-        clientHeight,
-        clientWidth,
-        scrollLeft,
-        scrollTop,
-        scrollHeight,
-        scrollWidth,
-      } = document.documentElement
+    ({ movement: [_deltaX, deltaY] }) => {
+      const { scrollLeft, scrollTop, scrollHeight, scrollWidth } =
+        document.documentElement
       const isBackward = deltaY < 0
       offsetYApi.start({
-        offsetY: offsetY / (scrollHeight - clientHeight),
+        offsetY: scrollTop / (scrollHeight - containerHeight),
       })
       opacityApi.start({
-        opacity: offsetY < 100 || !isBackward ? 0 : 1,
-        immediate: offsetY < 100 || isBackward,
+        opacity: scrollTop < 100 || !isBackward ? 0 : 1,
+        immediate: scrollTop < 100 || isBackward,
       })
       if (onScroll instanceof Function) {
         onScroll({
           currentTarget: {
-            clientHeight,
-            clientWidth,
+            clientHeight: containerHeight,
+            clientWidth: containerWidth,
             scrollLeft,
             scrollTop:
               scrollTop -
@@ -114,6 +112,12 @@ function OuterElementType({
       target: window,
     }
   )
+  useEffect(() => {
+    const { scrollTop, scrollHeight } = document.documentElement
+    offsetYApi.start({
+      offsetY: scrollTop / (scrollHeight - containerHeight),
+    })
+  }, [offsetYApi, containerHeight])
   forwardedRef.current = document.documentElement
   return (
     <>
@@ -208,11 +212,13 @@ function GridWithLoader<T>({
     () =>
       forwardRef<HTMLDivElement>((props, ref) => (
         <OuterElementType
+          containerWidth={containerWidth}
+          containerHeight={containerHeight}
           forwardedRef={ref as MutableRefObject<HTMLDivElement>}
           {...props}
         />
       )),
-    []
+    [containerHeight]
   )
   const innerElementType = useMemo(
     () =>
@@ -293,7 +299,11 @@ export function InfiniteGrid<T>({
   gridCallback,
   children,
 }: InfiniteGridProps<T>) {
-  const { width: containerWidth, height: containerHeight } = useWindowSize()
+  const { width: winWidth, height: containerHeight } = useWindowSize()
+  const containerWidth = Math.min(
+    winWidth,
+    document.documentElement.clientWidth
+  )
   const isItemLoaded = useCallback(
     (index: number) => {
       if (!itemData) {
