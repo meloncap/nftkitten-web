@@ -21,9 +21,7 @@ export const MeLaunchpadGrid = () => {
   const loadMoreItems = useCallback(
     (_startIndex: number, _stopIndex: number) => {
       if (hasNextPage) {
-        return fetchNextPage().then(() => {
-          return
-        })
+        return fetchNextPage().then(() => void 0)
       }
     },
     [hasNextPage, fetchNextPage]
@@ -62,7 +60,7 @@ export const MeLaunchpadGrid = () => {
     [hasNextPage]
   )
   return (
-    <div className='grow min-h-screen'>
+    <div className='min-h-screen'>
       {isLoading ? (
         <LoadingScreen />
       ) : isError ? (

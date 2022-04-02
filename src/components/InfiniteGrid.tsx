@@ -60,8 +60,6 @@ function getNumOfCol(containerWidth: number, width: number) {
 }
 
 function OuterElementType({
-  className: _className,
-  style: _style,
   onScroll,
   containerWidth,
   containerHeight,
@@ -75,19 +73,25 @@ function OuterElementType({
   forwardedRef: MutableRefObject<HTMLElement>
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [{ offsetY }, offsetYApi] = useSpring(() => ({ offsetY: 0 }))
-  const [{ opacity }, opacityApi] = useSpring(() => ({ opacity: 0 }))
+  const [{ offsetY }, offsetYApi] = useSpring({ offsetY: 0 }, [])
+  const [{ opacity }, opacityApi] = useSpring({ opacity: 0 }, [])
   const scrollClickHandler = useCallback(() => {
-    opacityApi.start({ opacity: 0, immediate: true })
+    opacityApi.update({ opacity: 0 })
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [opacityApi])
   useScroll(
     ({ movement: [_deltaX, deltaY] }) => {
-      const { scrollLeft, scrollTop, scrollHeight, scrollWidth } =
-        document.documentElement
+      const {
+        clientWidth,
+        clientHeight,
+        scrollLeft,
+        scrollTop,
+        scrollHeight,
+        scrollWidth,
+      } = document.documentElement
       const isBackward = deltaY < 0
       offsetYApi.start({
-        offsetY: scrollTop / (scrollHeight - containerHeight),
+        offsetY: scrollTop / (scrollHeight - clientHeight),
       })
       opacityApi.start({
         opacity: scrollTop < 100 || !isBackward ? 0 : 1,
@@ -96,8 +100,8 @@ function OuterElementType({
       if (onScroll instanceof Function) {
         onScroll({
           currentTarget: {
-            clientHeight: containerHeight,
-            clientWidth: containerWidth,
+            clientHeight,
+            clientWidth,
             scrollLeft,
             scrollTop:
               scrollTop -
@@ -115,11 +119,11 @@ function OuterElementType({
     }
   )
   useEffect(() => {
-    const { scrollTop, scrollHeight } = document.documentElement
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement
     offsetYApi.start({
-      offsetY: scrollTop / (scrollHeight - containerHeight),
+      offsetY: scrollTop / (scrollHeight - clientHeight),
     })
-  }, [offsetYApi, containerHeight, itemCount])
+  }, [offsetYApi, containerWidth, containerHeight, itemCount])
   forwardedRef.current = document.documentElement
   return (
     <>
@@ -129,10 +133,7 @@ function OuterElementType({
           style={{ width: offsetY.to((y) => `${y * 100}%`) }}
         ></animated.div>
       </div>
-      <div
-        className='overflow-visible relative w-screen min-h-screen'
-        ref={containerRef}
-      >
+      <div className='relative' ref={containerRef}>
         {children}
       </div>
       <animated.button
@@ -336,12 +337,7 @@ export function InfiniteGrid<T>({
         (itemData?.length ?? 0) +
         (loadMoreItems ? getNumOfCol(containerWidth, width) : 0)
       }
-      loadMoreItems={
-        loadMoreItems ??
-        (() => {
-          return
-        })
-      }
+      loadMoreItems={loadMoreItems ?? (() => void 0)}
       minimumBatchSize={
         pageSize ? pageSize / getNumOfCol(containerWidth, width) : undefined
       }

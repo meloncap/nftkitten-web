@@ -29,7 +29,9 @@ export const NavMenu = () => {
       if (!isAuthenticated) {
         await authenticate({ signingMessage: 'Log in NFTKitten', type })
           .then(function (user) {
-            if (!user) return
+            if (!user) {
+              return
+            }
             // eslint-disable-next-line no-console
             console.log('logged in user:', user)
             // eslint-disable-next-line no-console

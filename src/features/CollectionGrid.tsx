@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useQuery } from 'react-query'
 import { PagingResult } from '../types'
 import { LoadingScreen } from '../components/LoadingScreen'
@@ -21,8 +21,8 @@ export const CollectionGrid: FC = () => {
   >(`SolscanCollectionByVol${filterType}`, collectionByVolApi(filterType), {
     refetchInterval: 1000 * 20,
   })
-  const [silderValues, setSilderValues] = useState<ReadonlyArray<number>>([
-    0, 100,
+  const [sliderValues, setSliderValues] = useState<ReadonlyArray<number>>([
+    0, 0,
   ])
   const sliderData = useMemo(
     () => data?.data.map((d) => d.sol ?? 0) ?? [],
@@ -36,11 +36,14 @@ export const CollectionGrid: FC = () => {
       ),
     [sliderData]
   )
-  const itemData = useMemo(() => {
-    const min = xDomain[0] + ((xDomain[1] - xDomain[0]) * silderValues[0]) / 100
-    const max = xDomain[0] + ((xDomain[1] - xDomain[0]) * silderValues[1]) / 100
-    return data?.data.filter((d) => d.sol >= min && d.sol <= max) ?? []
-  }, [data, xDomain, silderValues])
+  useEffect(() => setSliderValues(xDomain), [xDomain])
+  const itemData = useMemo(
+    () =>
+      data?.data.filter(
+        (d) => d.sol >= sliderValues[0] && d.sol <= sliderValues[1]
+      ) ?? [],
+    [data, sliderValues]
+  )
   const gridCallback = useCallback(
     ({ data, style }) =>
       !data?.src ? null : (
@@ -69,7 +72,7 @@ export const CollectionGrid: FC = () => {
     []
   )
   return (
-    <div className='grow min-h-screen'>
+    <div className='min-h-screen'>
       <div className='flex justify-end py-2 px-4'>
         <a
           href='#'
@@ -129,10 +132,10 @@ export const CollectionGrid: FC = () => {
       </div>
       <MultiRangeSlider
         xDomain={xDomain}
-        values={silderValues}
+        values={sliderValues}
         onValuesChange={useCallback(
-          (values) => setSilderValues(values),
-          [setSilderValues]
+          (values) => setSliderValues(values),
+          [setSliderValues]
         )}
         sliderData={sliderData}
       />

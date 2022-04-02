@@ -1,5 +1,5 @@
 /* eslint-disable tailwindcss/no-custom-classname */
-import { useDebounce } from '../../../useDebounce'
+import { useDebounce } from 'usehooks-ts'
 import {
   useEffect,
   useState,
@@ -48,7 +48,8 @@ export function SearchBox() {
     } else {
       document.documentElement.classList.remove('overflow-hidden')
     }
-  }, [open])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, inputRef.current])
   const itemData = useMemo(
     () => (data && Object.keys(data).length ? data : null),
     [data]

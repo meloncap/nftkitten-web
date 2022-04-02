@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useInfiniteQuery } from 'react-query'
 import { PagingResult } from '../types'
 import { LoadingScreen } from '../components/LoadingScreen'
@@ -19,8 +19,8 @@ export const MeCollectionGrid = () => {
       collectionApi,
       queryOption<PagingResult<CollectionApiOutput>>()
     )
-  const [silderValues, setSilderValues] = useState<ReadonlyArray<number>>([
-    0, 100,
+  const [sliderValues, setSliderValues] = useState<ReadonlyArray<number>>([
+    0, 0,
   ])
   const sliderData = useMemo(
     () =>
@@ -38,22 +38,20 @@ export const MeCollectionGrid = () => {
       ),
     [sliderData]
   )
+  useEffect(() => setSliderValues(xDomain), [xDomain])
   const itemData = useMemo(() => {
-    const min = xDomain[0] + ((xDomain[1] - xDomain[0]) * silderValues[0]) / 100
-    const max = xDomain[0] + ((xDomain[1] - xDomain[0]) * silderValues[1]) / 100
     return (
       data?.pages
         ?.map((d) => d.data)
         .flat()
-        .filter((d) => d.sol >= min && d.sol <= max) ?? []
+        .filter((d) => d.sol >= sliderValues[0] && d.sol <= sliderValues[1]) ??
+      []
     )
-  }, [data, xDomain, silderValues])
+  }, [data, sliderValues])
   const loadMoreItems = useCallback(
     (_startIndex: number, _stopIndex: number) => {
       if (hasNextPage) {
-        return fetchNextPage().then(() => {
-          return
-        })
+        return fetchNextPage().then(() => void 0)
       }
     },
     [hasNextPage, fetchNextPage]
@@ -94,13 +92,13 @@ export const MeCollectionGrid = () => {
     [hasNextPage]
   )
   return (
-    <div className='grow min-h-screen'>
+    <div className='min-h-screen'>
       <MultiRangeSlider
         xDomain={xDomain}
-        values={silderValues}
+        values={sliderValues}
         onValuesChange={useCallback(
-          (values) => setSilderValues(values),
-          [setSilderValues]
+          (values) => setSliderValues(values),
+          [setSliderValues]
         )}
         sliderData={sliderData}
       />

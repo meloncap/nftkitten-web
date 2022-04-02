@@ -15,7 +15,7 @@ export function GridLayout({
       <GlobalHead />
       <SolanaStatsBar />
       <NavMenu />
-      <div className='flex flex-col-reverse md:flex-row md:justify-between'>
+      <div className='flex md:flex-row md:justify-between'>
         {header}
         <SearchBox />
       </div>

@@ -1,10 +1,11 @@
 import { useSpring, animated } from 'react-spring'
 import { HistogramChart } from './HistogramChart'
 import { useDrag } from '@use-gesture/react'
-import { useElementSize } from 'usehooks-ts'
 import { formatSol } from '../../utils/numberFormatter'
-import { useCallback, useMemo, MouseEvent, useEffect, useState } from 'react'
+import { useCallback, MouseEvent, useEffect, useState } from 'react'
 import Image from 'next/image'
+import { xToValue, valueToX } from './utils'
+import { useElementSize } from 'usehooks-ts'
 
 export function MultiRangeSlider({
   xDomain,
@@ -17,103 +18,112 @@ export function MultiRangeSlider({
   onValuesChange: (values: ReadonlyArray<number>) => void
   sliderData: Array<number>
 }) {
-  const [xDomainAdj, setXDomainAdj] = useState(xDomain)
-  useEffect(() => setXDomainAdj(xDomain), [xDomain, setXDomainAdj])
   const [containerRef, { width }] = useElementSize()
-  const [{ x: xMin }, apiMin] = useSpring({ x: 0 }, [])
+  const [zoomedXDomain, setZoomedXDomain] = useState(xDomain)
+  useEffect(() => setZoomedXDomain(xDomain), [xDomain])
   const innerWidth = width - 40
+  const [{ xMin, xMax }, api] = useSpring(
+    {
+      xMin: zoomedXDomain[0],
+      xMax: zoomedXDomain[1],
+      onChange({ value: { xMin, xMax } }) {
+        onValuesChange([xMin, xMax])
+      },
+    },
+    [zoomedXDomain, onValuesChange]
+  )
+
+  useEffect(() => {
+    api.set({
+      xMin: xDomain[0],
+      xMax: xDomain[1],
+    })
+  }, [api, xDomain])
+
   const bindMin = useDrag(
     ({ offset: [x] }) => {
-      let xMaxVal = xMax.get()
-      if (xMaxVal < x - innerWidth) {
-        xMaxVal = x - innerWidth
-        apiMax.start({ x: xMaxVal, immediate: true })
-      }
-      apiMin.start({ x, immediate: true })
-      onValuesChange([(x / innerWidth) * 100, (1 + xMaxVal / innerWidth) * 100])
+      const xMinVal = xToValue(x, innerWidth, zoomedXDomain)
+      api.start({
+        xMin: xMinVal,
+        xMax: Math.max(xMinVal, xMax.get()),
+        immediate: true,
+      })
     },
     {
       axis: 'x',
       bounds: { left: 0, right: innerWidth, top: 0, bottom: 0 },
-      from: () => [xMin.get(), 0],
+      from: () => [valueToX(xMin.get(), innerWidth, zoomedXDomain), 0],
     }
   )
-  const [{ x: xMax }, apiMax] = useSpring({ x: 0 }, [])
   const bindMax = useDrag(
     ({ offset: [x] }) => {
-      let xMinVal = xMin.get()
-      if (xMinVal > innerWidth + x) {
-        xMinVal = innerWidth + x
-        apiMin.start({ x: xMinVal, immediate: true })
-      }
-      apiMax.start({ x, immediate: true })
-      onValuesChange([(xMinVal / innerWidth) * 100, (1 + x / innerWidth) * 100])
+      const xMaxVal = xToValue(innerWidth + x, innerWidth, zoomedXDomain)
+      api.start({
+        xMax: xMaxVal,
+        xMin: Math.min(xMaxVal, xMin.get()),
+        immediate: true,
+      })
     },
     {
       axis: 'x',
       bounds: { left: -innerWidth, right: 0, top: 0, bottom: 0 },
-      from: () => [xMax.get(), 0],
+      from: () => [
+        valueToX(xMax.get(), innerWidth, zoomedXDomain) - innerWidth,
+        0,
+      ],
     }
   )
-  const data = useMemo(() => {
-    const stats: { [key: string]: number } = {}
-    let maxCount = -Infinity
-    for (const val of sliderData) {
-      const percent = Math.ceil(
-        ((val - xDomainAdj[0]) / (xDomainAdj[1] - xDomainAdj[0])) * 100
-      ).toString()
-      stats[percent] = (stats[percent] ?? 0) + 1
-      if (stats[percent] > maxCount) maxCount = stats[percent]
-    }
-    const data: Array<number> = []
-    for (let x = 0; x <= 100; x++) {
-      if (x.toString() in stats) {
-        data.push(30 + Math.ceil((stats[x] / maxCount) * 70))
-      } else {
-        data.push(0)
-      }
-    }
-    return data
-  }, [xDomainAdj, sliderData])
-  const clickHandler = useCallback(
+  const handleSliderClick = useCallback(
     (ev: MouseEvent<HTMLDivElement>) => {
       const rect = ev.currentTarget.getBoundingClientRect()
-      const evX = ev.clientX - rect.left
-      const minDiff = Math.abs(evX - xMin.get())
-      const maxDiff = Math.abs(rect.width - evX + xMax.get())
+      const evX = xToValue(ev.clientX - rect.left, rect.width, zoomedXDomain)
+      const minDiff = Math.hypot(xMin.get() - evX)
+      const maxDiff = Math.hypot(evX - xMax.get())
       if (minDiff < maxDiff) {
-        xMin.set(evX)
-        onValuesChange([
-          (evX / rect.width) * 100,
-          (1 + xMax.get() / rect.width) * 100,
-        ])
+        api.start({ xMin: evX, immediate: true })
       } else {
-        xMax.set(evX - rect.width)
-        onValuesChange([
-          (xMin.get() / rect.width) * 100,
-          (1 + (evX - rect.width) / rect.width) * 100,
-        ])
+        api.start({ xMax: evX, immediate: true })
       }
     },
-    [onValuesChange, xMax, xMin]
+    [api, xMin, xMax, zoomedXDomain]
   )
-  const minSolVal =
-    xDomainAdj[0] + (xDomainAdj[1] - xDomainAdj[0]) * (xMin.get() / innerWidth)
-  const minSol = useMemo(() => formatSol(minSolVal), [minSolVal])
-  const maxSolVal =
-    xDomainAdj[0] +
-    (xDomainAdj[1] - xDomainAdj[0]) * (1 + xMax.get() / innerWidth)
-  const maxSol = useMemo(() => formatSol(maxSolVal), [maxSolVal])
+  const handleHistogramClick = useCallback(
+    (newXDomain) => {
+      if (zoomedXDomain[0] != xDomain[0] || zoomedXDomain[1] != xDomain[1]) {
+        setZoomedXDomain(xDomain)
+      } else {
+        api.set({
+          xMin: Math.max(xMin.get(), newXDomain[0]),
+          xMax: Math.min(xMax.get(), newXDomain[1]),
+        })
+        setZoomedXDomain(newXDomain)
+      }
+    },
+    [xMin, xMax, zoomedXDomain, xDomain, setZoomedXDomain]
+  )
+  if (
+    !sliderData.length ||
+    !isFinite(zoomedXDomain[0]) ||
+    !isFinite(zoomedXDomain[1])
+  ) {
+    return null
+  }
   return (
-    <div className='relative' style={{ margin: 16, height: 100 }}>
-      {data.length && xDomainAdj[0] !== Infinity && (
+    <div
+      className='relative'
+      style={{ marginLeft: 16, marginRight: 16, height: 100 }}
+    >
+      {sliderData.length && (
         <>
           <HistogramChart
-            xDomain={xDomainAdj}
-            data={data}
-            highlight={values}
+            xDomain0={zoomedXDomain[0]}
+            xDomain1={zoomedXDomain[1]}
+            data={sliderData}
+            highlight0={values[0]}
+            highlight1={values[1]}
             width={innerWidth}
             height={43}
+            onClick={handleHistogramClick}
           />
           <div
             className='relative'
@@ -147,7 +157,14 @@ export function MultiRangeSlider({
                     lineHeight: '40px',
                     cursor: '-webkit-grab',
                     touchAction: 'none',
-                    transform: xMin.to((x) => `translate(${x}px, 0)`),
+                    transform: xMin.to(
+                      (x) =>
+                        `translate(${
+                          isFinite(x)
+                            ? valueToX(x, innerWidth, zoomedXDomain)
+                            : 0
+                        }px`
+                    ),
                   }}
                   {...bindMin()}
                 >
@@ -183,7 +200,15 @@ export function MultiRangeSlider({
                     lineHeight: '40px',
                     cursor: '-webkit-grab',
                     touchAction: 'none',
-                    transform: xMax.to((x) => `translate(${x}px, 0)`),
+                    transform: xMax.to(
+                      (x) =>
+                        `translate(${
+                          isFinite(x)
+                            ? valueToX(x, innerWidth, zoomedXDomain) -
+                              innerWidth
+                            : 0
+                        }px`
+                    ),
                   }}
                   {...bindMax()}
                 >
@@ -210,7 +235,7 @@ export function MultiRangeSlider({
                 <div
                   className='absolute inset-0 z-10 cursor-pointer'
                   style={{ left: 20, right: 20 }}
-                  onClick={clickHandler}
+                  onClick={handleSliderClick}
                 ></div>
                 <animated.div
                   className='absolute inset-y-0 bg-blue-500 pointer-events-none'
@@ -220,8 +245,18 @@ export function MultiRangeSlider({
                     zIndex: -1,
                     touchAction: 'none',
                     cursor: '-webkit-grab',
-                    left: xMin.to((x) => x + 26),
-                    right: xMax.to((x) => -x + 26),
+                    left: xMin.to(
+                      (x) =>
+                        (isFinite(x)
+                          ? valueToX(x, innerWidth, zoomedXDomain)
+                          : 0) + 26
+                    ),
+                    right: xMax.to(
+                      (x) =>
+                        (isFinite(x)
+                          ? innerWidth - valueToX(x, innerWidth, zoomedXDomain)
+                          : 0) + 26
+                    ),
                   }}
                 ></animated.div>
               </div>
@@ -239,12 +274,12 @@ export function MultiRangeSlider({
             ></div>
             <div className='flex justify-between'>
               <small className='pt-1 text-gray-400'>
-                <Image alt={minSol} src='/img/sol.svg' width={12} height={12} />{' '}
-                {minSol}
+                <Image alt='Solana' src='/img/sol.svg' width={12} height={12} />{' '}
+                <animated.span>{xMin.to((x) => formatSol(x))}</animated.span>
               </small>
               <small className='pt-1 text-gray-400'>
-                <Image alt={maxSol} src='/img/sol.svg' width={12} height={12} />{' '}
-                {maxSol}
+                <Image alt='Solana' src='/img/sol.svg' width={12} height={12} />{' '}
+                <animated.span>{xMax.to((x) => formatSol(x))}</animated.span>
               </small>
             </div>
           </div>
