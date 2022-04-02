@@ -6,6 +6,7 @@ export type MyStoreState = {
   imageBaseUrl: string
   solscanApiBaseUrl: string
   solscanPublicApiBaseUrl: string
+  openSeaApiBaseUrl: string
 }
 
 export const useMyStore = create<
@@ -19,4 +20,5 @@ export const useMyStore = create<
   imageBaseUrl: '',
   solscanApiBaseUrl: '',
   solscanPublicApiBaseUrl: '',
+  openSeaApiBaseUrl: '',
 }))

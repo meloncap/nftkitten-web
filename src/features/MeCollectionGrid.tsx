@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useInfiniteQuery } from 'react-query'
-import { PagingResult } from '../types'
+import { PagingResultQL } from '../types'
 import { LoadingScreen } from '../components/LoadingScreen'
 import { MediaCard } from '../components/MediaCard'
 import { collectionApi, CollectionApiOutput } from '../services/magicEdenApi'
-import { queryOption } from '../services/queryOption'
+import { queryOptionQL } from '../services/queryOption'
 import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../contants'
 import { InfiniteGrid } from '../components/InfiniteGrid'
 import Image from 'next/image'
@@ -14,10 +14,10 @@ import { MediaType } from '../components/MediaType'
 
 export const MeCollectionGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
-    useInfiniteQuery<PagingResult<CollectionApiOutput>>(
+    useInfiniteQuery<PagingResultQL<CollectionApiOutput>>(
       'MeCollection',
       collectionApi,
-      queryOption<PagingResult<CollectionApiOutput>>()
+      queryOptionQL<PagingResultQL<CollectionApiOutput>>()
     )
   const [sliderValues, setSliderValues] = useState<ReadonlyArray<number>>([
     0, 0,

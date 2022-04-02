@@ -34,9 +34,10 @@ export function MultiRangeSlider({
   )
 
   useEffect(() => {
-    api.set({
+    api.start({
       xMin: xDomain[0],
       xMax: xDomain[1],
+      immediate: true,
     })
   }, [api, xDomain])
 
@@ -92,14 +93,15 @@ export function MultiRangeSlider({
       if (zoomedXDomain[0] != xDomain[0] || zoomedXDomain[1] != xDomain[1]) {
         setZoomedXDomain(xDomain)
       } else {
-        api.set({
+        api.start({
           xMin: Math.max(xMin.get(), newXDomain[0]),
           xMax: Math.min(xMax.get(), newXDomain[1]),
+          immediate: true,
         })
         setZoomedXDomain(newXDomain)
       }
     },
-    [xMin, xMax, zoomedXDomain, xDomain, setZoomedXDomain]
+    [zoomedXDomain, xDomain, api, xMin, xMax]
   )
   if (
     !sliderData.length ||
@@ -111,7 +113,7 @@ export function MultiRangeSlider({
   return (
     <div
       className='relative'
-      style={{ marginLeft: 16, marginRight: 16, height: 100 }}
+      style={{ marginLeft: 16, marginRight: 16, height: 100, marginTop: 10 }}
     >
       {sliderData.length && (
         <>

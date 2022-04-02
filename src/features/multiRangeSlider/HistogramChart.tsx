@@ -22,21 +22,42 @@ export function HistogramChart({
   onClick: (domains: ReadonlyArray<number>) => void
 }) {
   const dataInXDomain = useMemo(() => {
-    const stats: { [key: string]: number } = {}
+    const stats: {
+      [key: string]: { count: number; min: number; max: number }
+    } = {}
     let maxCount = -Infinity
     for (const val of data) {
       const percent = valueToPercent(val, [xDomain0, xDomain1]).toString()
-      if (val >= xDomain0 && val <= xDomain1) {
-        stats[percent] = (stats[percent] ?? 0) + 1
+      if (percent in stats) {
+        stats[percent].count++
+        if (val < stats[percent].min) {
+          stats[percent].min = val
+        }
+        if (val > stats[percent].max) {
+          stats[percent].max = val
+        }
+      } else {
+        stats[percent] = {
+          count: 1,
+          min: val,
+          max: val,
+        }
       }
-      if (stats[percent] > maxCount) {
-        maxCount = stats[percent]
+      if ((stats[percent]?.count ?? 0) > maxCount) {
+        maxCount = stats[percent]?.count ?? 0
+      }
+      if (val < xDomain0 || val > xDomain1) {
+        delete stats[percent]
       }
     }
     const retVal: BarProps['data'] = []
     for (let x = 0; x <= 100; x++) {
       if (x.toString() in stats) {
-        retVal.push({ value: 50 + Math.ceil((stats[x] / maxCount) * 50) })
+        retVal.push({
+          value: 50 + Math.ceil((stats[x].count / maxCount) * 50),
+          min: stats[x].min,
+          max: stats[x].max,
+        })
       } else {
         retVal.push({ value: 0 })
       }
@@ -97,11 +118,7 @@ export function HistogramChart({
           <Bar
             dataKey='value'
             isAnimationActive={false}
-            onClick={(data, index) => {
-              const newXDomain0 =
-                xDomain0 + ((xDomain1 - xDomain0) * index) / 100
-              onClick([newXDomain0, newXDomain0 + (xDomain1 - xDomain0) / 100])
-            }}
+            onClick={({ min, max }) => onClick([min, max])}
           >
             {dataInXDomain.map((_, index) => (
               <Cell

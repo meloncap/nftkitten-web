@@ -73,7 +73,7 @@ export const CollectionGrid: FC = () => {
   )
   return (
     <div className='min-h-screen'>
-      <div className='flex justify-end py-2 px-4'>
+      <div className='flex justify-end px-4'>
         <a
           href='#'
           aria-current='page'

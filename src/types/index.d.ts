@@ -227,8 +227,20 @@ export type MEError = {
   message: string
 }
 
+export type PageInfo = {
+  endCursor?: string | null | undefined
+  hasNextPage?: boolean | undefined
+  hasPreviousPage?: boolean | undefined
+  startCursor?: string | null | undefined
+}
+
 export type PagingResult<T extends unknown | unknown[]> = {
   pageParam: number
+  data: T[]
+}
+
+export type PagingResultQL<T extends unknown | unknown[]> = {
+  pageParam: PageInfo
   data: T[]
 }
 

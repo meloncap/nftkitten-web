@@ -12,7 +12,7 @@ type Tab = {
 export function TabPanel({ tabs }: { tabs: Tab[] }) {
   return (
     <>
-      <div className='border-b border-gray-200 dark:border-gray-700'>
+      <div className='mb-4 border-b border-gray-200 dark:border-gray-700'>
         <ul className='flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400'>
           {tabs.map(({ url, isActive, title: Title }, i) => (
             <li className='mr-2' key={i}>

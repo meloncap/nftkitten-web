@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from 'react'
 import { useInfiniteQuery } from 'react-query'
-import { PagingResult } from '../types'
+import { PagingResultQL } from '../types'
 import { LoadingScreen } from '../components/LoadingScreen'
 import { launchpadApi, LaunchpadApiOutput } from '../services/magicEdenApi'
-import { queryOption } from '../services/queryOption'
+import { queryOptionQL } from '../services/queryOption'
 import { InfiniteGrid } from '../components/InfiniteGrid'
 import { MediaCard } from '../components/MediaCard'
 import { COLLECTION_THUMB_SIZE, ME_PAGE_LIMIT } from '../contants'
@@ -12,10 +12,10 @@ import { MediaType } from '../components/MediaType'
 
 export const MeLaunchpadGrid = () => {
   const { isLoading, isError, fetchNextPage, data, hasNextPage } =
-    useInfiniteQuery<PagingResult<LaunchpadApiOutput>>(
+    useInfiniteQuery<PagingResultQL<LaunchpadApiOutput>>(
       'MeLaunchpad',
       launchpadApi,
-      queryOption<PagingResult<LaunchpadApiOutput>>()
+      queryOptionQL<PagingResultQL<LaunchpadApiOutput>>()
     )
   const itemData = useMemo(() => data?.pages?.map((d) => d.data).flat(), [data])
   const loadMoreItems = useCallback(

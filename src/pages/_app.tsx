@@ -12,6 +12,7 @@ const apiBaseUrl: string = process.env.NEXT_PUBLIC_API_BASE_URL ?? ''
 const meApiBasUrl: string = process.env.NEXT_PUBLIC_ME_API_BASE_URL ?? ''
 const imageBaseUrl: string = process.env.NEXT_PUBLIC_IMAGE_BASE_URL ?? ''
 const moralisBaseUrl: string = process.env.NEXT_PUBLIC_MORALIS_BASE_URL ?? ''
+const openSeaApiBaseUrl: string = process.env.NEXT_PUBLIC_OPENSEA_API_BASE ?? ''
 const moralisApplicationId: string =
   process.env.NEXT_PUBLIC_MORALIS_APPLICATION_ID ?? ''
 const solscanApiBaseUrl: string =
@@ -26,6 +27,7 @@ export function MyApp({ Component, pageProps }: AppProps) {
     imageBaseUrl,
     solscanApiBaseUrl,
     solscanPublicApiBaseUrl,
+    openSeaApiBaseUrl,
   })
   return (
     <StrictMode>

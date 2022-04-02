@@ -32,5 +32,5 @@ export function valueToX(
 
 export function valueToPercent(value: number, xDomain: ReadonlyArray<number>) {
   const range = xDomain[1] - xDomain[0]
-  return Math.ceil(((value - xDomain[0]) / range) * 100)
+  return Math.ceil(((value - xDomain[0]) / (range === 0 ? 1 : range)) * 100)
 }
