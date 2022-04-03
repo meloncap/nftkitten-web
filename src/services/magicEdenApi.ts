@@ -42,7 +42,7 @@ export async function collectionApi({
     gql`
       query MyQuery($before: String, $first: Int, $after: String, $last: Int) {
         me_collection_connection(
-          order_by: {}
+          order_by: { id: desc }
           first: $first
           last: $last
           before: $before
@@ -131,7 +131,7 @@ export async function launchpadApi({
     gql`
       query MyQuery($before: String, $first: Int, $after: String, $last: Int) {
         me_launchpad_connection(
-          order_by: {}
+          order_by: { id: desc }
           first: $first
           last: $last
           before: $before
