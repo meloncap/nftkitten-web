@@ -78,11 +78,11 @@ export const CollectionGrid: FC = () => {
           href='#'
           aria-current='page'
           className={classNames(
-            'py-2 px-4 text-xs sm:text-sm font-medium bg-transparent rounded-l-lg border border-gray-900 hover:bg-gray-900 dark:border-white dark:hover:bg-gray-700',
+            'py-2 px-4 text-xs sm:text-sm font-medium rounded-l-lg border border-gray-900 hover:bg-gray-900 dark:border-white dark:hover:bg-gray-700',
             {
               'text-black dark:text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800':
                 filterType === '30day',
-              'focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 text-gray-900 focus:text-white hover:text-white dark:text-white dark:hover:text-white dark:focus:bg-gray-700':
+              'focus:z-10 focus:ring-2 bg-transparent focus:ring-gray-500 focus:bg-gray-900 text-gray-900 focus:text-white hover:text-white dark:text-white dark:hover:text-white dark:focus:bg-gray-700':
                 filterType !== '30day',
             }
           )}
@@ -96,11 +96,11 @@ export const CollectionGrid: FC = () => {
         <a
           href='#'
           className={classNames(
-            'py-2 px-4 text-xs sm:text-sm font-medium bg-transparent border-t border-b border-gray-900 hover:bg-gray-900 dark:border-white dark:hover:bg-gray-700',
+            'py-2 px-4 text-xs sm:text-sm font-medium border-t border-b border-gray-900 hover:bg-gray-900 dark:border-white dark:hover:bg-gray-700',
             {
               'text-black dark:text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800':
                 filterType === '7day',
-              'focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 text-gray-900 focus:text-white hover:text-white dark:text-white dark:hover:text-white dark:focus:bg-gray-700':
+              'focus:z-10 focus:ring-2 bg-transparent focus:ring-gray-500 focus:bg-gray-900 text-gray-900 focus:text-white hover:text-white dark:text-white dark:hover:text-white dark:focus:bg-gray-700':
                 filterType !== '7day',
             }
           )}
@@ -114,11 +114,11 @@ export const CollectionGrid: FC = () => {
         <a
           href='#'
           className={classNames(
-            'py-2 px-4 text-xs sm:text-sm font-medium bg-transparent rounded-r-md border border-gray-900 hover:bg-gray-900 dark:border-white dark:hover:bg-gray-700',
+            'py-2 px-4 text-xs sm:text-sm font-medium rounded-r-md border border-gray-900 hover:bg-gray-900 dark:border-white dark:hover:bg-gray-700',
             {
               'text-black dark:text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800':
                 filterType === '',
-              'focus:z-10 focus:ring-2 focus:ring-gray-500 text-gray-900 focus:bg-gray-900 focus:text-white hover:text-white dark:text-white dark:hover:text-white dark:focus:bg-gray-700':
+              'focus:z-10 focus:ring-2 bg-transparent focus:ring-gray-500 text-gray-900 focus:bg-gray-900 focus:text-white hover:text-white dark:text-white dark:hover:text-white dark:focus:bg-gray-700':
                 filterType !== '',
             }
           )}
