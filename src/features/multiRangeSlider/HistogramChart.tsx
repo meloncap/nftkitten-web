@@ -10,7 +10,6 @@ export function HistogramChart({
   data,
   highlight0,
   highlight1,
-  onClick,
 }: {
   xDomain0: number
   xDomain1: number
@@ -19,7 +18,6 @@ export function HistogramChart({
   data: Array<number>
   highlight0: number
   highlight1: number
-  onClick: (domains: ReadonlyArray<number>) => void
 }) {
   const step = width < 800 ? 4 : width < 1200 ? 2 : 1
   const dataInXDomain = useMemo(() => {
@@ -99,11 +97,7 @@ export function HistogramChart({
           barCategoryGap={0}
           barGap={0}
         >
-          <Bar
-            dataKey='value'
-            isAnimationActive={false}
-            onClick={({ min, max }) => onClick([min, max])}
-          >
+          <Bar dataKey='value' isAnimationActive={false}>
             {dataInXDomain.map((_, index) => (
               <Cell
                 cursor='pointer'
