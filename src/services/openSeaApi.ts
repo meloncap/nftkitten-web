@@ -38,71 +38,71 @@ export async function collectionApi({
   } = await request(
     `${openSeaApiBaseUrl}beta1/relay`,
     gql`
-    query RankingsPageQuery(
-      $chain: [ChainScalar!]
-      $count: Int!
-      $cursor: String
-      $sortBy: CollectionSort
-      $parents: [CollectionSlug!]
-      $createdAfter: DateTime
-    ) {
-      ...RankingsPage_data
-    }
-    
-    fragment PaymentAssetLogo_data on PaymentAssetType {
-      symbol
-      asset {
-        imageUrl
-        id
-      }
-    }
-    
-    fragment RankingsPage_data on Query {
-      rankings(after: $cursor, chains: $chain, first: $count, sortBy: $sortBy, parents: $parents, createdAfter: $createdAfter) {
-        edges {
-          node {
-            createdDate
-            name
-            slug
-            logo
-            isVerified
-            nativePaymentAsset {
-              ...PaymentAssetLogo_data
-              id
-            }
-            statsV2 {
-              floorPrice {
-                unit
-                eth
-              }
-              numOwners
-              totalSupply
-              sevenDayChange
-              sevenDayVolume {
-                unit
-              }
-              oneDayChange
-              oneDayVolume {
-                unit
-              }
-              thirtyDayChange
-              thirtyDayVolume {
-                unit
-              }
-              totalVolume {
-                unit
-              }
-            }
-            id
-            __typename
+query RankingsPageQuery (
+  $chain: [ChainScalar!]
+  $count: Int!
+  $cursor: String
+  $sortBy: CollectionSort
+  $parents: [CollectionSlug!]
+  $createdAfter: DateTime
+) {
+  ...RankingsPage_data
+}
+
+fragment PaymentAssetLogo_data on PaymentAssetType {
+  symbol
+  asset {
+    imageUrl
+    id
+  }
+}
+
+fragment RankingsPage_data on Query {
+  rankings(after: $cursor, chains: $chain, first: $count, sortBy: $sortBy, parents: $parents, createdAfter: $createdAfter) {
+    edges {
+      node {
+        createdDate
+        name
+        slug
+        logo
+        isVerified
+        nativePaymentAsset {
+          ...PaymentAssetLogo_data
+          id
+        }
+        statsV2 {
+          floorPrice {
+            unit
+            eth
           }
-          cursor
+          numOwners
+          totalSupply
+          sevenDayChange
+          sevenDayVolume {
+            unit
+          }
+          oneDayChange
+          oneDayVolume {
+            unit
+          }
+          thirtyDayChange
+          thirtyDayVolume {
+            unit
+          }
+          totalVolume {
+            unit
+          }
         }
-        pageInfo {
-          endCursor
-          hasNextPage
-        }
+        id
+        __typename
       }
+      cursor
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
     `,
     pageParam.endCursor
       ? {

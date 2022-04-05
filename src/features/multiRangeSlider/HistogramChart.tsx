@@ -21,7 +21,7 @@ export function HistogramChart({
   highlight1: number
   onClick: (domains: ReadonlyArray<number>) => void
 }) {
-  const split = Math.min(100, ~~(width / 18))
+  const step = width < 800 ? 4 : width < 1200 ? 2 : 1
   const dataInXDomain = useMemo(() => {
     const stats: {
       [key: string]: { count: number; min: number; max: number }
@@ -52,10 +52,11 @@ export function HistogramChart({
       }
     }
     const retVal: BarProps['data'] = []
-    for (let x = 0; x <= split; x++) {
+    for (let x = 0; x <= 100; x += step) {
       if (x.toString() in stats) {
+        const count = stats[x].count
         retVal.push({
-          value: 50 + Math.ceil((stats[x].count / maxCount) * 50),
+          value: 50 + Math.ceil((count / maxCount) * 50),
           min: stats[x].min,
           max: stats[x].max,
         })
@@ -64,14 +65,14 @@ export function HistogramChart({
       }
     }
     return retVal
-  }, [data, split, xDomain0, xDomain1])
+  }, [data, step, xDomain0, xDomain1])
 
   const valueLookup = useMemo(
     () =>
       dataInXDomain.reduce(
         (r: { [id: string]: number }, _, i) => ({
           ...r,
-          [i.toString()]: percentToValue(i, [xDomain0, xDomain1]),
+          [i.toString()]: percentToValue(i * step, [xDomain0, xDomain1]),
         }),
         {}
       ),
@@ -93,28 +94,10 @@ export function HistogramChart({
         <BarChart
           width={width}
           height={height}
-          // colors={({ indexValue }) =>
-          //   highlight0 <= indexValue && indexValue <= highlight1
-          //     ? '#1A56DB'
-          //     : '#6C757D'
-          // }
           data={dataInXDomain}
           margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
           barCategoryGap={0}
           barGap={0}
-          // enable GridX={false}
-          // enableGridY={false}
-          // valueScale={{ type: 'symlog' }}
-          // enableLabel={false}
-          // animate={false}
-          // borderWidth={1}
-          // borderColor={{
-          //   theme: 'grid.line.stroke',
-          // }}
-          // margin={{ top: 0, right: -1, bottom: 0, left: -1 }}
-          // padding={0}
-          // reverse={true}
-          // tooltip={() => null}
         >
           <Bar
             dataKey='value'

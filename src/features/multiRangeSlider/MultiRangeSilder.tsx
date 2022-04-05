@@ -1,4 +1,4 @@
-import { useSpring, animated } from 'react-spring'
+import { useSpring, animated, to } from 'react-spring'
 import { HistogramChart } from './HistogramChart'
 import { useDrag } from '@use-gesture/react'
 import { formatSol } from '../../utils/numberFormatter'
@@ -26,7 +26,7 @@ export function MultiRangeSlider({
     {
       xMin: zoomedXDomain[0],
       xMax: zoomedXDomain[1],
-      onChange({ value: { xMin, xMax } }) {
+      onRest({ value: { xMin, xMax } }) {
         onValuesChange([xMin, xMax])
       },
     },
@@ -47,7 +47,6 @@ export function MultiRangeSlider({
       api.start({
         xMin: xMinVal,
         xMax: Math.max(xMinVal, xMax.get()),
-        immediate: true,
       })
     },
     {
@@ -62,7 +61,6 @@ export function MultiRangeSlider({
       api.start({
         xMax: xMaxVal,
         xMin: Math.min(xMaxVal, xMin.get()),
-        immediate: true,
       })
     },
     {
@@ -72,6 +70,31 @@ export function MultiRangeSlider({
         valueToX(xMax.get(), innerWidth, zoomedXDomain) - innerWidth,
         0,
       ],
+    }
+  )
+  const bindMiddle = useDrag(
+    ({ offset: [x] }) => {
+      let xMinVal = xToValue(x, innerWidth, zoomedXDomain)
+      let xMaxVal = xMax.get() + (xMinVal - xMin.get())
+      const offLeft = zoomedXDomain[0] - xMinVal
+      if (offLeft > 0) {
+        xMinVal += offLeft
+        xMaxVal += offLeft
+      }
+      const offRight = xMaxVal - zoomedXDomain[1]
+      if (offRight > 0) {
+        xMinVal -= offRight
+        xMaxVal -= offRight
+      }
+      api.start({
+        xMin: xMinVal,
+        xMax: xMaxVal,
+      })
+    },
+    {
+      axis: 'x',
+      bounds: { left: 0, right: innerWidth, top: 0, bottom: 0 },
+      from: () => [valueToX(xMin.get(), innerWidth, zoomedXDomain), 0],
     }
   )
   const handleSliderClick = useCallback(
@@ -236,30 +259,37 @@ export function MultiRangeSlider({
                 </animated.button>
                 <div
                   className='absolute inset-0 z-10 cursor-pointer'
-                  style={{ left: 20, right: 20 }}
+                  tabIndex={0}
+                  style={{
+                    left: 20,
+                    right: 20,
+                  }}
                   onClick={handleSliderClick}
                 ></div>
                 <animated.div
-                  className='absolute inset-y-0 bg-blue-500 pointer-events-none'
+                  className='absolute inset-y-0 z-20 bg-blue-500 cursor-pointer'
                   style={{
                     top: 7,
                     height: 12,
-                    zIndex: -1,
                     touchAction: 'none',
                     cursor: '-webkit-grab',
-                    left: xMin.to(
+                    left: 26,
+                    transform: xMin.to(
                       (x) =>
-                        (isFinite(x)
-                          ? valueToX(x, innerWidth, zoomedXDomain)
-                          : 0) + 26
+                        `translate(${
+                          isFinite(x)
+                            ? valueToX(x, innerWidth, zoomedXDomain)
+                            : 0
+                        }px)`
                     ),
-                    right: xMax.to(
-                      (x) =>
-                        (isFinite(x)
-                          ? innerWidth - valueToX(x, innerWidth, zoomedXDomain)
-                          : 0) + 26
+                    width: to([xMin, xMax], (xMin, xMax) =>
+                      isFinite(xMin) && isFinite(xMax)
+                        ? valueToX(xMax, innerWidth, zoomedXDomain) -
+                          valueToX(xMin, innerWidth, zoomedXDomain)
+                        : 0
                     ),
                   }}
+                  {...bindMiddle()}
                 ></animated.div>
               </div>
             </div>

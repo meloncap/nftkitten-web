@@ -1,6 +1,6 @@
 # NFTKitten.io
 
-Motivate
+## Motivate
 
 When I first heard of NFT, I looked into the details. I wasn't a big fan. Because I thought it was just some metadata on a smart contract linked to some AWS website! I was thinking what if the AWS owner stopped paying for the service, wouldn't that NFT became a 404 page?
 
@@ -45,6 +45,10 @@ We can’t also store the data as a base64 encoded JSON for the same reason.
 We’re just left with a URI template and a literal string we must replace in order to get the actual NFT metadata.
 
 Which means, in my understanding, that ERC1155s are just mutable by design, and can’t be turned into immutable NFTs.
+
+## Solana Metaplex Standard
+
+For Metaplex there is is_mutable flag to indicate whether the NFT is mutable or not.
 
 ## Non-standard NFTs
 

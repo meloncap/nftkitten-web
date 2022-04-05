@@ -40,7 +40,8 @@ export async function collectionApi({
   } = await request(
     `${apiBaseUrl}beta1/relay`,
     gql`
-      query MyQuery($before: String, $first: Int, $after: String, $last: Int) {
+      query MyQuery($before: String, $first: Int, $after: String, $last: Int)
+      @cached {
         me_collection_connection(
           order_by: { id: desc }
           first: $first
@@ -129,7 +130,8 @@ export async function launchpadApi({
   } = await request(
     `${apiBaseUrl}beta1/relay`,
     gql`
-      query MyQuery($before: String, $first: Int, $after: String, $last: Int) {
+      query MyQuery($before: String, $first: Int, $after: String, $last: Int)
+      @cached {
         me_launchpad_connection(
           order_by: { id: desc }
           first: $first
