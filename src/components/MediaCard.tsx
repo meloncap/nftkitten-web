@@ -38,7 +38,6 @@ export const MediaCard = ({
         }}
         onLoadingComplete={onLoadingComplete}
         onError={onError}
-        unoptimized
       />
       {children}
     </div>

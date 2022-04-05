@@ -7,7 +7,7 @@ const nextConfig = {
     images: { layoutRaw: true },
   },
   images: {
-    domains: ['nftkitten.mo.cloudinary.net'],
+    domains: ['nftkittenmedia.mo.cloudinary.net'],
   },
   rewrites: async () => [
     {
