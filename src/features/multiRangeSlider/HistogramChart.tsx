@@ -21,6 +21,7 @@ export function HistogramChart({
   highlight1: number
   onClick: (domains: ReadonlyArray<number>) => void
 }) {
+  const split = Math.min(100, ~~(width / 18))
   const dataInXDomain = useMemo(() => {
     const stats: {
       [key: string]: { count: number; min: number; max: number }
@@ -51,7 +52,7 @@ export function HistogramChart({
       }
     }
     const retVal: BarProps['data'] = []
-    for (let x = 0; x <= 100; x++) {
+    for (let x = 0; x <= split; x++) {
       if (x.toString() in stats) {
         retVal.push({
           value: 50 + Math.ceil((stats[x].count / maxCount) * 50),
@@ -63,7 +64,7 @@ export function HistogramChart({
       }
     }
     return retVal
-  }, [data, xDomain0, xDomain1])
+  }, [data, split, xDomain0, xDomain1])
 
   const valueLookup = useMemo(
     () =>

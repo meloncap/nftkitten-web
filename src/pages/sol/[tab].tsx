@@ -14,7 +14,7 @@ const Home: NextPage = () => {
       {
         url: '/',
         isActive: /^home$/.test(`${tab}`),
-        title: () => <>Collection</>,
+        title: () => <>Solana NFT</>,
         content: () => <CollectionGrid />,
       },
       {
