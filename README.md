@@ -6,7 +6,7 @@ When I first heard of NFT, I looked into the details. I wasn't a big fan. Becaus
 
 Then I saw the evolution of the NFT, people start using IPFS, arweave instead of AWS. more utilities are being added for NFT.
 
-NFT brings crypto into the mainstream, even celebrities. people who used to think crypto was a SCAM, start to pay more attention to NFT, they want to learn more about it, youtuber start asking how to create NFT. NFT changed their perspective of crypto. And since NFT is just a smart contract, there are unlimited possibilities in the future.
+NFT brings crypto into the mainstream, even celebrities. people who used to think crypto was a SCAM, start to pay more attention to NFT, they want to learn more about it, youtuber start asking how to create NFT. NFT changed their perspective of crypto.
 
 Content creator can finally get what they deserve, their contents are free to download as it always has been, at the same time they get paid directly for their creation without a third party.
 
